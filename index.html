@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UNSENT — for the feelings that have nowhere to go</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B0B0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UNSENT">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg-0:#0B0B0F;
+  --bg-1:#151519;
+  --bg-2:#1C1C22;
+  --bg-3:#232329;
+  --line:#2B2B33;
+  --line-soft:#212127;
+  --ink-0:#EDEDF2;
+  --ink-1:#B6B6C3;
+  --ink-2:#7F7F8E;
+  --ink-3:#575765;
+  --violet:#9C8FE0;
+  --violet-dim:#5B4F87;
+  --violet-glow: rgba(156,143,224,0.16);
+  --clay:#CE9A73;
+  --sage:#8FAE96;
+  --rose:#C98A9A;
+  --radius-s:10px;
+  --radius-m:16px;
+  --radius-l:24px;
+  --shadow-1: 0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 30px -12px rgba(0,0,0,0.6);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --font-scale: 1;
+}
+:root[data-theme="light"]{
+  --bg-0:#F6F4F1;
+  --bg-1:#FFFFFF;
+  --bg-2:#FBFAF8;
+  --bg-3:#F0EEEA;
+  --line:#E4E1DB;
+  --line-soft:#ECEAE5;
+  --ink-0:#232026;
+  --ink-1:#5B5763;
+  --ink-2:#8B8794;
+  --ink-3:#B3AFB9;
+  --violet:#6E5FBE;
+  --violet-dim:#D9D3F2;
+  --violet-glow: rgba(110,95,190,0.10);
+}
+:root[data-theme="hc"]{
+  --bg-0:#000000;
+  --bg-1:#0A0A0A;
+  --bg-2:#111111;
+  --bg-3:#181818;
+  --line:#6B6B6B;
+  --line-soft:#3A3A3A;
+  --ink-0:#FFFFFF;
+  --ink-1:#F0F0F0;
+  --ink-2:#D0D0D0;
+  --ink-3:#A8A8A8;
+  --violet:#C6B8FF;
+  --violet-dim:#8A7AD1;
+  --violet-glow: rgba(198,184,255,0.28);
+  --clay:#FFB27A;
+  --sage:#B7E0BE;
+  --rose:#FFB0C2;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{-webkit-tap-highlight-color:transparent;}
+body{
+  background:var(--bg-0);
+  color:var(--ink-0);
+  font-family:var(--sans);
+  min-height:100vh;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  transition:background .3s var(--ease), color .3s var(--ease);
+  font-size:calc(16px * var(--font-scale));
+}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:500; letter-spacing:-0.01em; color:var(--ink-0);}
+p{color:var(--ink-1);}
+a{color:inherit;}
+button{font-family:var(--sans); cursor:pointer;}
+::selection{background:var(--violet-glow); color:var(--ink-0);}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+:focus-visible{outline:2px solid var(--violet); outline-offset:2px; border-radius:6px;}
+.hidden{display:none !important;}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+[data-motion="reduced"] *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px 22px; border-radius:100px; border:1px solid transparent;
+  font-size:14.5px; font-weight:600; letter-spacing:0.01em;
+  transition:transform .18s var(--ease), background .2s var(--ease), border-color .2s var(--ease), opacity .2s;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--ink-0); color:var(--bg-0);}
+:root[data-theme="light"] .btn-primary{background:var(--ink-0); color:#fff;}
+.btn-primary:hover{opacity:0.88;}
+.btn-ghost{background:transparent; color:var(--ink-1); border-color:var(--line);}
+.btn-ghost:hover{color:var(--ink-0); border-color:var(--ink-2);}
+.btn-violet{background:var(--violet); color:#100D1C;}
+.btn-violet:hover{opacity:0.9;}
+.btn-danger{background:transparent; color:#D98080; border-color:#4A2E2E;}
+.btn-danger:hover{background:rgba(217,128,128,0.08);}
+.btn-sm{padding:9px 16px; font-size:13px;}
+.btn-block{width:100%;}
+.btn-icon{width:40px; height:40px; padding:0; border-radius:50%; background:var(--bg-2); border:1px solid var(--line); color:var(--ink-1);}
+.btn-icon:hover{color:var(--ink-0); border-color:var(--ink-2);}
+.chip{
+  display:inline-flex; align-items:center; padding:9px 15px; border-radius:100px;
+  border:1px solid var(--line); background:var(--bg-2); color:var(--ink-1); font-size:13.5px;
+  transition:all .18s var(--ease); user-select:none;
+}
+.chip:hover{border-color:var(--ink-2); color:var(--ink-0);}
+.chip.active{background:var(--violet-glow); border-color:var(--violet); color:var(--violet);}
+.chip-row{display:flex; flex-wrap:wrap; gap:9px;}
+
+/* ============ LAYOUT SHELLS ============ */
+#screen-welcome, #screen-onboarding, #screen-lock{
+  min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;
+}
+.wrap{width:100%; max-width:640px; margin:0 auto; padding:0 24px;}
+.wrap-wide{width:100%; max-width:880px; margin:0 auto; padding:0 24px;}
+
+/* ============ LOCK SCREEN ============ */
+#screen-lock{align-items:center; justify-content:center; background:var(--bg-0); text-align:center; padding:24px;}
+.lock-dots{display:flex; gap:14px; justify-content:center; margin:26px 0;}
+.lock-dot{width:14px; height:14px; border-radius:50%; border:1.5px solid var(--ink-3); transition:all .15s var(--ease);}
+.lock-dot.filled{background:var(--violet); border-color:var(--violet);}
+.lock-dot.err{border-color:var(--rose); animation:shakeDot .35s;}
+@keyframes shakeDot{0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);}}
+.lock-keypad{display:grid; grid-template-columns:repeat(3,64px); gap:14px; justify-content:center; margin-top:10px;}
+.lock-key{width:64px; height:64px; border-radius:50%; background:var(--bg-2); border:1px solid var(--line); color:var(--ink-0); font-size:22px; font-family:var(--serif);}
+.lock-key:active{background:var(--bg-3); transform:scale(0.96);}
+.lock-key.ghost{background:none; border:none; color:var(--ink-2); font-size:13px;}
+
+/* ============ WELCOME ============ */
+#welcome-canvas-wrap{position:fixed; inset:0; z-index:0; overflow:hidden;}
+.field-orb{position:absolute; border-radius:50%; filter:blur(70px); opacity:0.5;}
+.orb-a{width:520px; height:520px; background:radial-gradient(circle, var(--violet-glow), transparent 70%); top:-140px; left:-120px; animation:drift1 22s ease-in-out infinite;}
+.orb-b{width:460px; height:460px; background:radial-gradient(circle, rgba(201,138,154,0.12), transparent 70%); bottom:-160px; right:-100px; animation:drift2 26s ease-in-out infinite;}
+@keyframes drift1{0%,100%{transform:translate(0,0);} 50%{transform:translate(40px,60px);}}
+@keyframes drift2{0%,100%{transform:translate(0,0);} 50%{transform:translate(-50px,-30px);}}
+.welcome-main{position:relative; z-index:1; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:80px 24px 40px;}
+.wordmark{font-family:var(--serif); font-size:clamp(48px,10vw,88px); font-weight:400; letter-spacing:-0.02em; line-height:1; opacity:0; animation:riseIn .9s var(--ease) forwards;}
+.tagline{font-family:var(--serif); font-style:italic; font-weight:400; color:var(--ink-1); font-size:clamp(16px,2.6vw,20px); margin-top:18px; opacity:0; animation:riseIn .9s var(--ease) .15s forwards;}
+.welcome-sub{max-width:440px; margin:28px auto 0; color:var(--ink-2); font-size:15px; line-height:1.7; opacity:0; animation:riseIn .9s var(--ease) .3s forwards;}
+.welcome-actions{display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:44px; opacity:0; animation:riseIn .9s var(--ease) .45s forwards;}
+@keyframes riseIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+.link-quiet{background:none; border:none; color:var(--ink-2); font-size:14px; text-decoration:underline; text-underline-offset:4px; text-decoration-color:var(--line);}
+.link-quiet:hover{color:var(--ink-0);}
+.welcome-foot{position:relative; z-index:1; text-align:center; padding:20px; font-size:12px; color:var(--ink-3);}
+
+.howitworks-steps{display:flex; flex-direction:column; gap:2px; margin-top:22px;}
+.hiw-step{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line-soft); text-align:left; align-items:flex-start;}
+.hiw-step:first-child{border-top:none;}
+.hiw-num{font-family:var(--serif); font-style:italic; color:var(--ink-3); font-size:15px; min-width:22px;}
+.hiw-text{color:var(--ink-1); font-size:15px; padding-top:1px;}
+
+/* ============ ONBOARDING ============ */
+#screen-onboarding{background:var(--bg-0); justify-content:center;}
+.ob-progress{display:flex; gap:6px; justify-content:center; padding-top:36px;}
+.ob-dot{width:26px; height:3px; border-radius:2px; background:var(--line);}
+.ob-dot.active{background:var(--violet);}
+.ob-body{flex:1; display:flex; flex-direction:column; justify-content:center; padding:40px 0 30px;}
+.ob-eyebrow{color:var(--ink-3); font-size:13px; margin-bottom:10px;}
+.ob-q{font-size:clamp(24px,4.4vw,32px); margin-bottom:8px;}
+.ob-hint{color:var(--ink-2); font-size:14px; margin-bottom:26px;}
+.ob-nav{display:flex; justify-content:space-between; align-items:center; padding-bottom:env(safe-area-inset-bottom,0px); padding-top:8px;}
+
+/* ============ APP SHELL ============ */
+#app{display:none; min-height:100vh; min-height:100dvh;}
+#app.active{display:flex;}
+.sidebar{
+  width:236px; flex-shrink:0; background:var(--bg-1); border-right:1px solid var(--line-soft);
+  display:flex; flex-direction:column; padding:22px 14px; position:sticky; top:0; height:100vh; height:100dvh;
+}
+.sb-brand{font-family:var(--serif); font-size:20px; padding:8px 10px 22px; letter-spacing:-0.01em;}
+.sb-nav{display:flex; flex-direction:column; gap:2px; flex:1;}
+.sb-link{
+  display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--radius-s);
+  color:var(--ink-2); font-size:14.5px; font-weight:500; background:none; border:none; text-align:left; width:100%;
+  transition:background .16s var(--ease), color .16s var(--ease);
+}
+.sb-link svg{width:18px; height:18px; flex-shrink:0; opacity:0.85;}
+.sb-link:hover{background:var(--bg-2); color:var(--ink-0);}
+.sb-link.active{background:var(--violet-glow); color:var(--violet);}
+.sb-foot{display:flex; flex-direction:column; gap:2px; padding-top:10px; border-top:1px solid var(--line-soft);}
+
+.main-col{flex:1; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 28px; border-bottom:1px solid var(--line-soft); position:sticky; top:0; background:var(--bg-0); z-index:20;
+}
+.topbar-title{font-size:15px; font-weight:600; color:var(--ink-1); display:none;}
+.topbar-actions{display:flex; gap:8px; margin-left:auto;}
+.page{flex:1; padding:34px 28px 100px; max-width:920px; width:100%; margin:0 auto;}
+.page-head{margin-bottom:28px;}
+.page-eyebrow{color:var(--violet); font-size:13px; font-weight:600; margin-bottom:6px;}
+.page-title{font-size:clamp(26px,4vw,34px);}
+.page-sub{color:var(--ink-2); font-size:14.5px; margin-top:8px; max-width:520px;}
+
+.bottomnav{display:none;}
+
+/* ============ CARDS ============ */
+.card{
+  background:var(--bg-1); border:1px solid var(--line-soft); border-radius:var(--radius-m);
+  padding:22px; box-shadow:var(--shadow-1);
+}
+.card + .card{margin-top:14px;}
+.card-title{font-size:16.5px; margin-bottom:4px;}
+.section-gap{margin-top:30px;}
+.subtle-label{font-size:12.5px; color:var(--ink-3); text-transform:none; letter-spacing:0.01em; margin-bottom:10px;}
+
+textarea, input[type=text], input[type=date], select{
+  width:100%; background:var(--bg-2); border:1px solid var(--line); border-radius:var(--radius-s);
+  color:var(--ink-0); font-family:var(--sans); font-size:14.5px; padding:13px 14px; resize:vertical;
+  transition:border-color .18s var(--ease);
+}
+textarea::placeholder, input::placeholder{color:var(--ink-3);}
+textarea:focus, input:focus, select:focus{border-color:var(--violet);}
+label.field-label{display:block; font-size:13px; color:var(--ink-2); margin-bottom:8px; font-weight:500;}
+.field{margin-bottom:18px;}
+.field-with-mic{position:relative;}
+.mic-btn{position:absolute; right:8px; bottom:8px; width:34px; height:34px; border-radius:50%; background:var(--bg-3); border:1px solid var(--line); color:var(--ink-1);}
+.mic-btn.listening{background:var(--violet-glow); border-color:var(--violet); color:var(--violet); animation:micPulse 1.2s ease-in-out infinite;}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 var(--violet-glow);} 50%{box-shadow:0 0 0 8px transparent;}}
+
+/* slider */
+.weight-slider-wrap{padding:10px 4px 4px;}
+input[type=range]{
+  -webkit-appearance:none; width:100%; height:4px; border-radius:4px; background:var(--line); outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--violet);
+  border:3px solid var(--bg-1); cursor:pointer; box-shadow:0 0 0 1px var(--violet);
+  transition:transform .12s var(--ease);
+}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.2);}
+input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:var(--violet); border:3px solid var(--bg-1); cursor:pointer;}
+.weight-labels{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-3); margin-top:6px;}
+.weight-readout{font-family:var(--serif); font-size:40px; margin:6px 0 2px;}
+
+/* dashboard stat row */
+.stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+.stat-box{background:var(--bg-2); border:1px solid var(--line-soft); border-radius:var(--radius-s); padding:16px;}
+.stat-num{font-family:var(--serif); font-size:26px;}
+.stat-label{font-size:12.5px; color:var(--ink-2); margin-top:2px;}
+.nudge{
+  display:flex; gap:12px; align-items:flex-start; background:linear-gradient(135deg, var(--violet-glow), transparent);
+  border:1px solid var(--line-soft); border-radius:var(--radius-m); padding:18px 20px; margin-top:14px;
+}
+.nudge-dot{width:6px; height:6px; border-radius:50%; background:var(--violet); margin-top:8px; flex-shrink:0;}
+
+/* empty state */
+.empty-state{text-align:center; padding:60px 20px; color:var(--ink-2);}
+.empty-state .es-title{font-family:var(--serif); font-size:19px; color:var(--ink-1); margin-bottom:6px;}
+.empty-state .es-sub{font-size:13.5px; max-width:320px; margin:0 auto; line-height:1.7;}
+
+/* tabs */
+.tabrow{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:18px; scrollbar-width:none;}
+.tabrow::-webkit-scrollbar{display:none;}
+.tabbtn{
+  flex-shrink:0; padding:9px 16px; border-radius:100px; border:1px solid transparent; background:none;
+  color:var(--ink-2); font-size:13.5px; font-weight:500;
+}
+.tabbtn.active{background:var(--bg-2); border-color:var(--line); color:var(--ink-0);}
+
+/* archive / list items */
+.entry-list{display:flex; flex-direction:column; gap:10px;}
+.entry-item{
+  background:var(--bg-1); border:1px solid var(--line-soft); border-radius:var(--radius-m); padding:17px 18px;
+  cursor:pointer; transition:border-color .16s var(--ease), transform .16s var(--ease);
+}
+.entry-item:hover{border-color:var(--ink-3); transform:translateY(-1px);}
+.entry-top{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;}
+.entry-meta{font-size:12px; color:var(--ink-3); display:flex; gap:8px; align-items:center;}
+.entry-tag{background:var(--bg-3); border-radius:100px; padding:3px 10px; font-size:11.5px; color:var(--ink-2);}
+.entry-preview{font-size:14px; color:var(--ink-1); line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.status-pill{font-size:11px; padding:3px 9px; border-radius:100px; border:1px solid var(--line);}
+.status-sealed{color:var(--violet); border-color:var(--violet-dim);}
+.status-released{color:var(--sage); border-color:var(--sage);}
+.status-later{color:var(--clay); border-color:var(--clay);}
+
+/* fade/slide animations */
+.fade-in{animation:fadeIn .5s var(--ease) both;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+.stagger > *{animation:fadeIn .45s var(--ease) both;}
+.stagger > *:nth-child(1){animation-delay:.02s;} .stagger > *:nth-child(2){animation-delay:.06s;}
+.stagger > *:nth-child(3){animation-delay:.10s;} .stagger > *:nth-child(4){animation-delay:.14s;}
+.stagger > *:nth-child(5){animation-delay:.18s;} .stagger > *:nth-child(6){animation-delay:.22s;}
+
+/* seal / release animations */
+@keyframes sealPop{0%{transform:scale(1);} 40%{transform:scale(0.97);} 100%{transform:scale(1);}}
+.seal-pop{animation:sealPop .4s var(--ease);}
+@keyframes releaseFade{0%{opacity:1; transform:translateY(0) scale(1); filter:blur(0);} 100%{opacity:0; transform:translateY(-16px) scale(0.98); filter:blur(4px);}}
+.releasing{animation:releaseFade .7s var(--ease) forwards;}
+
+/* untangle columns */
+.untangle-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+.ut-col{background:var(--bg-1); border:1px solid var(--line-soft); border-radius:var(--radius-m); padding:16px; min-height:220px; display:flex; flex-direction:column;}
+.ut-col-head{font-size:13px; font-weight:600; margin-bottom:4px;}
+.ut-col-sub{font-size:11.5px; color:var(--ink-3); margin-bottom:12px;}
+.ut-col.know .ut-col-head{color:var(--sage);}
+.ut-col.think .ut-col-head{color:var(--clay);}
+.ut-col.fear .ut-col-head{color:var(--rose);}
+.ut-cards{display:flex; flex-direction:column; gap:8px; flex:1; min-height:40px;}
+.ut-card{
+  background:var(--bg-2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13.5px;
+  color:var(--ink-1); cursor:grab; position:relative; padding-right:30px;
+}
+.ut-card.dragging{opacity:0.4;}
+.ut-card .ut-del{position:absolute; top:8px; right:8px; background:none; border:none; color:var(--ink-3); font-size:15px; line-height:1; width:18px; height:18px;}
+.ut-card .ut-del:hover{color:var(--rose);}
+.ut-col.dragover{outline:2px dashed var(--violet); outline-offset:-4px;}
+.ut-add{margin-top:10px; display:flex; gap:6px;}
+.ut-add input{font-size:13px; padding:9px 10px;}
+.ut-add button{flex-shrink:0;}
+
+/* pause */
+.pause-hero{text-align:center; padding:30px 20px 10px;}
+.pause-timer-ring{width:200px; height:200px; margin:26px auto; position:relative;}
+.pause-timer-num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:38px;}
+.breathe-orb{width:200px; height:200px; margin:26px auto; position:relative; display:flex; align-items:center; justify-content:center;}
+.breathe-orb .orb-core{
+  width:110px; height:110px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--violet), var(--violet-dim));
+  animation:breatheCycle 8s ease-in-out infinite;
+  box-shadow:0 0 40px var(--violet-glow);
+}
+@keyframes breatheCycle{
+  0%{transform:scale(0.72);} 45%{transform:scale(1);} 55%{transform:scale(1);} 100%{transform:scale(0.72);}
+}
+.breathe-label{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-0); font-weight:600; letter-spacing:0.03em;}
+.breathe-timer-num{margin-top:10px; font-family:var(--serif); font-size:26px; text-align:center;}
+
+/* suitcase */
+.luggage-wrap{display:flex; flex-direction:column; align-items:center; padding:10px 0 20px;}
+.luggage-bar{width:100%; max-width:340px; height:10px; background:var(--bg-3); border-radius:100px; overflow:hidden; margin-top:16px;}
+.luggage-fill{height:100%; background:linear-gradient(90deg, var(--violet), var(--rose)); border-radius:100px; transition:width .6s var(--ease);}
+.luggage-items{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:18px;}
+.luggage-chip{position:relative;}
+.luggage-chip[data-status="released"]{opacity:0.35; text-decoration:line-through;}
+
+/* receipt */
+.receipt{
+  background:var(--bg-1); border:1px dashed var(--line); border-radius:var(--radius-m); padding:26px;
+  font-family:'Courier New',monospace; font-size:13px; max-width:360px; margin:0 auto; color:var(--ink-1);
+}
+.receipt-row{display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px dotted var(--line-soft);}
+.receipt-total{margin-top:14px; padding-top:10px; border-top:1px dashed var(--line); font-weight:700; color:var(--ink-0); display:flex; justify-content:space-between;}
+.receipt-title{text-align:center; font-family:var(--serif); font-size:17px; margin-bottom:14px; letter-spacing:0.03em;}
+
+/* timeline */
+.tl-graph{width:100%; height:140px;}
+.milestone-row{display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-top:1px solid var(--line-soft);}
+.milestone-row:first-child{border-top:none;}
+.mrow-dot{width:8px; height:8px; border-radius:50%; background:var(--violet); margin-top:6px; flex-shrink:0;}
+
+/* heatmap */
+.heatmap-wrap{overflow-x:auto; padding-bottom:6px;}
+.heatmap-grid{display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,14px); gap:3px; width:max-content;}
+.heatmap-cell{width:14px; height:14px; border-radius:3px; background:var(--bg-3);}
+.heatmap-legend{display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11px; color:var(--ink-3);}
+.heatmap-legend .heatmap-cell{width:11px; height:11px;}
+
+/* afterimage */
+.aft-cols{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+.aft-col h4{font-size:14.5px; margin-bottom:10px;}
+.aft-col textarea{min-height:110px; font-size:13.5px;}
+
+/* modal */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(6,6,9,0.66); backdrop-filter:blur(3px); z-index:200;
+  display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none;
+  transition:opacity .25s var(--ease);
+}
+.modal-backdrop.open{opacity:1; pointer-events:auto;}
+.modal-box{
+  background:var(--bg-1); border:1px solid var(--line); border-radius:var(--radius-l); max-width:520px; width:100%;
+  max-height:86vh; overflow-y:auto; padding:28px; box-shadow:0 20px 60px -10px rgba(0,0,0,0.5);
+  transform:translateY(16px) scale(0.98); opacity:0; transition:all .3s var(--ease);
+}
+.modal-backdrop.open .modal-box{transform:translateY(0) scale(1); opacity:1;}
+.modal-close{position:absolute; top:0; right:0;}
+.modal-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;}
+.modal-title{font-size:20px;}
+
+/* toast */
+#toast-root{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:400; display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; padding:0 16px;}
+.toast{background:var(--ink-0); color:var(--bg-0); padding:12px 20px; border-radius:100px; font-size:13.5px; font-weight:500; box-shadow:0 10px 30px rgba(0,0,0,0.3); animation:toastIn .35s var(--ease);}
+@keyframes toastIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+/* result badges (was i overreacting) */
+.result-badge{display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:100px; font-size:14px; font-weight:600; margin-bottom:14px;}
+.result-green{background:rgba(143,174,150,0.12); color:var(--sage);}
+.result-yellow{background:rgba(206,154,115,0.12); color:var(--clay);}
+.result-orange{background:rgba(201,138,154,0.14); color:var(--rose);}
+.result-blue{background:var(--violet-glow); color:var(--violet);}
+
+/* settings */
+.settings-row{display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line-soft);}
+.settings-row:first-child{border-top:none;}
+.settings-row-label{font-size:14.5px;}
+.settings-row-sub{font-size:12.5px; color:var(--ink-3); margin-top:2px;}
+.segctrl{display:flex; background:var(--bg-2); border:1px solid var(--line); border-radius:100px; padding:3px;}
+.segbtn{padding:7px 14px; border-radius:100px; font-size:12.5px; background:none; border:none; color:var(--ink-2);}
+.segbtn.active{background:var(--bg-3); color:var(--ink-0);}
+
+/* community */
+.comm-card{background:var(--bg-1); border:1px solid var(--line-soft); border-radius:var(--radius-m); padding:18px;}
+.comm-cat{font-size:11.5px; color:var(--violet); margin-bottom:8px; font-weight:600;}
+.comm-reacts{display:flex; gap:8px; margin-top:12px;}
+.react-btn{background:var(--bg-2); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:12.5px; color:var(--ink-2);}
+.react-btn.reacted{border-color:var(--violet); color:var(--violet); background:var(--violet-glow);}
+
+/* safety banner */
+.safety-banner{background:linear-gradient(135deg, rgba(201,138,154,0.08), transparent); border:1px solid var(--line-soft); border-radius:var(--radius-m); padding:18px 20px;}
+
+/* misc */
+.divider{height:1px; background:var(--line-soft); margin:24px 0;}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.flex-between{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+.mt8{margin-top:8px;} .mt14{margin-top:14px;} .mt20{margin-top:20px;} .mt28{margin-top:28px;}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:900px){
+  .untangle-grid{grid-template-columns:1fr;}
+  .aft-cols{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:760px){
+  .sidebar{display:none;}
+  #app.active{flex-direction:column;}
+  .page{padding:24px 18px 110px;}
+  .topbar{padding:14px 18px;}
+  .topbar-title{display:block;}
+  .bottomnav{
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:100;
+    background:var(--bg-1); border-top:1px solid var(--line-soft); padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));
+    justify-content:space-between;
+  }
+  .bn-link{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none;
+    color:var(--ink-3); font-size:10.5px; padding:6px 2px; border-radius:12px;
+  }
+  .bn-link svg{width:20px; height:20px;}
+  .bn-link.active{color:var(--violet);}
+  .modal-box{padding:22px; border-radius:20px 20px 0 0; max-height:88vh; align-self:flex-end; margin-bottom:0;}
+  .modal-backdrop{align-items:flex-end; padding:0;}
+  .modal-backdrop .modal-box{max-width:100%;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr;}
+}
+@media (min-width:761px){
+  #screen-onboarding .wrap, #screen-welcome .wrap{max-width:560px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ LOCK SCREEN ============================================================ -->
+<div id="screen-lock" class="hidden">
+  <div class="wrap" style="text-align:center;">
+    <div style="font-family:var(--serif); font-size:26px;" id="lock-title">Enter your passcode</div>
+    <p style="font-size:13px; color:var(--ink-3); margin-top:6px;" id="lock-sub">Only you can open this.</p>
+    <div class="lock-dots" id="lock-dots"></div>
+    <div class="lock-keypad" id="lock-keypad"></div>
+  </div>
+</div>
+
+<!-- ============================================================ WELCOME ============================================================ -->
+<div id="screen-welcome">
+  <div id="welcome-canvas-wrap"><div class="field-orb orb-a"></div><div class="field-orb orb-b"></div></div>
+  <main class="welcome-main">
+    <div class="wordmark">UNSENT</div>
+    <p class="tagline">For the feelings that have nowhere to go.</p>
+    <p class="welcome-sub">You don't have to send everything you feel. Sometimes you just need somewhere to put it.</p>
+    <div class="welcome-actions">
+      <button class="btn btn-primary" id="btn-enter">Enter UNSENT</button>
+      <button class="link-quiet" id="btn-howitworks">How it works</button>
+    </div>
+  </main>
+  <div class="welcome-foot">Not a replacement for therapy, medical care, or emergency services.</div>
+</div>
+
+<!-- ============================================================ ONBOARDING ============================================================ -->
+<div id="screen-onboarding" class="hidden">
+  <div class="ob-progress" id="ob-progress"></div>
+  <div class="wrap ob-body" id="ob-body"></div>
+</div>
+
+<!-- ============================================================ APP ============================================================ -->
+<div id="app">
+  <nav class="sidebar" aria-label="Main navigation">
+    <div class="sb-brand">UNSENT</div>
+    <div class="sb-nav" id="sb-nav"></div>
+  </nav>
+
+  <div class="main-col">
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Home</div>
+      <div class="topbar-actions">
+        <button class="btn-icon" id="btn-search" aria-label="Search" title="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="btn-icon" id="btn-settings-shortcut" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </button>
+      </div>
+    </header>
+    <main class="page" id="page-root"></main>
+  </div>
+
+  <nav class="bottomnav" id="bottomnav" aria-label="Mobile navigation"></nav>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   ICONS
+   ============================================================ */
+const ICONS = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  unload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13"/><path d="M7 11l5 5 5-5"/><path d="M4 19h16"/></svg>',
+  untangle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 8c4 0 4 8 8 8"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M16 8c-4 0-4 8-8 8"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
+  reflect:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  timeline:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>',
+  journal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v17H6.5A2.5 2.5 0 004 16.5z"/><path d="M4 16.5A2.5 2.5 0 016.5 19H20"/></svg>',
+  community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+};
+
+const NAV_ITEMS = [
+  {id:'home', label:'Home', icon:'home'},
+  {id:'unload', label:'Unload', icon:'unload'},
+  {id:'untangle', label:'Untangle', icon:'untangle'},
+  {id:'pause', label:'Pause', icon:'pause'},
+  {id:'reflect', label:'Reflect', icon:'reflect'},
+  {id:'timeline', label:'Timeline', icon:'timeline'},
+  {id:'journal', label:'Me', icon:'journal'},
+  {id:'community', label:'Community', icon:'community'},
+  {id:'settings', label:'Settings', icon:'settings'}
+];
+const BOTTOMNAV_IDS = ['home','unload','untangle','pause','reflect','timeline','journal'];
+
+/* ============================================================
+   DATA LAYER
+   ============================================================ */
+const STORAGE_KEY = 'unsentAppData';
+const SCHEMA_VERSION = 1;
+
+function defaultData(){
+  return {
+    version: SCHEMA_VERSION,
+    profile: { onboardingComplete:false, situations:[], feelings:[], needs:[], enteredBefore:false },
+    checkIns: [],           // {id,date,weight,reasons,note}
+    unsentMessages: [],     // {id,date,recipient,body,emotions,status,openDate}
+    reflections: {
+      overreacting: [],     // saved sessions
+      missList: [],
+      afterimage: {before:'',during:'',after:''}
+    },
+    factThoughtFearSessions: [], // {id,date,know:[],think:[],fear:[],reflection}
+    loopSessions: [],        // {id,date,thought,chain:[],conclusion}
+    pauseSessions: [],       // {id,date,intent,text,duration,sent:false,resolved}
+    lastActiveChecks: [],    // {id,date,hoping,result:'checked'|'resisted'}
+    journalEntries: [],      // {id,date,title,body,mood,tags}
+    memories: [],            // {id,title,date,description,song,location,emotion,keepMeaning,releaseMeaning}
+    timelineEvents: [],       // relationship events {id,date,label,note}
+    futureLetters: [],       // {id,writtenDate,unlockDate,body,opened}
+    luggage: [],              // {id,item,status}
+    dailyPrompt: { usedIds: [], current:null, lastShownDate:null, lastAnswer:null },
+    communityReacts: {},      // {postId: reactType}
+    milestones: [],           // {id,date,label}
+    security: { pinHash:null, enabled:false },
+    settings: { theme:'dark', motion:'full', reminder:'off', fontScale:1, contrast:'normal' }
+  };
+}
+
+let data = loadData();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    const base = defaultData();
+    // shallow migration: merge missing top-level keys
+    const merged = Object.assign({}, base, parsed);
+    merged.profile = Object.assign({}, base.profile, parsed.profile||{});
+    merged.reflections = Object.assign({}, base.reflections, parsed.reflections||{});
+    merged.dailyPrompt = Object.assign({}, base.dailyPrompt, parsed.dailyPrompt||{});
+    merged.settings = Object.assign({}, base.settings, parsed.settings||{});
+    merged.security = Object.assign({}, base.security, parsed.security||{});
+    merged.version = SCHEMA_VERSION;
+    return merged;
+  }catch(e){
+    console.warn('UNSENT: could not parse local data, starting fresh.', e);
+    return defaultData();
+  }
+}
+function saveData(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+  catch(e){ console.warn('UNSENT: save failed', e); toast('Could not save — your browser storage may be full.'); }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(d){
+  const dt = new Date(d+'T00:00:00');
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'});
+}
+function fmtDateTime(ts){
+  const dt = new Date(ts);
+  return dt.toLocaleDateString(undefined,{month:'short', day:'numeric'}) + ' · ' + dt.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+}
+function addMilestone(label){
+  if(data.milestones.some(m=>m.label===label)) return;
+  data.milestones.push({id:uid(), date:todayStr(), label});
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(msg){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent=msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .4s, transform .4s'; el.style.opacity='0'; el.style.transform='translateY(8px)'; setTimeout(()=>el.remove(),400); }, 2400);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(innerHTML, opts){
+  opts = opts||{};
+  closeModal(true);
+  const backdrop = document.createElement('div');
+  backdrop.className='modal-backdrop'; backdrop.id='active-modal';
+  backdrop.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true">${innerHTML}</div>`;
+  document.getElementById('modal-root').appendChild(backdrop);
+  requestAnimationFrame(()=>backdrop.classList.add('open'));
+  backdrop.addEventListener('mousedown', (e)=>{ if(e.target===backdrop && !opts.noBackdropClose) closeModal(); });
+  document.addEventListener('keydown', escCloseHandler);
+  return backdrop;
+}
+function escCloseHandler(e){ if(e.key==='Escape') closeModal(); }
+function closeModal(instant){
+  const m = document.getElementById('active-modal');
+  if(!m) return;
+  document.removeEventListener('keydown', escCloseHandler);
+  if(instant){ m.remove(); return; }
+  m.classList.remove('open');
+  setTimeout(()=>m.remove(), 250);
+}
+document.addEventListener('click', (e)=>{
+  if(e.target.closest('[data-modal-close]')) closeModal();
+});
+
+function confirmDialog(title, body, confirmLabel, onConfirm, danger){
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${title}</h3></div>
+    <p style="font-size:14.5px; line-height:1.6;">${body}</p>
+    <div style="display:flex; gap:10px; margin-top:22px; justify-content:flex-end;">
+      <button class="btn btn-ghost" data-modal-close>Cancel</button>
+      <button class="btn ${danger?'btn-danger':'btn-violet'}" id="confirm-yes">${confirmLabel}</button>
+    </div>
+  `);
+  document.getElementById('confirm-yes').addEventListener('click', ()=>{ closeModal(); onConfirm(); });
+}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+let currentPage = 'home';
+const PAGE_RENDERERS = {}; // filled below
+
+function goPage(id){
+  currentPage = id;
+  document.getElementById('topbar-title').textContent = NAV_ITEMS.find(n=>n.id===id)?.label || '';
+  renderNav();
+  const root = document.getElementById('page-root');
+  root.innerHTML='';
+  (PAGE_RENDERERS[id]||renderHome)(root);
+  window.scrollTo({top:0, behavior: data.settings.motion==='reduced' ? 'auto':'smooth'});
+}
+
+function renderNav(){
+  const sb = document.getElementById('sb-nav');
+  sb.innerHTML = NAV_ITEMS.map(n=>`
+    <button class="sb-link ${n.id===currentPage?'active':''}" data-nav="${n.id}">${ICONS[n.icon]}<span>${n.label}</span></button>
+  `).join('');
+  const bn = document.getElementById('bottomnav');
+  bn.innerHTML = BOTTOMNAV_IDS.map(id=>{
+    const n = NAV_ITEMS.find(x=>x.id===id);
+    return `<button class="bn-link ${id===currentPage?'active':''}" data-nav="${id}">${ICONS[n.icon]}<span>${n.label}</span></button>`;
+  }).join('');
+}
+document.addEventListener('click', (e)=>{
+  const navBtn = e.target.closest('[data-nav]');
+  if(navBtn){ goPage(navBtn.dataset.nav); }
+});
+document.getElementById('btn-settings-shortcut').addEventListener('click', ()=>goPage('settings'));
+
+/* ============================================================
+   HELPERS: emotion / recipient labels
+   ============================================================ */
+const RECIPIENTS = ['My ex','Someone I loved','Someone who hurt me','Someone I never got to tell','Myself','Someone else'];
+const EMOTION_TAGS = ['anger','sadness','love','regret','longing','closure','forgiveness','confusion'];
+const HEAVY_REASONS = ['Missing them','A memory came up','Saw something online','Loneliness','Anger','Guilt','Uncertainty','Someone mentioned them','Nothing specific'];
+const MISS_OPTIONS = ['Them','Their attention','Talking every day','Physical affection','Having someone','Our routine','Our memories','Feeling wanted','Feeling safe','Having plans','The person I thought they would become','Who I was around them','The future I imagined','Something else'];
+const LUGGAGE_ITEMS = ['Guilt','Regret','Memories','Anger','Questions','Unsaid words','Love','Insecurity','Expectations','Hope'];
+
+/* ============================================================
+   WELCOME + ONBOARDING
+   ============================================================ */
+document.getElementById('btn-howitworks').addEventListener('click', ()=>{
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">How it works</h3></div>
+    <div class="howitworks-steps">
+      <div class="hiw-step"><span class="hiw-num">1</span><span class="hiw-text">Unload what you're carrying.</span></div>
+      <div class="hiw-step"><span class="hiw-num">2</span><span class="hiw-text">Untangle what happened.</span></div>
+      <div class="hiw-step"><span class="hiw-num">3</span><span class="hiw-text">Pause before acting on an impulse.</span></div>
+      <div class="hiw-step"><span class="hiw-num">4</span><span class="hiw-text">Reflect on what you actually miss.</span></div>
+      <div class="hiw-step"><span class="hiw-num">5</span><span class="hiw-text">Slowly return to yourself.</span></div>
+    </div>
+    <button class="btn btn-primary btn-block mt20" data-modal-close>Okay</button>
+  `);
+});
+
+document.getElementById('btn-enter').addEventListener('click', ()=>{
+  document.getElementById('screen-welcome').style.display='none';
+  if(data.security.enabled && data.security.pinHash){
+    showLockScreen('enter', ()=>{
+      if(data.profile.onboardingComplete){ launchApp(); }
+      else{ startOnboarding(); }
+    });
+    return;
+  }
+  if(data.profile.onboardingComplete){ launchApp(); }
+  else{ startOnboarding(); }
+});
+
+const OB_STEPS = [
+  { key:'situations', multi:true, q:'What brings you here?', hint:'Choose whatever fits. You can select more than one.',
+    options:['We broke up','I discovered something that hurt me','Micro-cheating / blurred boundaries','Situationship','Ghosting','Unrequited feelings','Friendship ending',"I don't really know",'Something else'] },
+  { key:'feelings', multi:true, q:'What are you feeling right now?', hint:'There is no wrong answer.',
+    options:['Sad','Angry','Confused','Lonely','Betrayed','Jealous','Guilty','Numb','Relieved','Still hopeful','Replaceable','Embarrassed','Overwhelmed',"I don't know"] },
+  { key:'needs', multi:true, q:'What do you need most right now?', hint:"We'll shape your space around this.",
+    options:['To let it out','To understand what happened','To stop overthinking','To stop checking their profile','To stop myself from texting','To find closure','To reconnect with myself'] }
+];
+let obIndex = 0;
+let obSelections = {};
+
+function startOnboarding(){
+  obIndex = 0; obSelections = {situations:[], feelings:[], needs:[]};
+  document.getElementById('screen-onboarding').classList.remove('hidden');
+  renderOnboardingStep();
+}
+function renderOnboardingStep(){
+  const progress = document.getElementById('ob-progress');
+  progress.innerHTML = OB_STEPS.map((_,i)=>`<div class="ob-dot ${i<=obIndex?'active':''}"></div>`).join('');
+  const step = OB_STEPS[obIndex];
+  const body = document.getElementById('ob-body');
+  body.innerHTML = `
+    <div class="ob-eyebrow">Step ${obIndex+1} of ${OB_STEPS.length}</div>
+    <h2 class="ob-q">${step.q}</h2>
+    <p class="ob-hint">${step.hint}</p>
+    <div class="chip-row" id="ob-options">
+      ${step.options.map(o=>`<button type="button" class="chip" data-opt="${escapeAttr(o)}">${o}</button>`).join('')}
+    </div>
+    <div class="ob-nav mt28">
+      <button class="link-quiet" id="ob-skip">Skip onboarding</button>
+      <button class="btn btn-primary" id="ob-next">${obIndex===OB_STEPS.length-1?'Finish':'Continue'}</button>
+    </div>
+  `;
+  body.querySelectorAll('[data-opt]').forEach(btn=>{
+    if(obSelections[step.key].includes(btn.dataset.opt)) btn.classList.add('active');
+    btn.addEventListener('click', ()=>{
+      const val = btn.dataset.opt;
+      const arr = obSelections[step.key];
+      const idx = arr.indexOf(val);
+      if(idx>-1) arr.splice(idx,1); else arr.push(val);
+      btn.classList.toggle('active');
+    });
+  });
+  document.getElementById('ob-skip').addEventListener('click', finishOnboarding.bind(null,true));
+  document.getElementById('ob-next').addEventListener('click', ()=>{
+    if(obIndex < OB_STEPS.length-1){ obIndex++; renderOnboardingStep(); }
+    else finishOnboarding(false);
+  });
+}
+function finishOnboarding(skipped){
+  if(!skipped){
+    data.profile.situations = obSelections.situations;
+    data.profile.feelings = obSelections.feelings;
+    data.profile.needs = obSelections.needs;
+  }
+  data.profile.onboardingComplete = true;
+  data.profile.enteredBefore = true;
+  addMilestone('First check-in');
+  saveData();
+  document.getElementById('screen-onboarding').classList.add('hidden');
+  launchApp();
+}
+
+function launchApp(){
+  document.getElementById('app').classList.add('active');
+  applyTheme(); applyMotion(); applyAccessibility();
+  renderNav();
+  goPage('home');
+}
+
+/* ============================================================
+   PIN LOCK
+   ============================================================ */
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  if(window.crypto && window.crypto.subtle){
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  // fallback simple hash (not cryptographically strong, only used if subtle unavailable)
+  let h=0; for(let i=0;i<str.length;i++){ h=(h<<5)-h+str.charCodeAt(i); h|=0; }
+  return 'fallback'+h;
+}
+let lockState = { mode:'enter', buffer:'', firstEntry:null, onSuccess:null, attempts:0 };
+function showLockScreen(mode, onSuccess){
+  lockState = { mode, buffer:'', firstEntry:null, onSuccess, attempts:0 };
+  document.getElementById('screen-lock').classList.remove('hidden');
+  renderLockUI();
+}
+function hideLockScreen(){ document.getElementById('screen-lock').classList.add('hidden'); }
+function renderLockUI(){
+  const title = document.getElementById('lock-title');
+  const sub = document.getElementById('lock-sub');
+  if(lockState.mode==='enter'){ title.textContent='Enter your passcode'; sub.textContent='Only you can open this.'; }
+  else if(lockState.mode==='setup'){ title.textContent='Choose a passcode'; sub.textContent='4 digits. Pick something only you know.'; }
+  else if(lockState.mode==='confirm'){ title.textContent='Confirm your passcode'; sub.textContent='Enter it once more.'; }
+  const dotsWrap = document.getElementById('lock-dots');
+  dotsWrap.innerHTML = [0,1,2,3].map(i=>`<div class="lock-dot ${i<lockState.buffer.length?'filled':''}"></div>`).join('');
+  const keypad = document.getElementById('lock-keypad');
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','back'];
+  keypad.innerHTML = keys.map(k=>{
+    if(k==='') return `<div></div>`;
+    if(k==='back') return `<button type="button" class="lock-key ghost" data-key="back">⌫</button>`;
+    return `<button type="button" class="lock-key" data-key="${k}">${k}</button>`;
+  }).join('') + `<div style="grid-column:1/-1; text-align:center; margin-top:10px;"><button type="button" class="link-quiet" id="lock-cancel">Cancel</button></div>`;
+  keypad.querySelectorAll('[data-key]').forEach(b=>b.addEventListener('click', ()=>onLockKey(b.dataset.key)));
+  const cancelBtn = document.getElementById('lock-cancel');
+  if(cancelBtn) cancelBtn.addEventListener('click', ()=>{
+    hideLockScreen();
+    if(lockState.mode!=='enter'){ toast('Passcode setup cancelled.'); renderSettings(document.getElementById('page-root')); }
+    else { document.getElementById('screen-welcome').style.display='flex'; }
+  });
+}
+async function onLockKey(k){
+  if(k==='back'){ lockState.buffer = lockState.buffer.slice(0,-1); renderLockUI(); return; }
+  if(lockState.buffer.length>=4) return;
+  lockState.buffer += k;
+  renderLockUI();
+  if(lockState.buffer.length===4){
+    if(lockState.mode==='enter'){
+      const h = await sha256Hex(lockState.buffer);
+      if(h===data.security.pinHash){
+        hideLockScreen();
+        const cb = lockState.onSuccess; if(cb) cb();
+      } else {
+        markLockError();
+      }
+    } else if(lockState.mode==='setup'){
+      lockState.firstEntry = lockState.buffer;
+      lockState.buffer=''; lockState.mode='confirm';
+      renderLockUI();
+    } else if(lockState.mode==='confirm'){
+      if(lockState.buffer===lockState.firstEntry){
+        const h = await sha256Hex(lockState.buffer);
+        data.security.pinHash = h; data.security.enabled = true;
+        saveData(); hideLockScreen(); toast('Passcode set.');
+        renderSettings(document.getElementById('page-root'));
+      } else {
+        markLockError();
+        setTimeout(()=>{ lockState={mode:'setup', buffer:'', firstEntry:null, onSuccess:lockState.onSuccess, attempts:0}; renderLockUI(); }, 500);
+      }
+    }
+  }
+}
+function markLockError(){
+  document.querySelectorAll('#lock-dots .lock-dot').forEach(d=>d.classList.add('err'));
+  document.getElementById('lock-sub').textContent = "That didn't match. Try again.";
+  setTimeout(()=>{ lockState.buffer=''; renderLockUI(); }, 420);
+}
+
+/* ============================================================
+   PAGE: HOME
+   ============================================================ */
+function moodMessage(weight){
+  if(weight<34) return "You seem to have a little more breathing room today.";
+  if(weight<67) return "Today feels heavy. You don't have to solve everything today.";
+  return "You don't have to carry everything at once. Start with one thing.";
+}
+function todaysCheckIn(){ return data.checkIns.find(c=>c.date===todayStr()); }
+
+function suggestionForToday(){
+  const recentUnsent = data.unsentMessages.filter(m=> daysAgo(m.date) <= 2).length;
+  const recentPause = data.pauseSessions.filter(p=> daysAgo(p.date) <= 5).length;
+  const lastCheckIn = data.checkIns[data.checkIns.length-1];
+  const daysSinceCheckIn = lastCheckIn ? daysAgo(lastCheckIn.date) : 99;
+
+  if(recentUnsent >= 2) return {text:"You have a lot on your mind. Maybe try Untangle — it can help sort what you know from what you fear.", page:'untangle'};
+  if(recentPause >= 2) return {text:"You've been stopping yourself before acting. That pause matters, even when it doesn't feel like it.", page:'pause'};
+  if(daysSinceCheckIn >= 3) return {text:"You haven't checked in with yourself in a few days. No pressure — just noting it.", page:'home'};
+  return {text:"There's a prompt waiting for you today, if you'd like somewhere to start.", page:'journal'};
+}
+function daysAgo(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  return Math.floor((new Date(todayStr()+'T00:00:00') - d) / 86400000);
+}
+
+/* ---- Anniversary awareness ---- */
+function isNearSensitiveDate(){
+  // Any timelineEvents whose month/day matches today or is within 2 days (any year), soften tone.
+  const now = new Date(todayStr()+'T00:00:00');
+  return data.timelineEvents.some(ev=>{
+    const d = new Date(ev.date+'T00:00:00');
+    const thisYear = new Date(now.getFullYear(), d.getMonth(), d.getDate());
+    const diff = Math.abs((now - thisYear)/86400000);
+    return diff<=2;
+  });
+}
+
+/* ---- Weekly recap ---- */
+function weeklyRecap(){
+  const within7 = (d)=> daysAgo(d) <= 6;
+  const unsent = data.unsentMessages.filter(m=>within7(m.date)).length;
+  const pauses = data.pauseSessions.filter(p=>within7(p.date)).length;
+  const checkIns = data.checkIns.filter(c=>within7(c.date));
+  const journals = data.journalEntries.filter(j=>within7(j.date)).length;
+  if(!unsent && !pauses && !checkIns.length && !journals) return null;
+  // most common feeling this week, from check-in reasons
+  const reasonCounts = {};
+  checkIns.forEach(c=>(c.reasons||[]).forEach(r=>{ reasonCounts[r]=(reasonCounts[r]||0)+1; }));
+  let topReason = null, topCount=0;
+  Object.entries(reasonCounts).forEach(([r,c])=>{ if(c>topCount){ topCount=c; topReason=r; } });
+  const parts = [];
+  if(unsent) parts.push(`wrote ${unsent} unsent message${unsent===1?'':'s'}`);
+  if(pauses) parts.push(`paused ${pauses} time${pauses===1?'':'s'}`);
+  if(journals) parts.push(`journaled ${journals} time${journals===1?'':'s'}`);
+  if(!parts.length) parts.push('checked in a few times');
+  let text = `This week you ${parts.join(', ')}.`;
+  if(topReason) text += ` "${topReason}" came up most in your check-ins.`;
+  return text;
+}
+
+function renderHome(root){
+  const existing = todaysCheckIn();
+  const weightVal = existing ? existing.weight : 50;
+  const reasons = existing ? existing.reasons : [];
+  const nearSensitive = isNearSensitiveDate();
+  const recap = weeklyRecap();
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Welcome back</div>
+      <h1 class="page-title">${nearSensitive ? "However today feels, you can start here." : "How are you carrying today?"}</h1>
+    </div>
+
+    ${recap ? `<div class="card fade-in" style="background:var(--bg-2); border-style:dashed;"><p style="font-size:13px; color:var(--ink-2); line-height:1.6;">${escapeHtml(recap)}</p></div>` : ''}
+
+    <div class="card fade-in">
+      <div class="card-title">Today's check-in</div>
+      <p style="font-size:13.5px;">How heavy does today feel?</p>
+      <div class="weight-slider-wrap">
+        <div class="weight-readout" id="weight-readout">${weightVal}%</div>
+        <input type="range" min="0" max="100" value="${weightVal}" id="weight-slider">
+        <div class="weight-labels"><span>Light</span><span>Very heavy</span></div>
+      </div>
+      <div class="mt20">
+        <div class="subtle-label">What's making it heavy today? (optional)</div>
+        <div class="chip-row" id="reason-chips">
+          ${HEAVY_REASONS.map(r=>`<button type="button" class="chip ${reasons.includes(r)?'active':''}" data-reason="${escapeAttr(r)}">${r}</button>`).join('')}
+        </div>
+      </div>
+      <button class="btn btn-violet mt20" id="save-checkin">${existing?'Update check-in':'Save check-in'}</button>
+      <div id="mood-msg-wrap" class="mt14"></div>
+    </div>
+
+    <div class="section-gap">
+      <div class="subtle-label">Today</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num">${existing?existing.weight+'%':'—'}</div><div class="stat-label">Emotional weight</div></div>
+        <div class="stat-box"><div class="stat-num">${data.unsentMessages.filter(m=>m.date===todayStr()).length}</div><div class="stat-label">Unsent messages written</div></div>
+        <div class="stat-box"><div class="stat-num">${data.pauseSessions.filter(p=>p.date===todayStr()).length}</div><div class="stat-label">Times paused</div></div>
+      </div>
+    </div>
+
+    <div class="nudge fade-in" id="nudge-box"></div>
+  `;
+  updateMoodMsg(weightVal);
+  const suggestion = suggestionForToday();
+  document.getElementById('nudge-box').innerHTML = `<div class="nudge-dot"></div><div><p style="font-size:13.5px; color:var(--ink-1);">${suggestion.text}</p><button class="link-quiet mt8" style="margin-top:8px;" data-nav="${suggestion.page}">Take me there</button></div>`;
+
+  const slider = document.getElementById('weight-slider');
+  slider.addEventListener('input', ()=>{
+    document.getElementById('weight-readout').textContent = slider.value+'%';
+    updateMoodMsg(parseInt(slider.value));
+  });
+  document.querySelectorAll('#reason-chips [data-reason]').forEach(btn=>{
+    btn.addEventListener('click', ()=>btn.classList.toggle('active'));
+  });
+  document.getElementById('save-checkin').addEventListener('click', ()=>{
+    const w = parseInt(slider.value);
+    const selectedReasons = Array.from(document.querySelectorAll('#reason-chips .active')).map(b=>b.dataset.reason);
+    const idx = data.checkIns.findIndex(c=>c.date===todayStr());
+    const entry = {id: idx>-1?data.checkIns[idx].id:uid(), date:todayStr(), weight:w, reasons:selectedReasons, note:''};
+    if(idx>-1) data.checkIns[idx]=entry; else data.checkIns.push(entry);
+    if(data.checkIns.length===1) addMilestone('First check-in');
+    saveData();
+    toast('Check-in saved.');
+    goPage('home');
+  });
+}
+function updateMoodMsg(w){
+  document.getElementById('mood-msg-wrap').innerHTML = `<p style="font-size:13.5px; font-style:italic; color:var(--ink-2);">${moodMessage(w)}</p>`;
+}
+
+/* ============================================================
+   PAGE: UNLOAD
+   ============================================================ */
+let unloadSubview = 'write'; // write | archive
+let unloadArchiveTab = 'all';
+
+function renderUnload(root, opts){
+  opts = opts||{};
+  unloadSubview = opts.view || unloadSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Unload</div>
+      <h1 class="page-title">Say everything. Send nothing.</h1>
+      <p class="page-sub">Write to whoever you need to. Nothing here can ever be sent.</p>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${unloadSubview==='write'?'active':''}" data-uv="write">Write</button>
+      <button class="tabbtn ${unloadSubview==='archive'?'active':''}" data-uv="archive">Archive (${data.unsentMessages.length})</button>
+    </div>
+    <div id="unload-body"></div>
+  `;
+  root.querySelectorAll('[data-uv]').forEach(b=>b.addEventListener('click', ()=>{ unloadSubview=b.dataset.uv; renderUnload(root); }));
+  if(unloadSubview==='write') renderUnloadWrite(document.getElementById('unload-body'));
+  else renderUnloadArchive(document.getElementById('unload-body'));
+}
+
+function renderUnloadWrite(el){
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="field">
+        <label class="field-label">Who is this for?</label>
+        <div class="chip-row" id="uw-recipient">
+          ${RECIPIENTS.map(r=>`<button type="button" class="chip" data-r="${escapeAttr(r)}">${r}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">What do you want to say?</label>
+        <div class="field-with-mic">
+          <textarea id="uw-body" rows="9" placeholder="Start anywhere. No one will read this but you."></textarea>
+          ${speechSupported() ? `<button type="button" class="mic-btn" id="uw-mic" title="Speak instead of typing" aria-label="Voice input">${micIcon()}</button>` : ''}
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">What emotion is behind this message? (optional)</label>
+        <div class="chip-row" id="uw-emotions">
+          ${EMOTION_TAGS.map(t=>`<button type="button" class="chip" data-e="${t}">${t}</button>`).join('')}
+        </div>
+      </div>
+      <div class="chip-row" style="gap:10px; margin-top:8px;">
+        <button class="btn btn-violet" id="uw-seal">Seal it</button>
+        <button class="btn btn-ghost" id="uw-rewrite">Rewrite it</button>
+        <button class="btn btn-ghost" id="uw-release">Release it</button>
+        <button class="btn btn-ghost" id="uw-keep">Keep it</button>
+        <button class="btn btn-ghost" id="uw-later">Open later</button>
+      </div>
+    </div>
+  `;
+  let selectedRecipient = null;
+  el.querySelectorAll('#uw-recipient [data-r]').forEach(b=>b.addEventListener('click', ()=>{
+    el.querySelectorAll('#uw-recipient [data-r]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); selectedRecipient=b.dataset.r;
+  }));
+  el.querySelectorAll('#uw-emotions [data-e]').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('active')));
+  setupMic(el.querySelector('#uw-mic'), el.querySelector('#uw-body'));
+
+  function gather(status, openDate){
+    const body = el.querySelector('#uw-body').value.trim();
+    if(!body){ toast('Write something first — even one sentence is enough.'); return null; }
+    const emotions = Array.from(el.querySelectorAll('#uw-emotions .active')).map(b=>b.dataset.e);
+    return { id:uid(), date:todayStr(), recipient:selectedRecipient||'Someone else', body, emotions, status, openDate: openDate||null };
+  }
+  el.querySelector('#uw-seal').addEventListener('click', ()=>{
+    const msg = gather('sealed'); if(!msg) return;
+    data.unsentMessages.push(msg);
+    if(data.unsentMessages.length===1) addMilestone('First unsent message');
+    saveData();
+    const card = el.querySelector('.card'); card.classList.add('seal-pop');
+    toast('Sealed. It stays here, private.');
+    setTimeout(()=>renderUnload(document.getElementById('page-root'),{view:'archive'}), 500);
+  });
+  el.querySelector('#uw-keep').addEventListener('click', ()=>{
+    const msg = gather('kept'); if(!msg) return;
+    data.unsentMessages.push(msg); saveData();
+    toast('Kept privately.');
+    renderUnload(document.getElementById('page-root'),{view:'archive'});
+  });
+  el.querySelector('#uw-release').addEventListener('click', ()=>{
+    const msg = gather('released'); if(!msg) return;
+    data.unsentMessages.push(msg); saveData();
+    const card = el.querySelector('.card');
+    card.classList.add('releasing');
+    setTimeout(()=>{ toast('Released.'); renderUnload(document.getElementById('page-root'),{view:'archive'}); }, data.settings.motion==='reduced'?0:650);
+  });
+  el.querySelector('#uw-later').addEventListener('click', ()=>{
+    openModal(`
+      <div class="modal-head"><h3 class="modal-title">Open later</h3></div>
+      <p style="font-size:13.5px;">Choose a date to revisit this message.</p>
+      <div class="field mt14"><input type="date" id="later-date" min="${todayStr()}" value="${todayStr()}"></div>
+      <button class="btn btn-violet btn-block" id="later-confirm">Set date</button>
+    `);
+    document.getElementById('later-confirm').addEventListener('click', ()=>{
+      const d = document.getElementById('later-date').value || todayStr();
+      const msg = gather('later', d); if(!msg){ closeModal(); return; }
+      data.unsentMessages.push(msg); saveData(); closeModal();
+      toast('Saved. You can open it on '+fmtDate(d)+'.');
+      renderUnload(document.getElementById('page-root'),{view:'archive'});
+    });
+  });
+  el.querySelector('#uw-rewrite').addEventListener('click', ()=>{
+    const bodyEl = el.querySelector('#uw-body');
+    const body = bodyEl.value.trim();
+    if(!body){ toast('Write something first.'); return; }
+    openModal(`
+      <div class="modal-head"><h3 class="modal-title">A calmer version</h3></div>
+      <p style="font-size:13px; color:var(--ink-2); margin-bottom:14px;">A gentler reflection on what you wrote — not a replacement for your words.</p>
+      <div class="card" style="background:var(--bg-2);"><p style="font-size:14px; color:var(--ink-1); line-height:1.7;">${escapeHtml(gentleRewrite(body))}</p></div>
+      <button class="btn btn-ghost btn-block mt20" data-modal-close>Close</button>
+    `);
+  });
+}
+
+function gentleRewrite(text){
+  // local rule-based placeholder for generateReflection() — AI-ready architecture
+  const opener = ["What I'm hearing underneath this is: ", "Underneath the words, it sounds like: ", "Stripped of urgency, this might read as: "][Math.floor(Math.random()*3)];
+  let core = text.length>220 ? text.slice(0,220).trim()+'…' : text;
+  return opener + '"' + core + '" — said without needing a reaction from anyone.';
+}
+
+/* ---- Voice-to-text ---- */
+function speechSupported(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+function micIcon(){ return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>'; }
+function setupMic(btn, textarea){
+  if(!btn || !textarea || !speechSupported()) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recog = null, listening = false;
+  btn.addEventListener('click', ()=>{
+    if(listening){ recog && recog.stop(); return; }
+    recog = new SR();
+    recog.continuous = true; recog.interimResults = false; recog.lang = (navigator.language||'en-US');
+    const startVal = textarea.value;
+    let finalText = startVal;
+    recog.onresult = (e)=>{
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        if(e.results[i].isFinal){
+          finalText += (finalText && !finalText.endsWith(' ')?' ':'') + e.results[i][0].transcript.trim();
+          textarea.value = finalText;
+        }
+      }
+    };
+    recog.onerror = ()=>{ toast('Voice input had trouble hearing you.'); };
+    recog.onend = ()=>{ listening=false; btn.classList.remove('listening'); };
+    recog.start(); listening=true; btn.classList.add('listening');
+  });
+}
+
+function renderUnloadArchive(el){
+  const tabs = [['all','All'],['sealed','Sealed'],['released','Released'],['later','Open Later'],['toMyself','To Myself']];
+  el.innerHTML = `
+    <div class="tabrow">
+      ${tabs.map(([k,l])=>`<button class="tabbtn ${unloadArchiveTab===k?'active':''}" data-atab="${k}">${l}</button>`).join('')}
+    </div>
+    <div id="archive-list"></div>
+  `;
+  el.querySelectorAll('[data-atab]').forEach(b=>b.addEventListener('click', ()=>{ unloadArchiveTab=b.dataset.atab; renderUnloadArchive(el); }));
+  renderArchiveList(document.getElementById('archive-list'));
+}
+function renderArchiveList(listEl){
+  let items = data.unsentMessages.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(unloadArchiveTab==='sealed') items = items.filter(m=>m.status==='sealed');
+  else if(unloadArchiveTab==='released') items = items.filter(m=>m.status==='released');
+  else if(unloadArchiveTab==='later') items = items.filter(m=>m.status==='later');
+  else if(unloadArchiveTab==='toMyself') items = items.filter(m=>m.recipient==='Myself');
+
+  if(items.length===0){
+    listEl.innerHTML = `<div class="empty-state"><div class="es-title">Nothing here yet.</div><div class="es-sub">That's okay. You don't have to have something to say.</div></div>`;
+    return;
+  }
+  listEl.innerHTML = `<div class="entry-list stagger">${items.map(m=>`
+    <div class="entry-item" data-msg="${m.id}">
+      <div class="entry-top">
+        <div class="entry-meta"><span>${fmtDate(m.date)}</span><span>·</span><span>${m.recipient}</span></div>
+        <span class="status-pill status-${m.status==='sealed'?'sealed':m.status==='released'?'released':m.status==='later'?'later':'sealed'}">${statusLabel(m.status)}</span>
+      </div>
+      <div class="entry-preview">${escapeHtml(m.body)}</div>
+      ${m.emotions&&m.emotions.length?`<div class="mt8" style="margin-top:8px;">${m.emotions.map(e=>`<span class="entry-tag">${e}</span>`).join(' ')}</div>`:''}
+    </div>
+  `).join('')}</div>`;
+  listEl.querySelectorAll('[data-msg]').forEach(card=>card.addEventListener('click', ()=>openMessageDetail(card.dataset.msg)));
+}
+function statusLabel(s){ return {sealed:'Sealed', released:'Released', later:'Open later', kept:'Kept'}[s]||s; }
+
+function openMessageDetail(id){
+  const m = data.unsentMessages.find(x=>x.id===id);
+  if(!m) return;
+  const locked = m.status==='later' && m.openDate && m.openDate > todayStr();
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${m.recipient}</h3></div>
+    <div class="entry-meta mt8" style="margin-bottom:14px;">${fmtDate(m.date)} · ${statusLabel(m.status)}</div>
+    ${locked ? `<p style="font-size:14px;">This message unlocks on <strong>${fmtDate(m.openDate)}</strong>.</p>` :
+      `<p style="font-size:14.5px; line-height:1.7; white-space:pre-wrap;">${escapeHtml(m.body)}</p>
+       ${m.emotions&&m.emotions.length?`<div class="mt14" style="margin-top:14px;">${m.emotions.map(e=>`<span class="entry-tag">${e}</span>`).join(' ')}</div>`:''}`
+    }
+    <div class="chip-row mt20" style="margin-top:20px;">
+      ${m.status!=='released' && !locked ? `<button class="btn btn-ghost btn-sm" id="md-release">Mark released</button>`:''}
+      ${locked ? '' : `<button class="btn btn-ghost btn-sm" id="md-edit">Edit</button>`}
+      <button class="btn btn-danger btn-sm" id="md-delete">Delete</button>
+    </div>
+  `);
+  const releaseBtn = document.getElementById('md-release');
+  if(releaseBtn) releaseBtn.addEventListener('click', ()=>{ m.status='released'; saveData(); closeModal(); toast('Marked as released.'); renderUnload(document.getElementById('page-root'),{view:'archive'}); });
+  const editBtn = document.getElementById('md-edit');
+  if(editBtn) editBtn.addEventListener('click', ()=>{
+    closeModal();
+    openModal(`
+      <div class="modal-head"><h3 class="modal-title">Edit message</h3></div>
+      <textarea id="edit-body" rows="8">${escapeHtml(m.body)}</textarea>
+      <button class="btn btn-violet btn-block mt14" id="edit-save">Save changes</button>
+    `);
+    document.getElementById('edit-save').addEventListener('click', ()=>{
+      m.body = document.getElementById('edit-body').value.trim() || m.body;
+      saveData(); closeModal(); toast('Updated.');
+      renderUnload(document.getElementById('page-root'),{view:'archive'});
+    });
+  });
+  document.getElementById('md-delete').addEventListener('click', ()=>{
+    confirmDialog('Delete this message?', 'This cannot be undone.', 'Delete', ()=>{
+      data.unsentMessages = data.unsentMessages.filter(x=>x.id!==id);
+      saveData(); toast('Deleted.');
+      renderUnload(document.getElementById('page-root'),{view:'archive'});
+    }, true);
+  });
+}
+
+/* ============================================================
+   PAGE: UNTANGLE
+   ============================================================ */
+let untangleSubview = 'sort'; // sort | overreacting | loop
+let currentUtSession = { know:[], think:[], fear:[] };
+
+function renderUntangle(root, opts){
+  opts=opts||{};
+  untangleSubview = opts.view || untangleSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Untangle</div>
+      <h1 class="page-title">Not every thought is a fact.</h1>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${untangleSubview==='sort'?'active':''}" data-utv="sort">Fact / Thought / Fear</button>
+      <button class="tabbtn ${untangleSubview==='overreacting'?'active':''}" data-utv="overreacting">Was I overreacting?</button>
+      <button class="tabbtn ${untangleSubview==='loop'?'active':''}" data-utv="loop">The Loop</button>
+    </div>
+    <div id="untangle-body"></div>
+  `;
+  root.querySelectorAll('[data-utv]').forEach(b=>b.addEventListener('click', ()=>{ untangleSubview=b.dataset.utv; renderUntangle(root); }));
+  const body = document.getElementById('untangle-body');
+  if(untangleSubview==='sort') renderUntangleSort(body);
+  else if(untangleSubview==='overreacting') renderOverreacting(body);
+  else renderLoop(body);
+}
+
+function renderUntangleSort(el){
+  el.innerHTML = `
+    <div class="untangle-grid fade-in">
+      ${utColumn('know','What I know','Facts you can point to directly.')}
+      ${utColumn('think','What I think','Interpretations or conclusions.')}
+      ${utColumn('fear','What I fear','Things you\'re afraid might happen.')}
+    </div>
+    <div class="card mt20">
+      <div class="subtle-label">What changed when you separated the facts from the fears?</div>
+      <textarea id="ut-reflection" rows="3" placeholder="Write a little, if anything comes up."></textarea>
+      <button class="btn btn-violet mt14" id="ut-save-session">Save this session</button>
+    </div>
+  `;
+  ['know','think','fear'].forEach(cat=>renderUtCards(cat));
+  el.querySelectorAll('.ut-add button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cat = btn.dataset.addcat;
+      const input = el.querySelector(`input[data-input="${cat}"]`);
+      const val = input.value.trim();
+      if(!val) return;
+      currentUtSession[cat].push(val);
+      input.value='';
+      renderUtCards(cat);
+    });
+  });
+  el.querySelectorAll('.ut-add input').forEach(inp=>{
+    inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); el.querySelector(`button[data-addcat="${inp.dataset.input}"]`).click(); }});
+  });
+  setupDragDrop(el);
+  document.getElementById('ut-save-session').addEventListener('click', ()=>{
+    if(!currentUtSession.know.length && !currentUtSession.think.length && !currentUtSession.fear.length){
+      toast('Add at least one card first.'); return;
+    }
+    const reflection = document.getElementById('ut-reflection').value.trim();
+    data.factThoughtFearSessions.push({id:uid(), date:todayStr(), know:[...currentUtSession.know], think:[...currentUtSession.think], fear:[...currentUtSession.fear], reflection});
+    saveData();
+    currentUtSession = {know:[],think:[],fear:[]};
+    toast('Session saved to your timeline.');
+    renderUntangleSort(el);
+  });
+}
+function utColumn(cat,title,sub){
+  return `
+    <div class="ut-col ${cat}" data-col="${cat}">
+      <div class="ut-col-head">${title}</div>
+      <div class="ut-col-sub">${sub}</div>
+      <div class="ut-cards" id="ut-cards-${cat}"></div>
+      <div class="ut-add">
+        <input type="text" data-input="${cat}" placeholder="Add...">
+        <button class="btn btn-ghost btn-sm" data-addcat="${cat}">Add</button>
+      </div>
+    </div>
+  `;
+}
+function renderUtCards(cat){
+  const wrap = document.getElementById('ut-cards-'+cat);
+  if(!wrap) return;
+  wrap.innerHTML = currentUtSession[cat].map((txt,i)=>`
+    <div class="ut-card" draggable="true" data-cat="${cat}" data-idx="${i}">
+      ${escapeHtml(txt)}
+      <button class="ut-del" data-delcat="${cat}" data-delidx="${i}" aria-label="Remove">×</button>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('[data-delcat]').forEach(b=>b.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    currentUtSession[b.dataset.delcat].splice(parseInt(b.dataset.delidx),1);
+    renderUtCards(b.dataset.delcat);
+    setupDragDrop(document.getElementById('untangle-body'));
+  }));
+}
+function setupDragDrop(root){
+  let dragInfo = null;
+  root.querySelectorAll('.ut-card').forEach(card=>{
+    card.addEventListener('dragstart', ()=>{ dragInfo = {cat:card.dataset.cat, idx:parseInt(card.dataset.idx)}; card.classList.add('dragging'); });
+    card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); });
+  });
+  root.querySelectorAll('.ut-col').forEach(col=>{
+    col.addEventListener('dragover', (e)=>{ e.preventDefault(); col.classList.add('dragover'); });
+    col.addEventListener('dragleave', ()=>col.classList.remove('dragover'));
+    col.addEventListener('drop', (e)=>{
+      e.preventDefault(); col.classList.remove('dragover');
+      if(!dragInfo) return;
+      const target = col.dataset.col;
+      if(target===dragInfo.cat) return;
+      const [item] = currentUtSession[dragInfo.cat].splice(dragInfo.idx,1);
+      currentUtSession[target].push(item);
+      ['know','think','fear'].forEach(renderUtCards);
+      setupDragDrop(root);
+      dragInfo=null;
+    });
+  });
+}
+
+const OVERREACT_Q = [
+  {key:'what', q:'What happened?', type:'text'},
+  {key:'boundary', q:'Did you and this person have an understanding or boundary about this?', type:'choice', options:['Yes','No',"I'm not sure"]},
+  {key:'hidden', q:'Did they hide the behavior?', type:'choice', options:['Yes','No',"I'm not sure"]},
+  {key:'communicated', q:'Did you communicate that it hurt you?', type:'choice', options:['Yes','No','I tried',"I'm not sure"]},
+  {key:'response', q:'How did they respond?', type:'choice', options:['They listened','They apologized','They dismissed me','They blamed me','They became defensive','They changed their behavior','Nothing changed',"I'm not sure"]}
+];
+let orState = {}; let orStep = 0;
+
+function renderOverreacting(el){
+  orState = {}; orStep = 0;
+  el.innerHTML = `
+    <div class="card fade-in">
+      <p style="font-size:13.5px; font-style:italic; color:var(--ink-2); margin-bottom:18px;">You don't need to prove that something was "technically" wrong for your feelings to matter.</p>
+      <div id="or-step-wrap"></div>
+    </div>
+    <div id="or-history"></div>
+  `;
+  renderOrStep(el);
+  renderOrHistory(el);
+}
+function renderOrStep(el){
+  const wrap = el.querySelector('#or-step-wrap');
+  if(orStep >= OVERREACT_Q.length){ renderOrResult(el); return; }
+  const q = OVERREACT_Q[orStep];
+  wrap.innerHTML = `
+    <div class="subtle-label">Step ${orStep+1} of ${OVERREACT_Q.length}</div>
+    <h3 style="font-size:19px; margin-bottom:14px;">${q.q}</h3>
+    ${q.type==='text' ? `<textarea id="or-text" rows="4" placeholder="Describe it in your own words."></textarea>` :
+      `<div class="chip-row" id="or-choices">${q.options.map(o=>`<button type="button" class="chip" data-oc="${escapeAttr(o)}">${o}</button>`).join('')}</div>`}
+    <div class="flex-between mt20" style="margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" id="or-back" ${orStep===0?'disabled style="opacity:.3"':''}>Back</button>
+      <button class="btn btn-violet" id="or-next">${orStep===OVERREACT_Q.length-1?'See reflection':'Next'}</button>
+    </div>
+  `;
+  if(q.type==='choice'){
+    wrap.querySelectorAll('[data-oc]').forEach(b=>{
+      if(orState[q.key]===b.dataset.oc) b.classList.add('active');
+      b.addEventListener('click', ()=>{
+        wrap.querySelectorAll('[data-oc]').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); orState[q.key]=b.dataset.oc;
+      });
+    });
+  } else {
+    wrap.querySelector('#or-text').value = orState[q.key]||'';
+  }
+  wrap.querySelector('#or-back').addEventListener('click', ()=>{ if(orStep>0){ orStep--; renderOrStep(el);} });
+  wrap.querySelector('#or-next').addEventListener('click', ()=>{
+    if(q.type==='text') orState[q.key] = wrap.querySelector('#or-text').value.trim();
+    if(q.type==='choice' && !orState[q.key]){ toast('Choose an option to continue.'); return; }
+    if(q.type==='text' && !orState[q.key]){ toast('Write a little about what happened.'); return; }
+    orStep++; renderOrStep(el);
+  });
+}
+function computeOrResult(state){
+  let score = 0;
+  if(state.hidden==='Yes') score+=2;
+  if(state.boundary==='Yes') score+=2;
+  if(['They dismissed me','They blamed me','They became defensive','Nothing changed'].includes(state.response)) score+=2;
+  if(['They listened','They apologized','They changed their behavior'].includes(state.response)) score-=1;
+  if(state.boundary==="I'm not sure" || state.hidden==="I'm not sure") score+=0.5;
+
+  if(score>=4) return {label:'There may be a boundary or trust issue worth examining', cls:'result-orange', emoji:'🟠',
+    text:'Based on what you described, the behavior may have affected your sense of trust or boundaries. That reaction makes sense.'};
+  if(score>=2) return {label:'Your feelings make sense, but more context matters', cls:'result-yellow', emoji:'🟡',
+    text:'Based on what you described, there are real feelings here worth paying attention to, and also some unknowns still worth exploring.'};
+  if(state.boundary==="I'm not sure" && state.hidden==="I'm not sure") return {label:'The situation is unclear', cls:'result-blue', emoji:'🔵',
+    text:"There may be information you don't have yet. You can acknowledge what happened without deciding everything tonight."};
+  return {label:'Worth discussing', cls:'result-green', emoji:'🟢',
+    text:'This sounds like something worth a real conversation, whether or not it turns out to be a bigger issue.'};
+}
+function renderOrResult(el){
+  const wrap = el.querySelector('#or-step-wrap');
+  const result = computeOrResult(orState);
+  wrap.innerHTML = `
+    <div class="subtle-label">Reflection</div>
+    <div class="result-badge ${result.cls}">${result.emoji} ${result.label}</div>
+    <p style="font-size:14.5px; line-height:1.7;">${result.text}</p>
+    <p style="font-size:13px; color:var(--ink-2); margin-top:14px; line-height:1.7;">A few things worth sitting with: What would you need to feel resolved? Is this about what happened, or about what it might mean? What do you already know for certain?</p>
+    <div class="chip-row mt20" style="margin-top:20px;">
+      <button class="btn btn-violet btn-sm" id="or-save">Save this reflection</button>
+      <button class="btn btn-ghost btn-sm" id="or-restart">Start over</button>
+    </div>
+  `;
+  wrap.querySelector('#or-save').addEventListener('click', ()=>{
+    data.reflections.overreacting.push({id:uid(), date:todayStr(), state:{...orState}, result:result.label});
+    saveData(); toast('Saved.'); renderOrHistory(el);
+  });
+  wrap.querySelector('#or-restart').addEventListener('click', ()=>renderOverreacting(el));
+}
+function renderOrHistory(el){
+  const hist = el.querySelector('#or-history');
+  const items = data.reflections.overreacting.slice().reverse();
+  if(!items.length){ hist.innerHTML=''; return; }
+  hist.innerHTML = `<div class="section-gap"><div class="subtle-label">Past reflections</div><div class="entry-list">${items.slice(0,5).map(r=>`
+    <div class="entry-item"><div class="entry-top"><div class="entry-meta">${fmtDate(r.date)}</div></div><div class="entry-preview">${escapeHtml(r.result)}${r.state.what?' — '+escapeHtml(r.state.what):''}</div></div>
+  `).join('')}</div></div>`;
+}
+
+function renderLoop(el){
+  el.innerHTML = `
+    <div class="card fade-in">
+      <p style="font-size:13.5px; font-style:italic; color:var(--ink-2); margin-bottom:14px;">For the thought you keep returning to.</p>
+      <div class="field"><label class="field-label">What thought keeps coming back?</label><input type="text" id="loop-thought" placeholder='e.g. "What if I had stayed?"'></div>
+      <div id="loop-chain"></div>
+      <div class="chip-row mt14">
+        <button class="btn btn-ghost btn-sm" id="loop-add-step">Add a question / answer</button>
+      </div>
+      <div class="field mt20"><label class="field-label">What do you know today?</label><textarea id="loop-conclusion" rows="3" placeholder="You may not be able to answer every 'what if.' But you can decide what you know today."></textarea></div>
+      <button class="btn btn-violet" id="loop-save">Save</button>
+    </div>
+    <div id="loop-history"></div>
+  `;
+  let chain = [];
+  function renderChain(){
+    document.getElementById('loop-chain').innerHTML = chain.map((c,i)=>`
+      <div class="field" style="margin-bottom:8px;"><input type="text" data-ci="${i}" value="${escapeAttr(c)}" placeholder="${i%2===0?'A question...':'An answer...'}"></div>
+    `).join('');
+    document.querySelectorAll('#loop-chain [data-ci]').forEach(inp=>inp.addEventListener('input', ()=>{ chain[parseInt(inp.dataset.ci)] = inp.value; }));
+  }
+  document.getElementById('loop-add-step').addEventListener('click', ()=>{ chain.push(''); renderChain(); });
+  document.getElementById('loop-save').addEventListener('click', ()=>{
+    const thought = document.getElementById('loop-thought').value.trim();
+    if(!thought){ toast('Start with the thought that keeps returning.'); return; }
+    const conclusion = document.getElementById('loop-conclusion').value.trim();
+    data.loopSessions.push({id:uid(), date:todayStr(), thought, chain:chain.filter(c=>c.trim()), conclusion});
+    saveData(); toast('Saved.'); renderLoop(el);
+  });
+  const hist = document.getElementById('loop-history');
+  const items = data.loopSessions.slice().reverse();
+  if(items.length){
+    hist.innerHTML = `<div class="section-gap"><div class="subtle-label">Past loops</div><div class="entry-list">${items.slice(0,5).map(s=>`
+      <div class="entry-item"><div class="entry-top"><div class="entry-meta">${fmtDate(s.date)}</div></div><div class="entry-preview">${escapeHtml(s.thought)}</div></div>
+    `).join('')}</div></div>`;
+  }
+}
+
+/* ============================================================
+   PAGE: PAUSE
+   ============================================================ */
+let pauseSubview = 'text'; // text | lastactive
+let pauseFlow = { stage:'idle', intent:null, text:'', duration:600, remaining:600, timerId:null, sessionId:null };
+
+function renderPause(root, opts){
+  opts=opts||{};
+  pauseSubview = opts.view || pauseSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Pause</div>
+      <h1 class="page-title">Pause before you reach for them.</h1>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${pauseSubview==='text'?'active':''}" data-pv="text">Don't text them</button>
+      <button class="tabbtn ${pauseSubview==='lastactive'?'active':''}" data-pv="lastactive">Last Active</button>
+    </div>
+    <div id="pause-body"></div>
+  `;
+  root.querySelectorAll('[data-pv]').forEach(b=>b.addEventListener('click', ()=>{ pauseSubview=b.dataset.pv; renderPause(root); }));
+  if(pauseSubview==='text') renderPauseText(document.getElementById('pause-body'));
+  else renderLastActive(document.getElementById('pause-body'));
+}
+
+function pauseStats(){
+  const total = data.pauseSessions.length;
+  const notSent = data.pauseSessions.filter(p=>p.resolved==='kept').length;
+  const thisMonth = data.pauseSessions.filter(p=> p.date.slice(0,7)===todayStr().slice(0,7)).length;
+  const notSentMonth = data.pauseSessions.filter(p=> p.date.slice(0,7)===todayStr().slice(0,7) && p.resolved==='kept').length;
+  return {total, notSent, thisMonth, notSentMonth};
+}
+
+function renderPauseText(el){
+  if(pauseFlow.stage==='idle'){
+    const st = pauseStats();
+    el.innerHTML = `
+      <div class="pause-hero card fade-in">
+        <h2 style="font-size:20px;">Feeling the urge to reach out?</h2>
+        <p style="font-size:13.5px; margin:10px 0 22px;">UNSENT cannot send messages to anyone. This is just a space to slow down before you decide.</p>
+        <button class="btn btn-primary" id="pause-start" style="font-size:16px; padding:16px 30px;">I want to text them</button>
+      </div>
+      ${st.thisMonth>0?`<div class="card mt14"><p style="font-size:14px;">You paused <strong>${st.thisMonth}</strong> time${st.thisMonth===1?'':'s'} this month. You chose not to send <strong>${st.notSentMonth}</strong> of ${st.thisMonth===1?'it':'them'}.</p></div>`:''}
+    `;
+    document.getElementById('pause-start').addEventListener('click', ()=>{ pauseFlow={stage:'intent', intent:null, text:'', duration:600, remaining:600, timerId:null, sessionId:null}; renderPauseText(el); });
+    return;
+  }
+  if(pauseFlow.stage==='intent'){
+    const options = ['I want them back','I want an answer','I want reassurance','I want them to miss me','I want them to regret it',"I'm lonely",'I want to apologize',"I'm angry","I don't know"];
+    el.innerHTML = `
+      <div class="card fade-in">
+        <h3 style="font-size:19px; margin-bottom:14px;">What are you hoping will happen?</h3>
+        <div class="chip-row">${options.map(o=>`<button type="button" class="chip" data-int="${escapeAttr(o)}">${o}</button>`).join('')}</div>
+        <button class="btn btn-violet mt20" id="intent-next" style="margin-top:20px;">Continue</button>
+      </div>`;
+    el.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click', ()=>{
+      el.querySelectorAll('[data-int]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); pauseFlow.intent=b.dataset.int;
+    }));
+    el.querySelector('#intent-next').addEventListener('click', ()=>{
+      if(!pauseFlow.intent){ toast("Choose what you're hoping for."); return; }
+      pauseFlow.stage='compose'; renderPauseText(el);
+    });
+    return;
+  }
+  if(pauseFlow.stage==='compose'){
+    el.innerHTML = `
+      <div class="card fade-in">
+        <h3 style="font-size:19px; margin-bottom:14px;">What would you send?</h3>
+        <textarea id="pause-text" rows="6" placeholder="Write it exactly as you would send it.">${pauseFlow.text}</textarea>
+        <div class="subtle-label mt20" style="margin-top:20px;">Choose a pause</div>
+        <div class="chip-row" id="pause-durations">
+          ${[['5 minutes',300],['10 minutes',600],['30 minutes',1800],['1 hour',3600]].map(([l,s])=>`<button type="button" class="chip ${s===600?'active':''}" data-dur="${s}">${l}</button>`).join('')}
+        </div>
+        <div class="subtle-label mt20" style="margin-top:20px;">While you wait</div>
+        <div class="chip-row" id="pause-ambience">
+          ${[['ring','Watch a timer'],['breathe','Breathe with me']].map(([v,l])=>`<button type="button" class="chip ${(pauseFlow.ambience||'ring')===v?'active':''}" data-amb="${v}">${l}</button>`).join('')}
+        </div>
+        <button class="btn btn-violet mt20" id="pause-begin" style="margin-top:20px;">Start pause</button>
+      </div>`;
+    el.querySelectorAll('[data-dur]').forEach(b=>b.addEventListener('click', ()=>{ el.querySelectorAll('[data-dur]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); pauseFlow.duration=parseInt(b.dataset.dur); }));
+    el.querySelectorAll('[data-amb]').forEach(b=>b.addEventListener('click', ()=>{ el.querySelectorAll('[data-amb]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); pauseFlow.ambience=b.dataset.amb; }));
+    el.querySelector('#pause-begin').addEventListener('click', ()=>{
+      const txt = el.querySelector('#pause-text').value.trim();
+      if(!txt){ toast('Write what you would send, first.'); return; }
+      pauseFlow.text = txt; pauseFlow.remaining = pauseFlow.duration; pauseFlow.stage='timer';
+      pauseFlow.sessionId = uid();
+      data.pauseSessions.push({id:pauseFlow.sessionId, date:todayStr(), intent:pauseFlow.intent, text:pauseFlow.text, duration:pauseFlow.duration, resolved:'pending'});
+      saveData();
+      renderPauseText(el);
+    });
+    return;
+  }
+  if(pauseFlow.stage==='timer'){
+    const breathing = pauseFlow.ambience==='breathe';
+    el.innerHTML = `
+      <div class="pause-hero card fade-in">
+        <p style="font-size:14px; font-style:italic; color:var(--ink-1);">You already wrote it. You don't have to decide yet.</p>
+        ${breathing ? `
+          <div class="breathe-orb"><div class="orb-core"></div><div class="breathe-label" id="breathe-label">Breathe in</div></div>
+          <div class="breathe-timer-num" id="timer-num"></div>
+        ` : `
+          <div class="pause-timer-ring"><svg viewBox="0 0 120 120" width="200" height="200"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="ring-progress" cx="60" cy="60" r="52" fill="none" stroke="var(--violet)" stroke-width="6" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg><div class="pause-timer-num" id="timer-num"></div></div>
+        `}
+        <button class="btn btn-ghost btn-sm" id="pause-skip">Skip pause</button>
+      </div>`;
+    const circle = document.getElementById('ring-progress');
+    const circumference = circle ? 2*Math.PI*52 : 0;
+    if(circle) circle.style.strokeDasharray = circumference;
+    let breatheClock = 0;
+    function tick(){
+      document.getElementById('timer-num').textContent = formatTime(pauseFlow.remaining);
+      if(circle){
+        const pct = pauseFlow.remaining / pauseFlow.duration;
+        circle.style.strokeDashoffset = circumference * (1-pct);
+      }
+      if(breathing){
+        breatheClock = (breatheClock+1) % 8;
+        const label = document.getElementById('breathe-label');
+        if(label) label.textContent = breatheClock < 4 ? 'Breathe in' : 'Breathe out';
+      }
+      if(pauseFlow.remaining<=0){ clearInterval(pauseFlow.timerId); pauseFlow.stage='decide'; renderPauseText(el); return; }
+      pauseFlow.remaining--;
+    }
+    tick();
+    pauseFlow.timerId = setInterval(tick, 1000);
+    el.querySelector('#pause-skip').addEventListener('click', ()=>{ clearInterval(pauseFlow.timerId); pauseFlow.remaining=0; pauseFlow.stage='decide'; renderPauseText(el); });
+    return;
+  }
+  if(pauseFlow.stage==='decide'){
+    el.innerHTML = `
+      <div class="pause-hero card fade-in">
+        <h3 style="font-size:20px;">Do you still want to send it?</h3>
+        <div class="chip-row" style="justify-content:center; margin-top:22px;">
+          <button class="btn btn-primary" id="pause-keep">Keep it here</button>
+          <button class="btn btn-ghost" id="pause-stillwant">I still want to send it</button>
+        </div>
+        <p style="font-size:12px; color:var(--ink-3); margin-top:18px;">UNSENT cannot send messages to other people.</p>
+      </div>`;
+    el.querySelector('#pause-keep').addEventListener('click', ()=>{
+      const s = data.pauseSessions.find(x=>x.id===pauseFlow.sessionId); if(s) s.resolved='kept';
+      saveData(); toast('Kept here. Not sent.');
+      pauseFlow={stage:'idle'}; renderPauseText(el);
+    });
+    el.querySelector('#pause-stillwant').addEventListener('click', ()=>{
+      const s = data.pauseSessions.find(x=>x.id===pauseFlow.sessionId); if(s) s.resolved='still-wanted';
+      saveData();
+      openModal(`
+        <div class="modal-head"><h3 class="modal-title">One more thing</h3></div>
+        <p style="font-size:14px; line-height:1.7;">UNSENT can't send this for you — and won't pretend to. If you still want to reach out, that's your call to make outside this space. What you wrote is saved here either way, if you want to look at it again later.</p>
+        <button class="btn btn-primary btn-block mt20" data-modal-close>Okay</button>
+      `);
+      pauseFlow={stage:'idle'}; renderPauseText(el);
+    });
+    return;
+  }
+}
+function formatTime(sec){ const m=Math.floor(sec/60); const s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+
+function renderLastActive(el){
+  const today = data.lastActiveChecks.filter(c=>c.date===todayStr());
+  const checked = today.filter(c=>c.result==='checked').length;
+  const resisted = today.filter(c=>c.result==='resisted').length;
+  const options = ['They miss me','They moved on','They are unhappy','They posted something about me','They are with someone new','They messaged me',"I don't know"];
+  el.innerHTML = `
+    <div class="card fade-in">
+      <p style="font-size:13.5px; margin-bottom:16px;">Checking doesn't make you weak. But noticing the pattern gives you a choice.</p>
+      <div class="subtle-label">What were you hoping to find?</div>
+      <div class="chip-row" id="la-options">${options.map(o=>`<button type="button" class="chip" data-lo="${escapeAttr(o)}">${o}</button>`).join('')}</div>
+      <div class="chip-row mt20" style="margin-top:20px;">
+        <button class="btn btn-ghost" id="la-checked">I checked</button>
+        <button class="btn btn-violet" id="la-resisted">I resisted checking</button>
+      </div>
+    </div>
+    <div class="stat-grid section-gap">
+      <div class="stat-box"><div class="stat-num">${checked}</div><div class="stat-label">Checked today</div></div>
+      <div class="stat-box"><div class="stat-num">${resisted}</div><div class="stat-label">Resisted today</div></div>
+    </div>
+  `;
+  let hoping = null;
+  el.querySelectorAll('[data-lo]').forEach(b=>b.addEventListener('click', ()=>{ el.querySelectorAll('[data-lo]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); hoping=b.dataset.lo; }));
+  function log(result){
+    data.lastActiveChecks.push({id:uid(), date:todayStr(), hoping, result});
+    if(result==='resisted') addMilestone('First day you resisted checking');
+    saveData(); toast(result==='checked'?'Logged.':'Noted — that took something.');
+    renderLastActive(el);
+  }
+  el.querySelector('#la-checked').addEventListener('click', ()=>log('checked'));
+  el.querySelector('#la-resisted').addEventListener('click', ()=>log('resisted'));
+}
+
+/* ============================================================
+   PAGE: REFLECT
+   ============================================================ */
+let reflectSubview = 'miss'; // miss | afterimage | luggage | prompt
+
+const DAILY_PROMPTS = [
+  "What are you pretending doesn't hurt?",
+  "What do you wish they understood?",
+  "What do you know now that you didn't know then?",
+  "What part of this situation is outside your control?",
+  "What do you miss?",
+  "What don't you miss?",
+  "What boundary became clearer because of this?",
+  "What would you tell yourself from one month ago?"
+];
+
+function renderReflect(root, opts){
+  opts=opts||{};
+  reflectSubview = opts.view || reflectSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Reflect</div>
+      <h1 class="page-title">What do you actually miss?</h1>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${reflectSubview==='miss'?'active':''}" data-rv="miss">What I miss</button>
+      <button class="tabbtn ${reflectSubview==='afterimage'?'active':''}" data-rv="afterimage">Afterimage</button>
+      <button class="tabbtn ${reflectSubview==='luggage'?'active':''}" data-rv="luggage">Emotional Luggage</button>
+      <button class="tabbtn ${reflectSubview==='prompt'?'active':''}" data-rv="prompt">Daily Prompt</button>
+    </div>
+    <div id="reflect-body"></div>
+  `;
+  root.querySelectorAll('[data-rv]').forEach(b=>b.addEventListener('click', ()=>{ reflectSubview=b.dataset.rv; renderReflect(root); }));
+  const b = document.getElementById('reflect-body');
+  if(reflectSubview==='miss') renderMiss(b);
+  else if(reflectSubview==='afterimage') renderAfterimage(b);
+  else if(reflectSubview==='luggage') renderLuggage(b);
+  else renderDailyPrompt(b);
+}
+
+function renderMiss(el){
+  el.innerHTML = `
+    <div class="card fade-in">
+      <p style="font-size:13.5px; margin-bottom:14px;">Maybe you don't miss everything. What exactly do you miss?</p>
+      <div class="chip-row" id="miss-options">${MISS_OPTIONS.map(o=>`<button type="button" class="chip" data-mo="${escapeAttr(o)}">${o}</button>`).join('')}</div>
+      <button class="btn btn-violet mt20" id="miss-reflect-btn" style="margin-top:20px;">See reflection</button>
+      <div id="miss-result" class="mt20"></div>
+    </div>
+    <div id="miss-history"></div>
+  `;
+  el.querySelectorAll('[data-mo]').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('active')));
+  el.querySelector('#miss-reflect-btn').addEventListener('click', ()=>{
+    const chosen = Array.from(el.querySelectorAll('#miss-options .active')).map(b=>b.dataset.mo);
+    if(!chosen.length){ toast('Choose at least one.'); return; }
+    const text = `You selected: ${chosen.join(', ')}. Missing these things doesn't necessarily mean you need the relationship back — it may mean you miss what it provided.`;
+    el.querySelector('#miss-result').innerHTML = `<div class="card" style="background:var(--bg-2);"><p style="font-size:14px; line-height:1.7;">${text}</p><button class="btn btn-ghost btn-sm mt14" id="miss-save" style="margin-top:14px;">Save this reflection</button></div>`;
+    el.querySelector('#miss-save').addEventListener('click', ()=>{
+      data.reflections.missList.push({id:uid(), date:todayStr(), selections:chosen});
+      saveData(); toast('Saved.'); renderMissHistory(el);
+    });
+  });
+  renderMissHistory(el);
+}
+function renderMissHistory(el){
+  const hist = el.querySelector('#miss-history');
+  const items = data.reflections.missList.slice().reverse();
+  if(!items.length){ hist.innerHTML=''; return; }
+  hist.innerHTML = `<div class="section-gap"><div class="subtle-label">Past reflections</div><div class="entry-list">${items.slice(0,5).map(r=>`
+    <div class="entry-item"><div class="entry-meta">${fmtDate(r.date)}</div><div class="entry-preview mt8" style="margin-top:8px;">${r.selections.join(', ')}</div></div>
+  `).join('')}</div></div>`;
+}
+
+function renderAfterimage(el){
+  const a = data.reflections.afterimage;
+  el.innerHTML = `
+    <p style="font-size:13.5px; color:var(--ink-2); margin-bottom:16px;">Who were you before them, and who are you becoming now?</p>
+    <div class="aft-cols fade-in">
+      <div class="aft-col"><h4>Before</h4><p style="font-size:12px; color:var(--ink-3); margin-bottom:8px;">What did you enjoy? What did you tolerate?</p><textarea id="aft-before" placeholder="Who were you before this person?">${escapeHtml(a.before)}</textarea></div>
+      <div class="aft-col"><h4>During</h4><p style="font-size:12px; color:var(--ink-3); margin-bottom:8px;">What changed? What did you stop doing?</p><textarea id="aft-during" placeholder="What changed while you were with them?">${escapeHtml(a.during)}</textarea></div>
+      <div class="aft-col"><h4>After</h4><p style="font-size:12px; color:var(--ink-3); margin-bottom:8px;">What do you want to carry forward?</p><textarea id="aft-after" placeholder="What do you want to carry forward?">${escapeHtml(a.after)}</textarea></div>
+    </div>
+    <button class="btn btn-violet mt20" id="aft-save">Save</button>
+  `;
+  el.querySelector('#aft-save').addEventListener('click', ()=>{
+    data.reflections.afterimage = {
+      before: document.getElementById('aft-before').value,
+      during: document.getElementById('aft-during').value,
+      after: document.getElementById('aft-after').value
+    };
+    saveData(); toast('Saved.');
+  });
+}
+
+function renderLuggage(el){
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="luggage-wrap">
+        <h3 style="font-size:18px;">What are you carrying?</h3>
+        <div class="luggage-bar"><div class="luggage-fill" id="luggage-fill"></div></div>
+        <p style="font-size:12px; color:var(--ink-3); margin-top:8px;" id="luggage-caption"></p>
+      </div>
+      <div class="chip-row" id="luggage-add-options">${LUGGAGE_ITEMS.map(i=>`<button type="button" class="chip" data-litem="${i}">${i}</button>`).join('')}</div>
+      <div class="luggage-items" id="luggage-items"></div>
+    </div>
+  `;
+  el.querySelectorAll('[data-litem]').forEach(b=>b.addEventListener('click', ()=>{
+    if(data.luggage.find(x=>x.item===b.dataset.litem && x.status!=='released')){ toast('Already in your bag.'); return; }
+    data.luggage.push({id:uid(), item:b.dataset.litem, status:'carrying'});
+    saveData(); renderLuggage(el);
+  }));
+  renderLuggageItems(el);
+}
+function renderLuggageItems(el){
+  const items = data.luggage;
+  const released = items.filter(i=>i.status==='released').length;
+  const pct = items.length ? Math.round((released/items.length)*100) : 0;
+  document.getElementById('luggage-fill').style.width = pct+'%';
+  document.getElementById('luggage-caption').textContent = items.length ? `${released} of ${items.length} released` : "Add what you're carrying — no pressure to release anything yet.";
+  const wrap = document.getElementById('luggage-items');
+  if(!items.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = items.map(i=>`<button type="button" class="chip luggage-chip" data-status="${i.status}" data-lid="${i.id}">${i.item}${i.status==='released'?' ✓':''}</button>`).join('');
+  wrap.querySelectorAll('[data-lid]').forEach(b=>b.addEventListener('click', ()=>openLuggageItem(b.dataset.lid, el)));
+}
+function openLuggageItem(id, el){
+  const item = data.luggage.find(x=>x.id===id);
+  if(!item) return;
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${item.item}</h3></div>
+    <p style="font-size:13.5px; margin-bottom:14px;">Is this something you want to...</p>
+    <div class="chip-row">
+      ${['keep','process','release','return'].map(s=>`<button type="button" class="chip ${item.status===s+'d'||item.status===s?'active':''}" data-lstatus="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+    </div>
+  `);
+  document.querySelectorAll('[data-lstatus]').forEach(b=>b.addEventListener('click', ()=>{
+    const map = {keep:'carrying', process:'processing', release:'released', return:'returned'};
+    item.status = map[b.dataset.lstatus];
+    saveData(); closeModal(); renderLuggageItems(el);
+    toast(b.dataset.lstatus==='release' ? 'A little lighter.' : 'Updated.');
+  }));
+}
+
+function renderDailyPrompt(el){
+  ensureDailyPrompt();
+  const dp = data.dailyPrompt;
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="subtle-label">Today's prompt</div>
+      <h3 style="font-size:20px; margin-bottom:18px;">${dp.current}</h3>
+      <textarea id="dp-answer" rows="4" placeholder="Answer, or skip for today.">${dp.lastShownDate===todayStr()&&dp.lastAnswer?escapeHtml(dp.lastAnswer):''}</textarea>
+      <div class="chip-row mt14" style="margin-top:14px;">
+        <button class="btn btn-violet btn-sm" id="dp-save">Save</button>
+        <button class="btn btn-ghost btn-sm" id="dp-skip">Skip</button>
+      </div>
+    </div>
+  `;
+  el.querySelector('#dp-save').addEventListener('click', ()=>{
+    const ans = document.getElementById('dp-answer').value.trim();
+    if(!ans){ toast('Write something, or skip.'); return; }
+    dp.lastAnswer = ans;
+    data.journalEntries.push({id:uid(), date:todayStr(), title:dp.current, body:ans, mood:'', tags:['realization']});
+    saveData(); toast('Saved to your journal.');
+  });
+  el.querySelector('#dp-skip').addEventListener('click', ()=>{ toast('Okay — no pressure.'); });
+}
+function ensureDailyPrompt(){
+  const dp = data.dailyPrompt;
+  if(dp.lastShownDate===todayStr() && dp.current) return;
+  if(dp.usedIds.length >= DAILY_PROMPTS.length) dp.usedIds = [];
+  let idx;
+  do{ idx = Math.floor(Math.random()*DAILY_PROMPTS.length); } while(dp.usedIds.includes(idx) && dp.usedIds.length < DAILY_PROMPTS.length);
+  dp.usedIds.push(idx);
+  dp.current = DAILY_PROMPTS[idx];
+  dp.lastShownDate = todayStr();
+  dp.lastAnswer = '';
+  saveData();
+}
+
+/* ============================================================
+   PAGE: TIMELINE
+   ============================================================ */
+let timelineRange = 30;
+let timelineSubview = 'weight'; // weight | events | memories | letters
+let timelineViewMode = 'line'; // line | heatmap
+
+function renderTimeline(root, opts){
+  opts=opts||{};
+  timelineSubview = opts.view || timelineSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Your Timeline</div>
+      <h1 class="page-title">Your emotional pattern</h1>
+      <p class="page-sub">This isn't a measure of recovery. It's just what you've noticed.</p>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${timelineSubview==='weight'?'active':''}" data-tlv="weight">Pattern</button>
+      <button class="tabbtn ${timelineSubview==='events'?'active':''}" data-tlv="events">Relationship events</button>
+      <button class="tabbtn ${timelineSubview==='memories'?'active':''}" data-tlv="memories">Memory archive</button>
+      <button class="tabbtn ${timelineSubview==='letters'?'active':''}" data-tlv="letters">Future letters</button>
+    </div>
+    <div id="timeline-body"></div>
+  `;
+  root.querySelectorAll('[data-tlv]').forEach(b=>b.addEventListener('click', ()=>{ timelineSubview=b.dataset.tlv; renderTimeline(root); }));
+  const b = document.getElementById('timeline-body');
+  if(timelineSubview==='weight') renderWeightTimeline(b);
+  else if(timelineSubview==='events') renderRelEvents(b);
+  else if(timelineSubview==='memories') renderMemories(b);
+  else renderFutureLetters(b);
+}
+
+function renderWeightTimeline(el){
+  const ranges = [[7,'7 days'],[30,'30 days'],[90,'90 days'],[99999,'All time']];
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="flex-between" style="flex-wrap:wrap; gap:10px;">
+        <div class="chip-row">${ranges.map(([d,l])=>`<button type="button" class="chip ${timelineRange===d?'active':''}" data-range="${d}">${l}</button>`).join('')}</div>
+        <div class="segctrl" id="tl-viewmode">
+          ${[['line','Line'],['heatmap','Grid']].map(([v,l])=>`<button class="segbtn ${timelineViewMode===v?'active':''}" data-viewmode="${v}">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="mt20" style="margin-top:20px;" id="tl-graph-wrap"></div>
+    </div>
+    <div class="section-gap">
+      <div class="subtle-label">Milestones</div>
+      <div class="card" id="milestone-card"></div>
+    </div>
+    <div class="section-gap">
+      <div class="subtle-label">Check-ins</div>
+      <div id="checkin-list"></div>
+    </div>
+  `;
+  el.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click', ()=>{ timelineRange=parseInt(b.dataset.range); renderWeightTimeline(el); }));
+  el.querySelectorAll('[data-viewmode]').forEach(b=>b.addEventListener('click', ()=>{ timelineViewMode=b.dataset.viewmode; renderWeightTimeline(el); }));
+  document.getElementById('tl-graph-wrap').innerHTML = timelineViewMode==='heatmap' ? buildHeatmap() : buildSvgGraph();
+  const ms = data.milestones.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('milestone-card').innerHTML = ms.length ? ms.map(m=>`<div class="milestone-row"><div class="mrow-dot"></div><div><div style="font-size:13.5px;">${m.label}</div><div class="entry-meta">${fmtDate(m.date)}</div></div></div>`).join('') : `<p style="font-size:13px; color:var(--ink-3);">Milestones will appear here as you use UNSENT.</p>`;
+
+  const filtered = data.checkIns.filter(c=>daysAgo(c.date)<=timelineRange).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const listEl = document.getElementById('checkin-list');
+  if(!filtered.length){
+    listEl.innerHTML = `<div class="empty-state"><div class="es-title">Your story hasn't been recorded here yet.</div><div class="es-sub">Check in from Home to begin.</div></div>`;
+  } else {
+    listEl.innerHTML = `<div class="entry-list">${filtered.map(c=>`
+      <div class="entry-item"><div class="entry-top"><div class="entry-meta">${fmtDate(c.date)}</div><span class="status-pill">${c.weight}%</span></div>
+      ${c.reasons&&c.reasons.length?`<div class="entry-preview">${c.reasons.join(', ')}</div>`:''}</div>
+    `).join('')}</div>`;
+  }
+}
+function buildSvgGraph(){
+  const pts = data.checkIns.filter(c=>daysAgo(c.date)<=timelineRange).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if(pts.length<2){
+    return `<div class="empty-state" style="padding:30px 10px;"><div class="es-sub">Once you have a few check-ins, your pattern will show up here.</div></div>`;
+  }
+  const w=600,h=140,pad=10;
+  const xs = pts.map((p,i)=> pad + i*((w-2*pad)/(pts.length-1)));
+  const ys = pts.map(p=> h-pad - (p.weight/100)*(h-2*pad));
+  const path = xs.map((x,i)=>`${i===0?'M':'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const areaPath = path + ` L${xs[xs.length-1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
+  return `<svg class="tl-graph" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <path d="${areaPath}" fill="var(--violet-glow)" stroke="none"/>
+    <path d="${path}" fill="none" stroke="var(--violet)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${xs.map((x,i)=>`<circle cx="${x.toFixed(1)}" cy="${ys[i].toFixed(1)}" r="2.6" fill="var(--violet)"/>`).join('')}
+  </svg>`;
+}
+function buildHeatmap(){
+  const days = Math.min(timelineRange, 182);
+  const byDate = {};
+  data.checkIns.forEach(c=>{ byDate[c.date]=c.weight; });
+  const cells = [];
+  const start = new Date(todayStr()+'T00:00:00');
+  start.setDate(start.getDate() - (days-1));
+  // align to start of week (Sun)
+  const lead = start.getDay();
+  for(let i=0;i<lead;i++) cells.push(null);
+  for(let i=0;i<days;i++){
+    const d = new Date(start); d.setDate(start.getDate()+i);
+    const ds = d.toISOString().slice(0,10);
+    cells.push({date:ds, weight: byDate[ds]});
+  }
+  function colorFor(w){
+    if(w==null) return 'var(--bg-3)';
+    if(w<20) return 'rgba(143,174,150,0.85)';
+    if(w<40) return 'rgba(143,174,150,0.45)';
+    if(w<60) return 'rgba(206,154,115,0.5)';
+    if(w<80) return 'rgba(201,138,154,0.55)';
+    return 'rgba(201,138,154,0.9)';
+  }
+  const cellsHtml = cells.map(c=>{
+    if(!c) return `<div class="heatmap-cell" style="background:transparent;"></div>`;
+    const title = c.weight!=null ? `${fmtDate(c.date)} — ${c.weight}%` : fmtDate(c.date);
+    return `<div class="heatmap-cell" style="background:${colorFor(c.weight)};" title="${escapeAttr(title)}"></div>`;
+  }).join('');
+  return `<div class="heatmap-wrap"><div class="heatmap-grid">${cellsHtml}</div></div>
+  <div class="heatmap-legend"><span>Lighter</span>${[10,30,50,70,90].map(w=>`<div class="heatmap-cell" style="background:${colorFor(w)};"></div>`).join('')}<span>Heavier</span><span style="margin-left:8px;">· no entry</span><div class="heatmap-cell" style="background:var(--bg-3);"></div></div>`;
+}
+
+function renderRelEvents(el){
+  const events = data.timelineEvents.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="field"><label class="field-label">What happened?</label><input type="text" id="ev-label" placeholder="e.g. First met, Boundary crossed, Breakup"></div>
+      <div class="field"><label class="field-label">When?</label><input type="date" id="ev-date" value="${todayStr()}"></div>
+      <div class="field"><label class="field-label">Note (optional)</label><textarea id="ev-note" rows="2"></textarea></div>
+      <button class="btn btn-violet" id="ev-add">Add event</button>
+    </div>
+    <div id="ev-list" class="section-gap"></div>
+  `;
+  document.getElementById('ev-add').addEventListener('click', ()=>{
+    const label = document.getElementById('ev-label').value.trim();
+    if(!label){ toast('Give the event a short label.'); return; }
+    const date = document.getElementById('ev-date').value || todayStr();
+    const note = document.getElementById('ev-note').value.trim();
+    data.timelineEvents.push({id:uid(), date, label, note});
+    saveData(); toast('Added.'); renderRelEvents(el);
+  });
+  const listEl = document.getElementById('ev-list');
+  if(!events.length){ listEl.innerHTML = `<div class="empty-state"><div class="es-title">Your story hasn't been recorded here yet.</div></div>`; return; }
+  listEl.innerHTML = events.map(ev=>`
+    <div class="milestone-row"><div class="mrow-dot"></div><div style="flex:1;"><div style="font-size:14px;">${escapeHtml(ev.label)}</div>${ev.note?`<div style="font-size:13px; color:var(--ink-2); margin-top:2px;">${escapeHtml(ev.note)}</div>`:''}<div class="entry-meta mt8" style="margin-top:4px;">${fmtDate(ev.date)}</div></div>
+    <button class="btn-icon" style="width:30px;height:30px;" data-delev="${ev.id}" aria-label="Delete">×</button></div>
+  `).join('');
+  listEl.querySelectorAll('[data-delev]').forEach(b=>b.addEventListener('click', ()=>{
+    data.timelineEvents = data.timelineEvents.filter(x=>x.id!==b.dataset.delev); saveData(); renderRelEvents(el);
+  }));
+}
+
+function renderMemories(el){
+  const items = data.memories.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  el.innerHTML = `
+    <div class="flex-between fade-in"><div></div><button class="btn btn-violet btn-sm" id="mem-new">Add a memory</button></div>
+    <div id="mem-list" class="section-gap"></div>
+  `;
+  document.getElementById('mem-new').addEventListener('click', openMemoryForm);
+  const listEl = document.getElementById('mem-list');
+  if(!items.length){ listEl.innerHTML = `<div class="empty-state"><div class="es-title">No memories saved yet.</div><div class="es-sub">You can choose what meaning to keep, and what to release.</div></div>`; return; }
+  listEl.innerHTML = `<div class="entry-list">${items.map(m=>`
+    <div class="entry-item" data-mem="${m.id}">
+      <div class="entry-top"><div class="entry-meta">${fmtDate(m.date)}${m.emotion?' · '+m.emotion:''}</div></div>
+      <div style="font-size:15px; margin-bottom:4px;">${escapeHtml(m.title)}</div>
+      <div class="entry-preview">${escapeHtml(m.description||'')}</div>
+    </div>`).join('')}</div>`;
+  listEl.querySelectorAll('[data-mem]').forEach(c=>c.addEventListener('click', ()=>openMemoryDetail(c.dataset.mem)));
+}
+function openMemoryForm(existing){
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${existing?'Edit memory':'Add a memory'}</h3></div>
+    <div class="field"><label class="field-label">Title</label><input type="text" id="mf-title" value="${existing?escapeAttr(existing.title):''}" placeholder="Our first date"></div>
+    <div class="two-col">
+      <div class="field"><label class="field-label">Date</label><input type="date" id="mf-date" value="${existing?existing.date:todayStr()}"></div>
+      <div class="field"><label class="field-label">Emotion</label><input type="text" id="mf-emotion" value="${existing?escapeAttr(existing.emotion||''):''}" placeholder="warmth, longing..."></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label class="field-label">Song (optional)</label><input type="text" id="mf-song" value="${existing?escapeAttr(existing.song||''):''}"></div>
+      <div class="field"><label class="field-label">Location (optional)</label><input type="text" id="mf-location" value="${existing?escapeAttr(existing.location||''):''}"></div>
+    </div>
+    <div class="field"><label class="field-label">What do you want to remember?</label><textarea id="mf-desc" rows="3">${existing?escapeHtml(existing.description||''):''}</textarea></div>
+    <div class="field"><label class="field-label">Meaning I want to keep</label><textarea id="mf-keep" rows="2">${existing?escapeHtml(existing.keepMeaning||''):''}</textarea></div>
+    <div class="field"><label class="field-label">Meaning I want to release</label><textarea id="mf-release" rows="2">${existing?escapeHtml(existing.releaseMeaning||''):''}</textarea></div>
+    <button class="btn btn-violet btn-block" id="mf-save">Save memory</button>
+  `);
+  document.getElementById('mf-save').addEventListener('click', ()=>{
+    const title = document.getElementById('mf-title').value.trim();
+    if(!title){ toast('Give the memory a title.'); return; }
+    const obj = {
+      id: existing?existing.id:uid(),
+      title, date: document.getElementById('mf-date').value||todayStr(),
+      emotion: document.getElementById('mf-emotion').value.trim(),
+      song: document.getElementById('mf-song').value.trim(),
+      location: document.getElementById('mf-location').value.trim(),
+      description: document.getElementById('mf-desc').value.trim(),
+      keepMeaning: document.getElementById('mf-keep').value.trim(),
+      releaseMeaning: document.getElementById('mf-release').value.trim()
+    };
+    if(existing){ const idx = data.memories.findIndex(x=>x.id===existing.id); data.memories[idx]=obj; }
+    else data.memories.push(obj);
+    saveData(); closeModal(); toast('Saved.');
+    renderTimeline(document.getElementById('page-root'), {view:'memories'});
+  });
+}
+function openMemoryDetail(id){
+  const m = data.memories.find(x=>x.id===id); if(!m) return;
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${escapeHtml(m.title)}</h3></div>
+    <div class="entry-meta mt8" style="margin-bottom:14px;">${fmtDate(m.date)}${m.location?' · '+escapeHtml(m.location):''}${m.song?' · ♫ '+escapeHtml(m.song):''}</div>
+    ${m.description?`<p style="font-size:14px; line-height:1.7;">${escapeHtml(m.description)}</p>`:''}
+    ${m.keepMeaning?`<div class="mt14" style="margin-top:14px;"><div class="subtle-label">Meaning I want to keep</div><p style="font-size:13.5px;">${escapeHtml(m.keepMeaning)}</p></div>`:''}
+    ${m.releaseMeaning?`<div class="mt14" style="margin-top:14px;"><div class="subtle-label">Meaning I want to release</div><p style="font-size:13.5px;">${escapeHtml(m.releaseMeaning)}</p></div>`:''}
+    <div class="chip-row mt20" style="margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" id="mem-edit">Edit</button>
+      <button class="btn btn-danger btn-sm" id="mem-del">Delete</button>
+    </div>
+  `);
+  document.getElementById('mem-edit').addEventListener('click', ()=>{ closeModal(); setTimeout(()=>openMemoryForm(m),260); });
+  document.getElementById('mem-del').addEventListener('click', ()=>{
+    confirmDialog('Delete this memory?','This cannot be undone.','Delete', ()=>{
+      data.memories = data.memories.filter(x=>x.id!==id); saveData(); toast('Deleted.');
+      renderTimeline(document.getElementById('page-root'), {view:'memories'});
+    }, true);
+  });
+}
+
+function renderFutureLetters(el){
+  const letters = data.futureLetters.slice().sort((a,b)=>b.writtenDate.localeCompare(a.writtenDate));
+  el.innerHTML = `
+    <div class="card fade-in">
+      <div class="card-title">Dear future me,</div>
+      <textarea id="fl-body" rows="5" placeholder="I hope you remember..."></textarea>
+      <div class="field mt14" style="margin-top:14px;"><label class="field-label">Unlock on</label><input type="date" id="fl-date" min="${todayStr()}" value="${todayStr()}"></div>
+      <button class="btn btn-violet" id="fl-save">Seal the letter</button>
+    </div>
+    <div id="fl-list" class="section-gap"></div>
+  `;
+  document.getElementById('fl-save').addEventListener('click', ()=>{
+    const body = document.getElementById('fl-body').value.trim();
+    if(!body){ toast('Write a little to your future self.'); return; }
+    const unlockDate = document.getElementById('fl-date').value || todayStr();
+    data.futureLetters.push({id:uid(), writtenDate:todayStr(), unlockDate, body, opened:false});
+    saveData(); toast('Sealed until '+fmtDate(unlockDate)+'.'); renderFutureLetters(el);
+  });
+  const listEl = document.getElementById('fl-list');
+  if(!letters.length){ listEl.innerHTML=''; return; }
+  listEl.innerHTML = `<div class="entry-list">${letters.map(l=>{
+    const unlocked = l.unlockDate <= todayStr();
+    return `<div class="entry-item" data-letter="${l.id}">
+      <div class="entry-top"><div class="entry-meta">Written ${fmtDate(l.writtenDate)}</div><span class="status-pill ${unlocked?'status-released':'status-later'}">${unlocked?'Unlocked':'Unlocks '+fmtDate(l.unlockDate)}</span></div>
+      <div class="entry-preview">${unlocked?escapeHtml(l.body):'This letter is still sealed.'}</div>
+    </div>`;
+  }).join('')}</div>`;
+  listEl.querySelectorAll('[data-letter]').forEach(c=>c.addEventListener('click', ()=>{
+    const l = data.futureLetters.find(x=>x.id===c.dataset.letter);
+    if(l.unlockDate>todayStr()){ toast('This unlocks on '+fmtDate(l.unlockDate)+'.'); return; }
+    openModal(`
+      <div class="modal-head"><h3 class="modal-title">You wrote this for today.</h3></div>
+      <div class="entry-meta mt8" style="margin-bottom:14px;">Written ${fmtDate(l.writtenDate)}</div>
+      <p style="font-size:14.5px; line-height:1.75; white-space:pre-wrap;">${escapeHtml(l.body)}</p>
+      <button class="btn btn-danger btn-sm mt20" id="fl-del" style="margin-top:20px;">Delete letter</button>
+    `);
+    document.getElementById('fl-del').addEventListener('click', ()=>{
+      confirmDialog('Delete this letter?','This cannot be undone.','Delete', ()=>{
+        data.futureLetters = data.futureLetters.filter(x=>x.id!==l.id); saveData(); toast('Deleted.'); closeModal();
+        renderTimeline(document.getElementById('page-root'), {view:'letters'});
+      }, true);
+    });
+  }));
+}
+
+/* ============================================================
+   PAGE: ME (journal + receipt)
+   ============================================================ */
+let journalSubview = 'entries'; // entries | receipt
+let journalSearch = '';
+
+function renderJournalPage(root, opts){
+  opts=opts||{};
+  journalSubview = opts.view || journalSubview;
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Me</div>
+      <h1 class="page-title">Your journal</h1>
+    </div>
+    <div class="tabrow">
+      <button class="tabbtn ${journalSubview==='entries'?'active':''}" data-jv="entries">Entries</button>
+      <button class="tabbtn ${journalSubview==='receipt'?'active':''}" data-jv="receipt">Emotional Receipt</button>
+    </div>
+    <div id="journal-body"></div>
+  `;
+  root.querySelectorAll('[data-jv]').forEach(b=>b.addEventListener('click', ()=>{ journalSubview=b.dataset.jv; renderJournalPage(root); }));
+  if(journalSubview==='entries') renderJournalEntries(document.getElementById('journal-body'));
+  else renderReceipt(document.getElementById('journal-body'));
+}
+const JOURNAL_TAGS = ['breakup','anger','loneliness','hope','progress','memory','realization','closure'];
+
+function renderJournalEntries(el){
+  el.innerHTML = `
+    <div class="flex-between fade-in" style="gap:10px;">
+      <input type="text" id="j-search" placeholder="Search your journal..." value="${escapeAttr(journalSearch)}" style="max-width:260px;">
+      <button class="btn btn-violet btn-sm" id="j-new">New entry</button>
+    </div>
+    <div id="j-list" class="section-gap"></div>
+  `;
+  document.getElementById('j-new').addEventListener('click', ()=>openJournalForm());
+  document.getElementById('j-search').addEventListener('input', (e)=>{ journalSearch=e.target.value; renderJList(); });
+  renderJList();
+  function renderJList(){
+    const listEl = document.getElementById('j-list');
+    let items = data.journalEntries.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    if(journalSearch.trim()){
+      const q = journalSearch.toLowerCase();
+      items = items.filter(e=> (e.title||'').toLowerCase().includes(q) || (e.body||'').toLowerCase().includes(q) || (e.tags||[]).some(t=>t.includes(q)));
+    }
+    if(!items.length){ listEl.innerHTML = `<div class="empty-state"><div class="es-title">Start anywhere.</div><div class="es-sub">Even one sentence is enough.</div></div>`; return; }
+    listEl.innerHTML = `<div class="entry-list">${items.map(e=>`
+      <div class="entry-item" data-j="${e.id}">
+        <div class="entry-top"><div class="entry-meta">${fmtDate(e.date)}${e.mood?' · '+e.mood:''}</div></div>
+        <div style="font-size:15px; margin-bottom:4px;">${escapeHtml(e.title||'Untitled')}</div>
+        <div class="entry-preview">${escapeHtml(e.body)}</div>
+        ${e.tags&&e.tags.length?`<div class="mt8" style="margin-top:8px;">${e.tags.map(t=>`<span class="entry-tag">${t}</span>`).join(' ')}</div>`:''}
+      </div>`).join('')}</div>`;
+    listEl.querySelectorAll('[data-j]').forEach(c=>c.addEventListener('click', ()=>openJournalDetail(c.dataset.j)));
+  }
+}
+function openJournalForm(existing){
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${existing?'Edit entry':'New journal entry'}</h3></div>
+    <div class="field"><label class="field-label">Title</label><input type="text" id="jf-title" value="${existing?escapeAttr(existing.title||''):''}"></div>
+    <div class="field"><label class="field-label">Body</label><textarea id="jf-body" rows="6">${existing?escapeHtml(existing.body||''):''}</textarea></div>
+    <div class="field"><label class="field-label">Mood (optional)</label><input type="text" id="jf-mood" value="${existing?escapeAttr(existing.mood||''):''}" placeholder="e.g. tired, hopeful"></div>
+    <div class="field"><label class="field-label">Tags</label><div class="chip-row" id="jf-tags">${JOURNAL_TAGS.map(t=>`<button type="button" class="chip ${existing&&existing.tags&&existing.tags.includes(t)?'active':''}" data-jt="${t}">${t}</button>`).join('')}</div></div>
+    <button class="btn btn-violet btn-block mt20" id="jf-save" style="margin-top:20px;">Save entry</button>
+  `);
+  document.getElementById('jf-tags').querySelectorAll('[data-jt]').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('active')));
+  document.getElementById('jf-save').addEventListener('click', ()=>{
+    const body = document.getElementById('jf-body').value.trim();
+    if(!body){ toast('Write something first.'); return; }
+    const tags = Array.from(document.querySelectorAll('#jf-tags .active')).map(b=>b.dataset.jt);
+    const obj = { id: existing?existing.id:uid(), date: existing?existing.date:todayStr(), title:document.getElementById('jf-title').value.trim(), body, mood:document.getElementById('jf-mood').value.trim(), tags };
+    if(existing){ const idx=data.journalEntries.findIndex(x=>x.id===existing.id); data.journalEntries[idx]=obj; }
+    else data.journalEntries.push(obj);
+    saveData(); closeModal(); toast('Saved.');
+    renderJournalPage(document.getElementById('page-root'), {view:'entries'});
+  });
+}
+function openJournalDetail(id){
+  const e = data.journalEntries.find(x=>x.id===id); if(!e) return;
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">${escapeHtml(e.title||'Untitled')}</h3></div>
+    <div class="entry-meta mt8" style="margin-bottom:14px;">${fmtDate(e.date)}${e.mood?' · '+e.mood:''}</div>
+    <p style="font-size:14.5px; line-height:1.75; white-space:pre-wrap;">${escapeHtml(e.body)}</p>
+    ${e.tags&&e.tags.length?`<div class="mt14" style="margin-top:14px;">${e.tags.map(t=>`<span class="entry-tag">${t}</span>`).join(' ')}</div>`:''}
+    <div class="chip-row mt20" style="margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" id="j-edit">Edit</button>
+      <button class="btn btn-danger btn-sm" id="j-del">Delete</button>
+    </div>
+  `);
+  document.getElementById('j-edit').addEventListener('click', ()=>{ closeModal(); setTimeout(()=>openJournalForm(e),260); });
+  document.getElementById('j-del').addEventListener('click', ()=>{
+    confirmDialog('Delete this entry?','This cannot be undone.','Delete', ()=>{
+      data.journalEntries = data.journalEntries.filter(x=>x.id!==id); saveData(); toast('Deleted.');
+      renderJournalPage(document.getElementById('page-root'), {view:'entries'});
+    }, true);
+  });
+}
+
+function renderReceipt(el){
+  const hours = data.checkIns.length * 3 + data.journalEntries.length * 2;
+  const stats = {
+    'Love':'priceless',
+    'Time': (hours||0) + ' hours reflected',
+    'Unsent messages': data.unsentMessages.length,
+    'Pauses taken': data.pauseSessions.length,
+    'Journal entries': data.journalEntries.length,
+    'Memories kept': data.memories.length,
+    'Unsaid words': data.unsentMessages.reduce((s,m)=>s+ (m.body?m.body.split(/\s+/).length:0),0)
+  };
+  el.innerHTML = `
+    <div class="card fade-in" style="text-align:center;">
+      <p style="font-size:13px; color:var(--ink-2); margin-bottom:16px;">Generated from what you've done in UNSENT so far — private, and only visible to you.</p>
+      <div class="receipt" id="receipt-render">
+        <div class="receipt-title">EMOTIONAL RECEIPT</div>
+        ${Object.entries(stats).map(([k,v])=>`<div class="receipt-row"><span>${k}</span><span>${v}</span></div>`).join('')}
+        <div class="receipt-total"><span>REFUND</span><span>Not available</span></div>
+        <div class="receipt-row" style="border:none;"><span>LESSON</span><span>Still processing</span></div>
+      </div>
+      <div class="chip-row" style="justify-content:center; margin-top:20px;">
+        <button class="btn btn-ghost btn-sm" id="receipt-copy">Copy as text</button>
+        <button class="btn btn-violet btn-sm" id="receipt-download">Download as image</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('receipt-copy').addEventListener('click', async ()=>{
+    const text = 'EMOTIONAL RECEIPT\\n'+Object.entries(stats).map(([k,v])=>`${k}: ${v}`).join('\\n')+'\\nREFUND: Not available\\nLESSON: Still processing';
+    try{ await navigator.clipboard.writeText(text); toast('Copied.'); }catch(e){ toast('Could not copy — select the text manually.'); }
+  });
+  document.getElementById('receipt-download').addEventListener('click', ()=>downloadReceiptImage(stats));
+}
+function downloadReceiptImage(stats){
+  const isLight = data.settings.theme==='light';
+  const bg = isLight ? '#FFFFFF' : '#151519';
+  const line = isLight ? '#E4E1DB' : '#2B2B33';
+  const ink0 = isLight ? '#232026' : '#EDEDF2';
+  const ink1 = isLight ? '#5B5763' : '#B6B6C3';
+  const w=440, rowH=30, padTop=70, padBottom=90;
+  const rows = Object.entries(stats);
+  const h = padTop + rows.length*rowH + padBottom;
+  const canvas = document.createElement('canvas');
+  const scale = 2;
+  canvas.width = w*scale; canvas.height = h*scale;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(scale,scale);
+  ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle = line; ctx.setLineDash([4,3]); ctx.lineWidth=1.5;
+  ctx.strokeRect(10,10,w-20,h-20);
+  ctx.setLineDash([]);
+  ctx.fillStyle = ink0; ctx.textAlign='center'; ctx.font='600 17px Georgia, serif';
+  ctx.fillText('EMOTIONAL RECEIPT', w/2, 44);
+  ctx.textAlign='left'; ctx.font='13px "Courier New", monospace';
+  let y = padTop;
+  rows.forEach(([k,v])=>{
+    ctx.fillStyle = ink1; ctx.fillText(k, 30, y);
+    ctx.fillStyle = ink0; ctx.textAlign='right'; ctx.fillText(String(v), w-30, y);
+    ctx.textAlign='left';
+    ctx.strokeStyle = line; ctx.beginPath(); ctx.setLineDash([1,2]);
+    ctx.moveTo(30,y+8); ctx.lineTo(w-30,y+8); ctx.stroke(); ctx.setLineDash([]);
+    y += rowH;
+  });
+  y += 4;
+  ctx.strokeStyle = ink0; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(30,y); ctx.lineTo(w-30,y); ctx.stroke(); ctx.setLineDash([]);
+  y += 22;
+  ctx.font='700 13px "Courier New", monospace'; ctx.fillStyle = ink0;
+  ctx.fillText('REFUND', 30, y); ctx.textAlign='right'; ctx.fillText('Not available', w-30, y); ctx.textAlign='left';
+  y += 24;
+  ctx.font='13px "Courier New", monospace'; ctx.fillStyle = ink1;
+  ctx.fillText('LESSON', 30, y); ctx.textAlign='right'; ctx.fillText('Still processing', w-30, y);
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a'); a.href=url; a.download='unsent-emotional-receipt.png'; document.body.appendChild(a); a.click(); a.remove();
+  toast('Downloaded.');
+}
+
+/* ============================================================
+   PAGE: COMMUNITY (demo)
+   ============================================================ */
+const COMMUNITY_POSTS = [
+  {id:'c1', cat:'Breakups', text:"Three months out and I still reach for my phone to tell him something funny. I've started writing those texts here instead."},
+  {id:'c2', cat:'Micro-cheating', text:"I couldn't explain why the 'just friends' comment bothered me so much. Untangle helped me see it wasn't about proof — it was about the boundary we never actually set."},
+  {id:'c3', cat:'Ghosting', text:"No explanation ever came. I stopped waiting for one and started writing letters I'll never send instead."},
+  {id:'c4', cat:'Situationships', text:"I kept calling it 'not that deep' to everyone, including myself. Turns out it was deep enough to still hurt."},
+  {id:'c5', cat:'Friendship endings', text:"Nobody warned me that losing a best friend could feel this much like heartbreak."},
+  {id:'c6', cat:'Unrequited love', text:"I never told them. Some days that feels like the right call. Some days it doesn't. Both are allowed to be true."}
+];
+function renderCommunity(root){
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Community</div>
+      <h1 class="page-title">Someone else understands.</h1>
+      <p class="page-sub">Demo entries for this prototype — anonymized, read-only for now.</p>
+    </div>
+    <div class="entry-list stagger" id="comm-list"></div>
+  `;
+  const listEl = document.getElementById('comm-list');
+  listEl.innerHTML = COMMUNITY_POSTS.map(p=>`
+    <div class="comm-card">
+      <div class="comm-cat">${p.cat}</div>
+      <p style="font-size:14.5px; line-height:1.7; color:var(--ink-1);">${escapeHtml(p.text)}</p>
+      <div class="comm-reacts" data-post="${p.id}">
+        ${[['understand','❤️ I understand'],['alone',"🫂 You're not alone"],['lighter','🌱 I hope things get lighter']].map(([k,l])=>`<button type="button" class="react-btn ${data.communityReacts[p.id]===k?'reacted':''}" data-react="${k}">${l}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  listEl.querySelectorAll('[data-post]').forEach(row=>{
+    row.querySelectorAll('[data-react]').forEach(btn=>btn.addEventListener('click', ()=>{
+      const postId = row.dataset.post;
+      data.communityReacts[postId] = data.communityReacts[postId]===btn.dataset.react ? null : btn.dataset.react;
+      saveData();
+      row.querySelectorAll('[data-react]').forEach(b=>b.classList.toggle('reacted', data.communityReacts[postId]===b.dataset.react));
+    }));
+  });
+}
+
+/* ============================================================
+   PAGE: SETTINGS
+   ============================================================ */
+function renderSettings(root){
+  const hasPin = !!(data.security.enabled && data.security.pinHash);
+  root.innerHTML = `
+    <div class="page-head fade-in">
+      <div class="page-eyebrow">Settings</div>
+      <h1 class="page-title">Settings</h1>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Privacy</div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Passcode lock</div><div class="settings-row-sub">Require a 4-digit code to open UNSENT on this device</div></div>
+        <div class="segctrl" id="pin-ctrl">
+          ${[['off','Off'],['on','On']].map(([v,l])=>`<button class="segbtn ${((v==='on')===hasPin)?'active':''}" data-pin="${v}">${l}</button>`).join('')}
+        </div>
+      </div>
+      ${hasPin ? `<div class="settings-row"><div><div class="settings-row-label">Change passcode</div></div><button class="btn btn-ghost btn-sm" id="pin-change">Change</button></div>`:''}
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Appearance</div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Theme</div></div>
+        <div class="segctrl" id="theme-ctrl">
+          ${[['dark','Dark'],['light','Light'],['hc','High contrast']].map(([t,l])=>`<button class="segbtn ${data.settings.theme===t?'active':''}" data-theme="${t}">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Text size</div></div>
+        <div class="segctrl" id="font-ctrl">
+          ${[[0.9,'A'],[1,'A'],[1.15,'A'],[1.3,'A']].map(([v,l],i)=>`<button class="segbtn ${Math.abs((data.settings.fontScale||1)-v)<0.01?'active':''}" data-font="${v}" style="font-size:${12+i*2}px;">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Motion</div><div class="settings-row-sub">Reduce animation throughout the app</div></div>
+        <div class="segctrl" id="motion-ctrl">
+          ${[['full','Full'],['reduced','Reduced']].map(([v,l])=>`<button class="segbtn ${data.settings.motion===v?'active':''}" data-motion="${v}">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-row-label">Daily reminder</div><div class="settings-row-sub">Uses your browser's notification permission</div></div>
+        <div class="segctrl" id="reminder-ctrl">
+          ${[['off','Off'],['on','On']].map(([v,l])=>`<button class="segbtn ${data.settings.reminder===v?'active':''}" data-reminder="${v}">${l}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Install UNSENT</div>
+      <p style="font-size:13px; color:var(--ink-2); margin:6px 0 14px; line-height:1.6;">Add UNSENT to your home screen so it opens like a regular app, and keeps working without a connection.</p>
+      <button class="btn btn-ghost btn-sm" id="btn-install" ${window.__unsentInstallPrompt?'':'disabled style="opacity:.4"'}>Install app</button>
+      <span id="install-hint" style="font-size:12px; color:var(--ink-3); margin-left:8px;">${window.__unsentInstallPrompt?'':"If this isn't available, use your browser's \\"Add to Home Screen\\" option."}</span>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Your entries belong to you.</div>
+      <p style="font-size:13px; color:var(--ink-2); margin:6px 0 16px; line-height:1.6;">Your journal and reflections are stored locally in this browser only. UNSENT has no server and no account — nothing here is uploaded anywhere.</p>
+      <div class="chip-row">
+        <button class="btn btn-ghost btn-sm" id="btn-export">Export my data</button>
+        <button class="btn btn-ghost btn-sm" id="btn-import">Import my data</button>
+        <input type="file" id="import-file" accept="application/json" class="hidden">
+      </div>
+      <div class="divider"></div>
+      <button class="btn btn-danger btn-sm" id="btn-delete-all">Delete everything</button>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">Need more support?</div>
+      <div class="safety-banner mt14" style="margin-top:14px;">
+        <p style="font-size:13.5px; line-height:1.7;">UNSENT is a reflection tool, not a therapist, doctor, or emergency service.</p>
+        <p style="font-size:13px; color:var(--ink-2); margin-top:10px; line-height:1.7;">If you're in the Philippines and need to talk to someone now: <strong>National Center for Mental Health Crisis Hotline</strong> — 1553 (landline, toll-free) or 0966-351-4518 / 0917-899-8727. In immediate danger, contact local emergency services (911) or go to the nearest emergency room. If you're elsewhere, please reach out to a local crisis line or a trusted person near you.</p>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">About UNSENT</div>
+      <p style="font-size:13.5px; margin-top:8px; line-height:1.7;">UNSENT isn't about forgetting them. It's about making space for yourself again. It's a private space to say what you can't send, untangle what happened, pause before you act on impulse, and slowly return to yourself.</p>
+    </div>
+  `;
+  document.getElementById('theme-ctrl').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-theme]'); if(!b) return;
+    data.settings.theme = b.dataset.theme; saveData(); applyTheme(); renderSettings(root);
+  });
+  document.getElementById('font-ctrl').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-font]'); if(!b) return;
+    data.settings.fontScale = parseFloat(b.dataset.font); saveData(); applyAccessibility(); renderSettings(root);
+  });
+  document.getElementById('motion-ctrl').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-motion]'); if(!b) return;
+    data.settings.motion = b.dataset.motion; saveData(); applyMotion(); renderSettings(root);
+  });
+  document.getElementById('reminder-ctrl').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-reminder]'); if(!b) return;
+    if(b.dataset.reminder==='on'){
+      if(!('Notification' in window)){ toast('Notifications are not supported in this browser.'); return; }
+      Notification.requestPermission().then(perm=>{
+        if(perm==='granted'){
+          data.settings.reminder='on'; saveData(); renderSettings(root);
+          toast('Reminders on. UNSENT needs to be open to notify you — this is a browser limitation.');
+          scheduleDailyReminder();
+        } else {
+          toast('Notification permission was not granted.');
+        }
+      });
+    } else {
+      data.settings.reminder='off'; saveData(); renderSettings(root);
+    }
+  });
+  document.getElementById('pin-ctrl').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-pin]'); if(!b) return;
+    if(b.dataset.pin==='on'){
+      showLockScreen('setup', ()=>{});
+    } else {
+      confirmDialog('Turn off passcode lock?', 'UNSENT will open without a code from now on, on this device.', 'Turn off', ()=>{
+        data.security = {pinHash:null, enabled:false}; saveData(); toast('Passcode lock is off.'); renderSettings(root);
+      }, true);
+    }
+  });
+  const pinChangeBtn = document.getElementById('pin-change');
+  if(pinChangeBtn) pinChangeBtn.addEventListener('click', ()=>showLockScreen('setup', ()=>{}));
+  document.getElementById('btn-install').addEventListener('click', ()=>{
+    if(window.__unsentInstallPrompt){
+      window.__unsentInstallPrompt.prompt();
+    }
+  });
+  document.getElementById('btn-export').addEventListener('click', exportData);
+  document.getElementById('btn-import').addEventListener('click', ()=>document.getElementById('import-file').click());
+  document.getElementById('import-file').addEventListener('change', importDataFile);
+  document.getElementById('btn-delete-all').addEventListener('click', ()=>{
+    confirmDialog('Delete everything?', 'This permanently deletes all your journal entries, unsent messages, reflections, and settings stored in this browser. This cannot be undone.', 'Delete everything', ()=>{
+      confirmDialog('Are you absolutely sure?', 'There is no way to recover this data once it is deleted.', 'Yes, delete permanently', ()=>{
+        localStorage.removeItem(STORAGE_KEY);
+        data = defaultData();
+        toast('Everything has been deleted.');
+        document.getElementById('app').classList.remove('active');
+        document.getElementById('screen-welcome').style.display='flex';
+      }, true);
+    }, true);
+  });
+}
+function applyTheme(){ document.documentElement.setAttribute('data-theme', data.settings.theme||'dark'); }
+function applyMotion(){ document.body.setAttribute('data-motion', data.settings.motion==='reduced'?'reduced':'full'); }
+function applyAccessibility(){
+  document.documentElement.style.setProperty('--font-scale', data.settings.fontScale || 1);
+}
+function scheduleDailyReminder(){
+  if(data.settings.reminder!=='on' || !('Notification' in window) || Notification.permission!=='granted') return;
+  setInterval(()=>{
+    try{ new Notification('UNSENT', {body:"There's a quiet space here, whenever you need it."}); }catch(e){}
+  }, 24*60*60*1000);
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'unsent-export-'+todayStr()+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Exported.');
+}
+function importDataFile(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      const base = defaultData();
+      data = Object.assign({}, base, parsed);
+      data.profile = Object.assign({}, base.profile, parsed.profile||{});
+      data.reflections = Object.assign({}, base.reflections, parsed.reflections||{});
+      data.dailyPrompt = Object.assign({}, base.dailyPrompt, parsed.dailyPrompt||{});
+      data.settings = Object.assign({}, base.settings, parsed.settings||{});
+      data.security = Object.assign({}, base.security, parsed.security||{});
+      saveData(); applyTheme(); applyMotion(); applyAccessibility();
+      toast('Data imported.');
+      goPage('home');
+    }catch(err){ toast('That file could not be read as UNSENT data.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ============================================================
+   GLOBAL SEARCH
+   ============================================================ */
+function runGlobalSearch(q){
+  q = q.trim().toLowerCase();
+  if(!q) return {};
+  const results = { Journal:[], 'Unsent messages':[], Memories:[], 'Timeline events':[] };
+  data.journalEntries.forEach(e=>{ if((e.title||'').toLowerCase().includes(q)||(e.body||'').toLowerCase().includes(q)) results.Journal.push({label:e.title||'Untitled', sub:fmtDate(e.date), go:()=>{closeModal();goPage('journal');}}); });
+  data.unsentMessages.forEach(m=>{ if((m.body||'').toLowerCase().includes(q)||(m.recipient||'').toLowerCase().includes(q)) results['Unsent messages'].push({label:m.recipient, sub:m.body.slice(0,50), go:()=>{closeModal();goPage('unload');setTimeout(()=>renderUnload(document.getElementById('page-root'),{view:'archive'}),50);}}); });
+  data.memories.forEach(m=>{ if((m.title||'').toLowerCase().includes(q)||(m.description||'').toLowerCase().includes(q)) results.Memories.push({label:m.title, sub:fmtDate(m.date), go:()=>{closeModal();goPage('timeline');setTimeout(()=>renderTimeline(document.getElementById('page-root'),{view:'memories'}),50);}}); });
+  data.timelineEvents.forEach(ev=>{ if((ev.label||'').toLowerCase().includes(q)) results['Timeline events'].push({label:ev.label, sub:fmtDate(ev.date), go:()=>{closeModal();goPage('timeline');setTimeout(()=>renderTimeline(document.getElementById('page-root'),{view:'events'}),50);}}); });
+  return results;
+}
+function openSearch(){
+  openModal(`
+    <div class="modal-head"><h3 class="modal-title">Search</h3></div>
+    <input type="text" id="global-search-input" placeholder="Search your journal, messages, memories..." autofocus>
+    <div id="search-results" class="mt20" style="margin-top:20px;"></div>
+  `);
+  const input = document.getElementById('global-search-input');
+  input.focus();
+  input.addEventListener('input', ()=>{
+    const results = runGlobalSearch(input.value);
+    const resEl = document.getElementById('search-results');
+    const groups = Object.entries(results).filter(([,arr])=>arr.length);
+    if(!input.value.trim()){ resEl.innerHTML=''; return; }
+    if(!groups.length){ resEl.innerHTML = `<p style="font-size:13px; color:var(--ink-3);">No results.</p>`; return; }
+    resEl.innerHTML = groups.map(([g,arr])=>`
+      <div class="subtle-label mt14" style="margin-top:14px;">${g}</div>
+      <div class="entry-list">${arr.slice(0,5).map((r,i)=>`<div class="entry-item" data-sr="${g}-${i}"><div style="font-size:14px;">${escapeHtml(r.label)}</div><div class="entry-meta mt8" style="margin-top:4px;">${escapeHtml(r.sub)}</div></div>`).join('')}</div>
+    `).join('');
+    groups.forEach(([g,arr])=>arr.slice(0,5).forEach((r,i)=>{
+      const el = document.querySelector(`[data-sr="${g}-${i}"]`);
+      if(el) el.addEventListener('click', r.go);
+    }));
+  });
+}
+document.getElementById('btn-search').addEventListener('click', openSearch);
+
+/* ============================================================
+   ESCAPE HELPERS
+   ============================================================ */
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+/* ============================================================
+   AI-READY PLACEHOLDER
+   ============================================================ */
+function generateReflection(input, mode){
+  // Local rule-based implementation. Can be swapped for an API call later.
+  // mode: 'rewrite' | 'summary' | 'question'
+  if(mode==='rewrite') return gentleRewrite(input);
+  if(mode==='question') return "What would you need to know to feel more settled about this?";
+  return "You're noticing a pattern. That noticing is itself progress, even when nothing else has changed yet.";
+}
+
+/* ============================================================
+   PAGE REGISTRY
+   ============================================================ */
+Object.assign(PAGE_RENDERERS, {
+  home: renderHome,
+  unload: renderUnload,
+  untangle: renderUntangle,
+  pause: renderPause,
+  reflect: renderReflect,
+  timeline: renderTimeline,
+  journal: renderJournalPage,
+  community: renderCommunity,
+  settings: renderSettings
+});
+
+/* ============================================================
+   PWA: install prompt + service worker
+   ============================================================ */
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  window.__unsentInstallPrompt = e;
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+applyTheme();
+applyMotion();
+applyAccessibility();
+if(data.settings.reminder==='on') scheduleDailyReminder();
+if(data.profile.enteredBefore || data.profile.onboardingComplete){
+  // returning user — still show welcome briefly, "Enter" skips onboarding
+}
+
+})();
+</script>
+</body>
+</html>
