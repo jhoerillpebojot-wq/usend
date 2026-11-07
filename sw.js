@@ -1,5 +1,5 @@
-const CACHE_NAME = 'unsent-cache-v1';
-const ASSETS = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = 'unsent-cache-v2';
+const ASSETS = ['./', './index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -15,19 +15,24 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Cache-first for app shell, falling back to network, so UNSENT still opens offline.
+// Serve from cache first so UNSENT opens offline, and refresh the cache in the
+// background when online so updates to index.html still reach people.
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET' || !req.url.startsWith('http')) return;
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
+    caches.match(req).then((cached) => {
+      const network = fetch(req)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
+          if (response && (response.ok || response.type === 'opaque')) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+          }
           return response;
         })
-        .catch(() => cached);
+        .catch(() => cached || (req.mode === 'navigate' ? caches.match('./index.html') : undefined));
+      return cached || network;
     })
   );
 });
