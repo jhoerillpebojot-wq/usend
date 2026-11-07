@@ -17,150 +17,224 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:dark;
   --bg:#0B0B0F; --bg1:#151519; --bg2:#1C1C22; --bg3:#26262D; --line:#2B2B33;
   --ink:#EDEDF2; --ink1:#B6B6C3; --ink2:#80808F; --violet:#9C8FE0; --glow:rgba(156,143,224,.16);
   --sage:#8FAE96; --clay:#CE9A73; --rose:#C98A9A;
   --serif:'Fraunces',Georgia,serif; --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
 }
 :root[data-theme="light"]{
+  color-scheme:light;
   --bg:#F6F4F1; --bg1:#FFFFFF; --bg2:#FBFAF8; --bg3:#EFEDE9; --line:#E2DFD9;
-  --ink:#232026; --ink1:#5B5763; --ink2:#8B8794; --violet:#6E5FBE; --glow:rgba(110,95,190,.10);
+  --ink:#232026; --ink1:#5B5763; --ink2:#8B8794; --violet:#6E5FBE; --glow:rgba(110,95,190,.12);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-tap-highlight-color:transparent}
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;
-  padding-top:env(safe-area-inset-top,0px)}
+  padding-top:env(safe-area-inset-top,0px);overflow-x:hidden;transition:background .35s var(--ease),color .35s var(--ease)}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(520px 280px at 85% -4%,var(--glow),transparent 70%),radial-gradient(420px 260px at -5% 105%,rgba(201,138,154,.07),transparent 70%);pointer-events:none;z-index:0}
 h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-.01em}
 p{color:var(--ink1)}
-button{font-family:inherit;cursor:pointer;color:inherit}
-:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:6px}
+button{font-family:inherit;cursor:pointer;color:inherit;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:8px}
 .hidden{display:none!important}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* controls */
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 22px;border-radius:100px;border:1px solid transparent;font-size:14.5px;font-weight:600;transition:transform .15s,opacity .15s}
-.btn:active{transform:scale(.97)}
-.btn-main{background:var(--violet);color:#100D1C}
+/* ---------- motion ---------- */
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes sheet{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes zoom{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes letter{from{opacity:0;transform:translateY(24px) scale(.9);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,50px)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-30px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes sealed{0%{transform:scale(1)}35%{transform:scale(.96);box-shadow:0 0 0 0 var(--glow)}100%{transform:scale(.98);opacity:.0;box-shadow:0 0 0 24px transparent}}
+@keyframes released{to{opacity:0;transform:translateY(-34px) scale(.97);filter:blur(7px)}}
+@keyframes br{0%,100%{transform:scale(.7)}45%,55%{transform:scale(1)}}
+@keyframes halo{0%,100%{box-shadow:0 0 30px var(--glow)}50%{box-shadow:0 0 70px var(--violet)}}
+.enter>*{animation:up .55s var(--ease) both}
+.enter>*:nth-child(2){animation-delay:.05s}.enter>*:nth-child(3){animation-delay:.1s}
+.enter>*:nth-child(4){animation-delay:.15s}.enter>*:nth-child(5){animation-delay:.2s}.enter>*:nth-child(6){animation-delay:.25s}
+.sv{animation:fade .4s var(--ease) both}
+.enter .stag>*,.stag.fresh>*{animation:up .45s var(--ease) both}
+.stag>*:nth-child(2){animation-delay:.04s}.stag>*:nth-child(3){animation-delay:.08s}.stag>*:nth-child(4){animation-delay:.12s}.stag>*:nth-child(5){animation-delay:.16s}.stag>*:nth-child(n+6){animation-delay:.2s}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:12px 24px;border-radius:100px;border:1px solid transparent;font-size:15px;font-weight:600;transition:transform .18s var(--ease),opacity .2s,box-shadow .25s,background .2s}
+.btn:active{transform:scale(.96)}
+.btn-main{background:var(--violet);color:#100D1C;box-shadow:0 6px 22px -8px var(--violet)}
 :root[data-theme="light"] .btn-main{color:#fff}
 .btn-solid{background:var(--ink);color:var(--bg)}
 .btn-ghost{background:none;border-color:var(--line);color:var(--ink1)}
-.btn-ghost:hover{border-color:var(--ink2);color:var(--ink)}
 .btn-danger{background:none;border-color:#5a3434;color:#d98080}
-.btn-sm{padding:8px 15px;font-size:13px}
-.btn[disabled]{opacity:.4;pointer-events:none}
-.link{background:none;border:none;color:var(--ink2);font-size:14px;text-decoration:underline;text-underline-offset:4px}
-.link:hover{color:var(--ink)}
-.chip{padding:8px 14px;border-radius:100px;border:1px solid var(--line);background:var(--bg2);color:var(--ink1);font-size:13.5px}
-.chip.on{background:var(--glow);border-color:var(--violet);color:var(--violet)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.seg{display:flex;background:var(--bg1);border:1px solid var(--line);border-radius:100px;padding:3px;margin-bottom:22px;width:fit-content;max-width:100%;overflow-x:auto}
-.seg button{background:none;border:none;padding:8px 16px;border-radius:100px;font-size:13.5px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.btn-sm{min-height:42px;padding:9px 18px;font-size:14px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.done{background:var(--sage);color:#10200f;box-shadow:none}
+.link{background:none;border:none;color:var(--ink2);font-size:14.5px;text-decoration:underline;text-underline-offset:4px;padding:10px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{min-height:42px;padding:9px 16px;border-radius:100px;border:1px solid var(--line);background:var(--bg2);color:var(--ink1);font-size:14px;transition:transform .15s var(--ease),background .2s,border-color .2s,color .2s}
+.chip:active{transform:scale(.94)}
+.chip.on{background:var(--glow);border-color:var(--violet);color:var(--violet);animation:pop .3s var(--ease)}
+.seg{display:flex;background:var(--bg1);border:1px solid var(--line);border-radius:100px;padding:4px;margin-bottom:24px;width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg.flat{margin:0}
+.seg button{background:none;border:none;min-height:40px;padding:8px 18px;border-radius:100px;font-size:14px;font-weight:500;color:var(--ink2);white-space:nowrap;transition:background .25s var(--ease),color .2s}
 .seg button.on{background:var(--bg3);color:var(--ink)}
-textarea,input[type=text],input[type=date]{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:15px;padding:13px 14px;resize:vertical}
-textarea:focus,input:focus{border-color:var(--violet);outline:none}
+textarea,input[type=text],input[type=date]{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:14px;color:var(--ink);font:inherit;font-size:16px;padding:14px 16px;resize:vertical;transition:border-color .2s,box-shadow .2s}
+textarea:focus,input:focus{border-color:var(--violet);outline:none;box-shadow:0 0 0 4px var(--glow)}
 ::placeholder{color:var(--ink2);opacity:.7}
-label.lb{display:block;font-size:13px;color:var(--ink2);margin-bottom:8px}
-.field{margin-bottom:18px}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:var(--line);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--violet);border:3px solid var(--bg1);box-shadow:0 0 0 1px var(--violet)}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--violet);border:3px solid var(--bg1)}
-
-/* layout */
-.page{max-width:680px;margin:0 auto;padding:28px 20px calc(110px + env(safe-area-inset-bottom,0px))}
-.page h1{font-size:clamp(26px,5vw,34px);margin-bottom:6px}
-.sub{font-size:14.5px;color:var(--ink2);margin-bottom:24px}
-.card{background:var(--bg1);border:1px solid var(--line);border-radius:18px;padding:22px}
-.card+.card,.gap{margin-top:16px}
-.card h3{font-size:18px;margin-bottom:6px}
-.small{font-size:13px;color:var(--ink2)}
-.note{font-size:13.5px;font-style:italic;color:var(--ink2)}
-.item{background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:10px;cursor:pointer}
-.item:hover{border-color:var(--ink2)}
-.item .meta{font-size:12px;color:var(--ink2);margin-bottom:5px;display:flex;justify-content:space-between;gap:8px}
-.item .pv{font-size:14px;color:var(--ink1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}
-.empty{text-align:center;color:var(--ink2);padding:36px 10px;font-size:14px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.between{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.mt{margin-top:18px}
-
-/* nav */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;background:var(--bg1);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
-nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--ink2);font-size:11px;padding:7px 2px;border-radius:12px}
-nav.tabs svg{width:22px;height:22px}
-nav.tabs button.on{color:var(--violet)}
-@media (min-width:860px){
-  nav.tabs{top:0;right:auto;width:190px;flex-direction:column;justify-content:flex-start;gap:4px;padding:26px 12px;border-top:none;border-right:1px solid var(--line)}
-  nav.tabs button{flex:none;flex-direction:row;gap:12px;font-size:14.5px;padding:12px;justify-content:flex-start}
-  nav.tabs button.on{background:var(--glow)}
-  #app .page{margin-left:max(190px,calc(50% - 340px + 95px));padding-bottom:60px}
+label.lb{display:block;font-size:13.5px;color:var(--ink2);margin-bottom:10px}
+.field{margin-bottom:20px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;outline:none;margin:14px 0 6px;--p:50%;background:linear-gradient(90deg,var(--violet) var(--p),var(--line) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--violet);border:4px solid var(--bg1);box-shadow:0 0 0 1px var(--violet),0 4px 14px -2px var(--violet)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--violet);border:4px solid var(--bg1)}
+@media (hover:hover){
+  .btn:hover{opacity:.9}.btn-main:hover{box-shadow:0 8px 28px -6px var(--violet)}
+  .btn-ghost:hover{border-color:var(--ink2);color:var(--ink)}
+  .chip:hover{border-color:var(--ink2);color:var(--ink)}
+  .item:hover{border-color:var(--ink2);transform:translateY(-2px)}
+  .quick button:hover{border-color:var(--violet);transform:translateY(-2px)}
+  .link:hover{color:var(--ink)}
 }
 
-/* welcome / lock */
-.center{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 24px}
-.mark{font-family:var(--serif);font-size:clamp(52px,12vw,92px);line-height:1;letter-spacing:-.02em;animation:rise .9s both}
-.tag{font-family:var(--serif);font-style:italic;color:var(--ink1);font-size:19px;margin-top:16px;animation:rise .9s .15s both}
-.acts{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:40px;animation:rise .9s .3s both}
-@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.foot{font-size:12px;color:var(--ink2);margin-top:44px;max-width:300px}
-.dots{display:flex;gap:14px;justify-content:center;margin:24px 0}
-.dots i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ink2)}
-.dots i.f{background:var(--violet);border-color:var(--violet)}
-.pad{display:grid;grid-template-columns:repeat(3,66px);gap:14px;justify-content:center}
-.pad button{width:66px;height:66px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);font:22px var(--serif)}
-.pad button.g{background:none;border:none;color:var(--ink2);font-size:14px}
+/* ---------- layout ---------- */
+.page{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:30px 20px calc(120px + env(safe-area-inset-bottom,0px))}
+.page h1{font-size:clamp(28px,6vw,36px);margin-bottom:8px;line-height:1.2}
+.sub{font-size:15px;color:var(--ink2);margin-bottom:26px}
+.card{background:var(--bg1);border:1px solid var(--line);border-radius:20px;padding:24px;transition:transform .25s var(--ease)}
+.card+.card,.gap{margin-top:18px}
+.card h3{font-size:18.5px;margin-bottom:6px}
+.small{font-size:13.5px;color:var(--ink2);line-height:1.6}
+.note{font-size:14px;font-style:italic;color:var(--ink2)}
+.item{background:var(--bg1);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-top:12px;cursor:pointer;transition:transform .2s var(--ease),border-color .2s}
+.item:active{transform:scale(.985)}
+.item .meta{font-size:12.5px;color:var(--ink2);margin-bottom:6px;display:flex;justify-content:space-between;gap:10px}
+.item .pv{font-size:14.5px;color:var(--ink1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}
+.empty{text-align:center;color:var(--ink2);padding:40px 12px;font-size:14.5px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mt{margin-top:20px}
+.h2{font-size:18px;margin:34px 0 4px}
+.setrow{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.setrow:first-of-type{border-top:none}
+.setrow .l{font-size:15px}
 
-/* today */
-.big{font-family:var(--serif);font-size:44px;margin:4px 0}
-.hint{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-top:8px}
-.quick{display:grid;gap:10px}
-.quick button{text-align:left;background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:15px}
-.quick button small{display:block;color:var(--ink2);font-size:13px;margin-top:2px}
-.quick button:hover{border-color:var(--violet)}
+/* ---------- nav ---------- */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;background:color-mix(in srgb,var(--bg1) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--ink2);font-size:11.5px;font-weight:500;padding:8px 2px;border-radius:14px;min-height:54px;transition:color .2s,background .25s}
+nav.tabs svg{width:23px;height:23px}
+nav.tabs button.on{color:var(--violet)}
+nav.tabs button.on svg{animation:pop .4s var(--ease)}
+@media (min-width:860px){
+  nav.tabs{top:0;right:auto;width:200px;flex-direction:column;justify-content:flex-start;gap:4px;padding:28px 12px;border-top:none;border-right:1px solid var(--line)}
+  nav.tabs button{flex:none;flex-direction:row;gap:12px;font-size:14.5px;padding:12px 14px;justify-content:flex-start;min-height:0}
+  nav.tabs button.on{background:var(--glow)}
+  #app .page{margin-left:max(200px,calc(50% - 340px + 100px));padding-bottom:60px}
+  #toasts{bottom:30px!important}
+}
 
-/* sort */
-.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* ---------- welcome / lock ---------- */
+.center{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 24px;overflow:hidden}
+.center.leaving{animation:fade .4s reverse both}
+.orbbg{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:-1}
+.o1{width:480px;height:480px;background:radial-gradient(circle,var(--glow),transparent 70%);top:-140px;left:-140px;animation:drift 22s ease-in-out infinite}
+.o2{width:420px;height:420px;background:radial-gradient(circle,rgba(201,138,154,.14),transparent 70%);bottom:-140px;right:-120px;animation:drift2 26s ease-in-out infinite}
+.mark{font-family:var(--serif);font-size:clamp(54px,13vw,96px);line-height:1;letter-spacing:-.02em}
+.mark span{display:inline-block;animation:letter .9s var(--ease) both}
+.tag{font-family:var(--serif);font-style:italic;color:var(--ink1);font-size:19px;margin-top:18px;animation:up .9s .6s var(--ease) both}
+.acts{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:38px;width:100%;max-width:360px;animation:up .9s .8s var(--ease) both}
+.foot{font-size:12.5px;color:var(--ink2);margin-top:34px;max-width:300px;animation:up .9s 1s var(--ease) both}
+.wcard,.nudge{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:linear-gradient(135deg,var(--glow),var(--bg1));border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.wcard b,.nudge b{display:block;font-size:15px;color:var(--ink);font-weight:600}
+.wcard span,.nudge p{font-size:13px;color:var(--ink2);line-height:1.5}
+.wcard .btn{margin-left:auto;flex-shrink:0}
+.nudge{margin-bottom:22px;align-items:flex-start}
+.nudge .ic{width:42px;height:42px;border-radius:14px;background:var(--glow);color:var(--violet);display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:bob 2.6s ease-in-out infinite}
+.nudge .ic svg{width:22px;height:22px}
+.dots{display:flex;gap:16px;justify-content:center;margin:26px 0}
+.dots i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ink2);transition:all .15s}
+.dots i.f{background:var(--violet);border-color:var(--violet);transform:scale(1.15)}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:16px;justify-content:center}
+.pad button{width:72px;height:72px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);font:24px var(--serif);transition:transform .12s,background .2s}
+.pad button:active{transform:scale(.9);background:var(--bg3)}
+.pad button.g{background:none;border:none;color:var(--ink2);font-size:16px}
+
+/* ---------- today ---------- */
+.big{font-family:var(--serif);font-size:52px;line-height:1.1;margin:6px 0}
+.hint{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink2);margin-top:8px}
+.quick{display:grid;gap:12px}
+.quick button{text-align:left;background:var(--bg1);border:1px solid var(--line);border-radius:16px;padding:18px 20px;font-size:15.5px;font-weight:500;transition:transform .2s var(--ease),border-color .2s}
+.quick button:active{transform:scale(.98)}
+.quick button small{display:block;color:var(--ink2);font-size:13.5px;margin-top:3px;font-weight:400}
+
+/* ---------- sort ---------- */
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media (max-width:640px){.cols{grid-template-columns:1fr}}
-.col{background:var(--bg1);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:120px}
-.col h4{font-size:13px;margin-bottom:10px;font-weight:600}
+.col{background:var(--bg1);border:1px solid var(--line);border-radius:16px;padding:16px;min-height:110px}
+.col h4{font-size:13.5px;margin-bottom:12px;font-weight:600}
 .col.know h4{color:var(--sage)}.col.think h4{color:var(--clay)}.col.fear h4{color:var(--rose)}
-.tile{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 30px 9px 11px;font-size:13.5px;margin-bottom:8px;position:relative;cursor:pointer;color:var(--ink1)}
-.tile b{position:absolute;right:9px;top:8px;font-weight:400;color:var(--ink2);cursor:pointer}
+.tile{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:11px 40px 11px 13px;font-size:14px;margin-bottom:10px;position:relative;cursor:pointer;color:var(--ink1);animation:pop .3s var(--ease)}
+.tile b{position:absolute;right:0;top:0;bottom:0;width:40px;display:flex;align-items:center;justify-content:center;font-weight:400;font-size:18px;color:var(--ink2)}
 
-/* pause */
-.orb{width:120px;height:120px;border-radius:50%;margin:30px auto;background:radial-gradient(circle at 35% 30%,var(--violet),#5B4F87);animation:br 8s ease-in-out infinite;box-shadow:0 0 50px var(--glow)}
-@keyframes br{0%,100%{transform:scale(.72)}45%,55%{transform:scale(1)}}
-.timer{font-family:var(--serif);font-size:40px;text-align:center}
+/* ---------- pause ---------- */
+.ringwrap{position:relative;width:220px;height:220px;margin:22px auto 8px}
+.ringwrap svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.rt{fill:none;stroke:var(--line);stroke-width:2.5}
+.rp{fill:none;stroke:var(--violet);stroke-width:2.5;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.orb{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--violet),#5B4F87);animation:br 8s ease-in-out infinite,halo 8s ease-in-out infinite}
+.timer{font-family:var(--serif);font-size:42px;text-align:center}
+.sealing{animation:sealed .65s var(--ease) forwards}
+.releasing{animation:released .7s var(--ease) forwards}
 
-/* modal / toast */
-.back{position:fixed;inset:0;background:rgba(6,6,9,.66);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px}
-.modal{background:var(--bg1);border:1px solid var(--line);border-radius:22px;max-width:520px;width:100%;max-height:86vh;overflow-y:auto;padding:26px}
-.modal h3{font-size:20px;margin-bottom:12px}
-@media (max-width:700px){.back{align-items:flex-end;padding:0}.modal{border-radius:22px 22px 0 0}}
-#toasts{position:fixed;bottom:96px;left:0;right:0;z-index:400;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
-.toast{background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:100px;font-size:13.5px;font-weight:500;animation:rise .3s both}
-.step{display:flex;gap:14px;padding:11px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink1)}
+/* ---------- modal / toast ---------- */
+.back{position:fixed;inset:0;background:rgba(6,6,9,.66);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .25s both}
+.modal{background:var(--bg1);border:1px solid var(--line);border-radius:24px;max-width:520px;width:100%;max-height:88vh;max-height:88dvh;overflow-y:auto;padding:28px;animation:zoom .3s var(--ease) both}
+.modal h3{font-size:21px;margin-bottom:12px}
+@media (max-width:700px){
+  .back{align-items:flex-end;padding:0}
+  .modal{border-radius:24px 24px 0 0;padding:26px 22px calc(26px + env(safe-area-inset-bottom,0px));animation:sheet .35s var(--ease) both}
+  .page{padding:24px 18px calc(124px + env(safe-area-inset-bottom,0px))}
+  .card{padding:22px 20px}
+  .seg{width:100%}
+  .seg button{flex:1;padding:8px 10px}
+  .setrow{flex-direction:column;align-items:stretch;gap:12px}
+  .setrow .seg{width:100%}
+  .row .btn{flex:1 1 auto}
+  .wcard{flex-wrap:wrap}
+  .wcard .btn{width:100%;margin-left:0}
+}
+#toasts{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom,0px));left:0;right:0;z-index:400;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
+.toast{background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:100px;font-size:14px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:up .35s var(--ease) both}
+.step{display:flex;gap:16px;padding:13px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink1);line-height:1.5}
 .step:first-child{border-top:none}
-.step i{font-family:var(--serif);color:var(--ink2);min-width:18px}
+.step i{font-family:var(--serif);color:var(--violet);min-width:18px;font-style:normal}
 </style>
 </head>
 <body>
 
 <!-- LOCK -->
 <div id="lock" class="center hidden">
-  <h2 id="lock-t" style="font-size:26px">Enter your passcode</h2>
-  <p class="small" id="lock-s" style="margin-top:6px">Only you can open this.</p>
+  <h2 id="lock-t" style="font-size:27px">Enter your passcode</h2>
+  <p class="small" id="lock-s" style="margin-top:8px">Only you can open this.</p>
   <div class="dots" id="lock-dots"></div>
   <div class="pad" id="lock-pad"></div>
-  <button class="link mt" id="lock-x">Cancel</button>
+  <button class="link" id="lock-x" style="margin-top:22px">Cancel</button>
 </div>
 
 <!-- WELCOME -->
 <div id="welcome" class="center">
-  <div class="mark">UNSENT</div>
+  <div class="orbbg o1"></div><div class="orbbg o2"></div>
+  <div class="mark" id="mark" aria-label="UNSENT"></div>
   <p class="tag">For the feelings that have nowhere to go.</p>
   <div class="acts">
-    <button class="btn btn-solid" id="enter" style="padding:15px 34px;font-size:16px">Enter</button>
-    <button class="link" id="w-install">Install as an app</button>
+    <button class="btn btn-solid" id="enter" style="padding:16px 40px;font-size:16.5px;min-width:200px">Enter</button>
+    <div class="wcard" id="w-inst">
+      <div><b>Install UNSENT</b><span>Opens like an app, even offline.</span></div>
+      <button class="btn btn-main btn-sm" id="w-install">Install</button>
+    </div>
   </div>
   <p class="foot">Private to this device. Not a replacement for therapy, medical care, or emergency services.</p>
 </div>
@@ -179,19 +253,19 @@ nav.tabs button.on{color:var(--violet)}
 const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-function localDate(d){d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
-const today=()=>localDate();
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const fmt=d=>{const x=new Date(d+"T00:00:00");return isNaN(x)?d:x.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})};
 const ago=d=>Math.round((new Date(today()+"T00:00:00")-new Date(d+"T00:00:00"))/864e5);
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- DATA ---------- */
 const KEY="unsent2";
-const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null});
+const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null});
 function load(){
   try{
     const r=localStorage.getItem(KEY);
     if(r) return Object.assign(blank(),JSON.parse(r));
-    const o=localStorage.getItem("unsentAppData"); // migrate from the older version
+    const o=localStorage.getItem("unsentAppData");
     if(o){
       const p=JSON.parse(o), d=blank();
       d.checkins=(p.checkIns||[]).map(c=>({date:c.date,weight:c.weight,reasons:c.reasons||[]}));
@@ -208,27 +282,28 @@ function load(){
 }
 let D=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast("Couldn’t save. Browser storage may be full.")}}
-function toast(m){const e=document.createElement("div");e.className="toast";e.textContent=m;$("#toasts").appendChild(e);setTimeout(()=>{e.style.opacity="0";e.style.transition="opacity .4s";setTimeout(()=>e.remove(),400)},2400)}
+function toast(m){const e=document.createElement("div");e.className="toast";e.textContent=m;$("#toasts").appendChild(e);setTimeout(()=>{e.style.transition="opacity .4s,transform .4s";e.style.opacity="0";e.style.transform="translateY(8px)";setTimeout(()=>e.remove(),400)},2400)}
 
 /* ---------- MODAL ---------- */
 function modal(html){
   closeModal();
   const b=document.createElement("div");b.className="back";b.id="modal";
   b.innerHTML='<div class="modal" role="dialog" aria-modal="true">'+html+'</div>';
-  b.addEventListener("mousedown",e=>{if(e.target===b)closeModal()});
+  b.addEventListener("click",e=>{if(e.target===b)closeModal()});
   $("#modal-root").appendChild(b);
+  document.body.style.overflow="hidden";
   $$("[data-x]",b).forEach(x=>x.addEventListener("click",closeModal));
   return b;
 }
-function closeModal(){const m=$("#modal");if(m)m.remove()}
+function closeModal(){const m=$("#modal");if(m)m.remove();document.body.style.overflow=""}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 function confirmBox(title,body,label,fn){
   const m=modal('<h3>'+title+'</h3><p>'+body+'</p><div class="row mt" style="justify-content:flex-end"><button class="btn btn-ghost" data-x>Cancel</button><button class="btn btn-danger" id="yes">'+label+'</button></div>');
   $("#yes",m).addEventListener("click",()=>{closeModal();fn()});
 }
-function seg(items,cur,k){return '<div class="seg">'+items.map(([v,l])=>'<button class="'+(v===cur?"on":"")+'" data-'+k+'="'+v+'">'+l+'</button>').join("")+'</div>'}
+function seg(items,cur,k,flat){return '<div class="seg'+(flat?" flat":"")+'">'+items.map(([v,l])=>'<button class="'+(v===cur?"on":"")+'" data-'+k+'="'+v+'">'+l+'</button>').join("")+'</div>'}
 function chips(list,k,on){return '<div class="chips">'+list.map(o=>'<button type="button" class="chip'+(on&&on.includes(o)?" on":"")+'" data-'+k+'="'+esc(o)+'">'+o+'</button>').join("")+'</div>'}
-function pick(root,k,multi){ // chip selection helper
+function pick(root,k,multi){
   $$("[data-"+k+"]",root).forEach(b=>b.addEventListener("click",()=>{
     if(!multi)$$("[data-"+k+"]",root).forEach(x=>x.classList.remove("on"));
     b.classList.toggle("on",multi?!b.classList.contains("on"):true);
@@ -247,19 +322,64 @@ const ICON={
 const TABS=[["today","Today"],["write","Write"],["understand","Understand"],["journal","Journal"],["settings","Settings"]];
 let cur="today";
 const V={write:"unsent",und:"sort",jr:"entries"};
-function go(p,sub){
+function go(p,sub,quiet){
   if(P.timer){clearInterval(P.timer);P.timer=null}
-  if(P.stage==="timer"||P.stage==="decide"){finishPause("left")}
+  if(P.stage==="timer"||P.stage==="decide")finishPause("left");
   P.stage="idle";
   if(sub){if(p==="write")V.write=sub;if(p==="understand")V.und=sub;if(p==="journal")V.jr=sub}
-  cur=p;
-  $("#tabs").innerHTML=TABS.map(([id,l])=>'<button class="'+(id===cur?"on":"")+'" data-go="'+id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICON[id]+'</svg><span>'+l+'</span></button>').join("");
-  $$("#tabs [data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
-  const el=$("#page");el.innerHTML="";
+  const changed=p!==cur;cur=p;
+  if(changed||!quiet){
+    $("#tabs").innerHTML=TABS.map(([id,l])=>'<button class="'+(id===cur?"on":"")+'" data-go="'+id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICON[id]+'</svg><span>'+l+'</span></button>').join("");
+    $$("#tabs [data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+  }
+  const el=$("#page");el.classList.remove("enter");el.innerHTML="";
   ({today:rToday,write:rWrite,understand:rUnderstand,journal:rJournal,settings:rSettings})[p](el);
-  window.scrollTo(0,0);
+  if(!quiet){el.classList.add("enter");window.scrollTo(0,0)}
 }
-const rerender=()=>{const y=window.scrollY;go(cur);window.scrollTo(0,y)};
+const rerender=()=>{const y=window.scrollY;go(cur,null,true);window.scrollTo(0,y)};
+const subSwitch=(root,key,fn)=>$$("[data-v]",root).forEach(b=>b.addEventListener("click",()=>{V[key]=b.dataset.v;go(cur,null,true);window.scrollTo(0,0)}));
+
+/* ---------- INSTALL ---------- */
+function platform(){
+  const u=navigator.userAgent;
+  if(/iPad|iPhone|iPod/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))return "ios";
+  return /Android/.test(u)?"android":"desktop";
+}
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const GUIDE={
+  ios:{l:"iPhone / iPad",s:["Open this page in <b>Safari</b>.","Tap the <b>Share</b> button (square with an arrow up).","Scroll down and tap <b>Add to Home Screen</b>.","Tap <b>Add</b>. UNSENT now sits on your home screen."],n:"iPhone can’t install with one tap. Apple only allows it through the Share menu."},
+  android:{l:"Android",s:["Open this page in <b>Chrome</b>.","Tap the <b>⋮</b> menu at the top right.","Tap <b>Install app</b> or <b>Add to Home screen</b>.","Tap <b>Install</b>."],n:"On Samsung Internet: menu (≡), then <b>Add page to</b>, then <b>Home screen</b>."},
+  desktop:{l:"Computer",s:["Open this page in <b>Chrome</b> or <b>Edge</b>.","Click the <b>install icon</b> at the right end of the address bar.","Click <b>Install</b>. UNSENT opens in its own window."],n:"No icon? Chrome: ⋮ menu, <b>Cast, save and share</b>, <b>Install page as app</b>. Safari on Mac: <b>File, Add to Dock</b>."}
+};
+function guideHtml(k){
+  const g=GUIDE[k];
+  return '<div class="seg" style="margin:16px 0 10px">'+Object.entries(GUIDE).map(([x,v])=>'<button type="button" class="'+(x===k?"on":"")+'" data-g="'+x+'">'+v.l+'</button>').join("")+'</div>'+
+    g.s.map((t,i)=>'<div class="step"><i>'+(i+1)+'</i><span>'+t+'</span></div>').join("")+'<p class="small mt">'+g.n+'</p>';
+}
+/* one delegated listener: tabs keep working no matter how many times you switch */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-g]");if(!b)return;
+  const box=b.closest("#gbox");if(box)box.innerHTML=guideHtml(b.dataset.g);
+});
+let deferred=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});
+window.addEventListener("appinstalled",()=>{deferred=null;toast("UNSENT installed.");$$("#w-inst,#nd").forEach(x=>x.remove())});
+async function doInstall(){
+  if(standalone()){toast("You’re already using the installed app.");return}
+  if(deferred){const d=deferred;deferred=null;d.prompt();try{await d.userChoice}catch(e){}return}
+  modal('<h3>Install UNSENT</h3><p class="small">Add it to your home screen so it opens like an app.</p><div id="gbox">'+guideHtml(platform())+'</div><button class="btn btn-solid mt" data-x style="width:100%">Okay</button>');
+}
+(function pwa(){
+  try{
+    const c=document.createElement("canvas");c.width=c.height=512;const x=c.getContext("2d");
+    x.fillStyle="#0B0B0F";x.fillRect(0,0,512,512);x.fillStyle="#9C8FE0";x.font="italic 320px Georgia,serif";x.textAlign="center";x.textBaseline="middle";x.fillText("U",256,282);
+    const icon=c.toDataURL("image/png");
+    $("#apple-icon").href=icon;$("#fav-icon").href=icon;
+    const base=location.href.split("#")[0].split("?")[0];
+    const man={name:"UNSENT",short_name:"UNSENT",description:"For the feelings that have nowhere to go.",start_url:base,scope:base.replace(/[^/]*$/,""),display:"standalone",background_color:"#0B0B0F",theme_color:"#0B0B0F",icons:[{src:icon,sizes:"512x512",type:"image/png",purpose:"any"}]};
+    $("#manifest-link").href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:"application/manifest+json"}));
+  }catch(e){}
+})();
 
 /* ---------- TODAY ---------- */
 function rToday(el){
@@ -268,47 +388,57 @@ function rToday(el){
   const n1=D.unsent.filter(wk).length, n2=D.pauses.filter(wk).length, n3=D.journal.filter(wk).length;
   const bits=[];if(n1)bits.push("wrote "+n1+" unsent message"+(n1>1?"s":""));if(n2)bits.push("paused "+n2+" time"+(n2>1?"s":""));if(n3)bits.push("journaled "+n3+" time"+(n3>1?"s":""));
   const msg=v=>v<34?"A little more breathing room today.":v<67?"Today feels heavy. You don’t have to solve everything today.":"You don’t have to carry everything at once. Start with one thing.";
+  const showNudge=!standalone()&&(!D.installDismissed||ago(D.installDismissed)>=7);
   el.innerHTML=`
-    <h1>How are you carrying today?</h1>
-    <p class="sub">${bits.length?"This week you "+bits.join(", ")+".":"Take a moment. No pressure."}</p>
+    <div><h1>How are you carrying today?</h1>
+    <p class="sub">${bits.length?"This week you "+bits.join(", ")+".":"Take a moment. No pressure."}</p></div>
+    ${showNudge?`<div class="nudge" id="nd"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></div><div><b>Add UNSENT to your home screen</b><p>Open it like an app, even offline.</p><div class="row" style="margin-top:12px"><button class="btn btn-main btn-sm" id="ndi">Install</button><button class="btn btn-ghost btn-sm" id="ndx">Not now</button></div></div></div>`:"<span></span>"}
     <div class="card">
       <h3>Check in</h3>
       <div class="big" id="wv">${w}%</div>
       <input type="range" min="0" max="100" value="${w}" id="ws" aria-label="How heavy today feels">
       <div class="hint"><span>Light</span><span>Very heavy</span></div>
       <p class="note mt" id="wm">${msg(w)}</p>
-      <div class="mt" id="rs">${chips(["Missing them","A memory","Saw something online","Lonely","Angry","Nothing specific"],"r",rs)}</div>
+      <div class="mt">${chips(["Missing them","A memory","Saw something online","Lonely","Angry","Nothing specific"],"r",rs)}</div>
       <button class="btn btn-main mt" id="ci">${ci?"Update check-in":"Save check-in"}</button>
     </div>
-    <h3 style="margin:30px 0 12px;font-size:17px">Need something right now?</h3>
-    <div class="quick">
-      <button data-q="write:unsent">Get it out<small>Write what you can’t send</small></button>
-      <button data-q="write:pause">I want to text them or check their profile<small>Wait it out before you decide</small></button>
-      <button data-q="understand:sort">I can’t stop thinking about it<small>Sort what you know from what you fear</small></button>
+    <div>
+      <h3 class="h2" style="margin-bottom:14px">Need something right now?</h3>
+      <div class="quick">
+        <button data-q="write:unsent">Get it out<small>Write what you can’t send</small></button>
+        <button data-q="write:pause">I want to text them or check their profile<small>Wait it out before you decide</small></button>
+        <button data-q="understand:sort">I can’t stop thinking about it<small>Sort what you know from what you fear</small></button>
+      </div>
     </div>`;
-  const s=$("#ws");
-  s.addEventListener("input",()=>{$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value)});
+  const s=$("#ws"), paint=()=>s.style.setProperty("--p",s.value+"%");
+  paint();
+  s.addEventListener("input",()=>{paint();$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value)});
   pick(el,"r",true);
   $("#ci").addEventListener("click",()=>{
     const e={date:today(),weight:+s.value,reasons:chosen(el,"r")};
     const i=D.checkins.findIndex(c=>c.date===today());
     if(i>-1)D.checkins[i]=e;else D.checkins.push(e);
-    save();toast("Check-in saved.");rerender();
+    save();const b=$("#ci");b.classList.add("done");b.textContent="Saved ✓";toast("Check-in saved.");
+    setTimeout(rerender,reduced()?0:900);
   });
   $$("[data-q]",el).forEach(b=>b.addEventListener("click",()=>{const [p,s]=b.dataset.q.split(":");go(p,s)}));
+  if($("#ndi")){
+    $("#ndi").addEventListener("click",doInstall);
+    $("#ndx").addEventListener("click",()=>{D.installDismissed=today();save();const n=$("#nd");n.style.transition="opacity .3s,transform .3s";n.style.opacity="0";n.style.transform="translateY(-8px)";setTimeout(()=>n.remove(),300)});
+  }
 }
 
 /* ---------- WRITE (unsent + pause) ---------- */
 function rWrite(el){
-  el.innerHTML=`<h1>Write</h1><p class="sub">Say everything. Send nothing. UNSENT can’t message anyone.</p>`+
-    seg([["unsent","Unsent messages"],["pause","Pause"]],V.write,"v")+'<div id="wb"></div>';
-  $$("[data-v]",el).forEach(b=>b.addEventListener("click",()=>{V.write=b.dataset.v;go("write")}));
+  el.innerHTML=`<div><h1>Write</h1><p class="sub">Say everything. Send nothing. UNSENT can’t message anyone.</p></div>`+
+    seg([["unsent","Unsent messages"],["pause","Pause"]],V.write,"v")+'<div id="wb" class="sv"></div>';
+  subSwitch(el,"write");
   (V.write==="unsent"?wUnsent:wPause)($("#wb"));
 }
 function wUnsent(el){
   const list=D.unsent.slice().reverse();
   el.innerHTML=`
-    <div class="card">
+    <div class="card" id="uc">
       <label class="lb">Who is this for?</label>
       ${chips(["My ex","Someone who hurt me","Someone I never told","Myself","Someone else"],"to")}
       <div class="field mt"><textarea id="ub" rows="8" placeholder="Start anywhere. No one will read this but you."></textarea></div>
@@ -318,13 +448,16 @@ function wUnsent(el){
       </div>
       <p class="small mt">Seal keeps it here. Release marks it as let go. Both stay private.</p>
     </div>
-    <h3 style="margin:30px 0 4px;font-size:17px">Your unsent messages (${list.length})</h3>
-    <div id="ul">${list.length?list.map(m=>`<div class="item" data-m="${m.id}"><div class="meta"><span>${fmt(m.date)} · ${esc(m.to)}</span><span>${m.status==="released"?"Released":"Sealed"}</span></div><div class="pv">${esc(m.body)}</div></div>`).join(""):'<div class="empty">Nothing here yet. You don’t have to have something to say.</div>'}</div>`;
+    <h3 class="h2">Your unsent messages (${list.length})</h3>
+    <div id="ul" class="stag fresh">${list.length?list.map(m=>`<div class="item" data-m="${m.id}"><div class="meta"><span>${fmt(m.date)} · ${esc(m.to)}</span><span>${m.status==="released"?"Released":"Sealed"}</span></div><div class="pv">${esc(m.body)}</div></div>`).join(""):'<div class="empty">Nothing here yet. You don’t have to have something to say.</div>'}</div>`;
   pick(el,"to",false);
   const add=st=>{
     const body=$("#ub").value.trim();if(!body){toast("Write a sentence first.");return}
     D.unsent.push({id:uid(),date:today(),to:chosen(el,"to")[0]||"Someone else",body,status:st});save();
-    toast(st==="sealed"?"Sealed. It stays here.":"Released.");rerender();
+    $("#seal").disabled=true;$("#rel").disabled=true;
+    $("#uc").classList.add(st==="sealed"?"sealing":"releasing");
+    toast(st==="sealed"?"Sealed. It stays here.":"Released.");
+    setTimeout(rerender,reduced()?0:650);
   };
   $("#seal").addEventListener("click",()=>add("sealed"));
   $("#rel").addEventListener("click",()=>add("released"));
@@ -345,13 +478,13 @@ function wPause(el){
     el.innerHTML=`
       <div class="card">
         <h3>Feeling the urge?</h3>
-        <p class="small" style="margin-bottom:16px">Give it a few minutes before you decide.</p>
+        <p class="small" style="margin-bottom:18px">Give it a few minutes before you decide.</p>
         <label class="lb">What do you want to do?</label>
         ${chips(["Text them","Check their profile"],"k",["Text them"])}
         <div class="field mt"><label class="lb">What would you say? (optional)</label><textarea id="pt" rows="4" placeholder="Write it exactly as you would send it."></textarea></div>
         <label class="lb">How long to pause?</label>
-        <div class="chips" id="pd">${[["5 min",300],["10 min",600],["30 min",1800]].map(([l,s])=>'<button type="button" class="chip'+(s===P.dur?" on":"")+'" data-d="'+s+'">'+l+'</button>').join("")}</div>
-        <button class="btn btn-main mt" id="ps">Start pause</button>
+        <div class="chips">${[["5 min",300],["10 min",600],["30 min",1800]].map(([l,s])=>'<button type="button" class="chip'+(s===P.dur?" on":"")+'" data-d="'+s+'">'+l+'</button>').join("")}</div>
+        <button class="btn btn-main mt" id="ps" style="width:100%">Start pause</button>
       </div>
       ${m.length?`<p class="note mt">You paused ${m.length} time${m.length>1?"s":""} this month and chose not to act ${kept} time${kept===1?"":"s"}.</p>`:""}`;
     pick(el,"k",false);pick(el,"d",false);
@@ -365,10 +498,14 @@ function wPause(el){
     return;
   }
   if(P.stage==="timer"){
-    el.innerHTML=`<div class="card" style="text-align:center"><p class="note">You don’t have to decide yet.</p><div class="orb"></div><div class="timer" id="tn"></div><p class="small" id="bl" style="margin-top:6px"></p><button class="btn btn-ghost btn-sm mt" id="sk">Skip</button></div>`;
+    const C=2*Math.PI*54;
+    el.innerHTML=`<div class="card" style="text-align:center"><p class="note">You don’t have to decide yet.</p>
+      <div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="rt" cx="60" cy="60" r="54"/><circle class="rp" id="rp" cx="60" cy="60" r="54" style="stroke-dasharray:${C};stroke-dashoffset:0"/></svg><div class="orb"></div></div>
+      <div class="timer" id="tn"></div><p class="small" id="bl" style="margin-top:6px"></p><button class="btn btn-ghost btn-sm mt" id="sk">Skip</button></div>`;
     const tick=()=>{
       const mm=Math.floor(P.rem/60),ss=P.rem%60;$("#tn").textContent=mm+":"+String(ss).padStart(2,"0");
       $("#bl").textContent=((P.dur-P.rem)%8)<4?"Breathe in":"Breathe out";
+      $("#rp").style.strokeDashoffset=C*(1-P.rem/P.dur);
       if(P.rem<=0){clearInterval(P.timer);P.timer=null;P.stage="decide";wPause(el);return}
       P.rem--;
     };
@@ -377,23 +514,23 @@ function wPause(el){
     return;
   }
   if(P.stage==="decide"){
-    el.innerHTML=`<div class="card" style="text-align:center"><h3>How do you feel now?</h3><p class="small">Whatever you choose, nothing is sent from here.</p>
+    el.innerHTML=`<div class="card sv" style="text-align:center"><h3>How do you feel now?</h3><p class="small">Whatever you choose, nothing is sent from here.</p>
       <div class="row mt" style="justify-content:center"><button class="btn btn-main" id="pk">The urge passed</button><button class="btn btn-ghost" id="pd2">I still want to</button></div></div>`;
     $("#pk").addEventListener("click",()=>{finishPause("kept");P.stage="idle";toast("Noted. That took something.");rerender()});
     $("#pd2").addEventListener("click",()=>{
       finishPause("done");P.stage="idle";
-      modal('<h3>That’s your call</h3><p style="line-height:1.7">UNSENT can’t send anything for you. If you reach out, that happens outside this space. What you wrote here is only yours.</p><button class="btn btn-solid mt" data-x>Okay</button>');
+      modal('<h3>That’s your call</h3><p style="line-height:1.7">UNSENT can’t send anything for you. If you reach out, that happens outside this space. What you wrote here is only yours.</p><button class="btn btn-solid mt" data-x style="width:100%">Okay</button>');
       rerender();
     });
   }
 }
 
-/* ---------- UNDERSTAND (sort + miss) ---------- */
+/* ---------- UNDERSTAND ---------- */
 const S={know:[],think:[],fear:[],cat:"know"};
 function rUnderstand(el){
-  el.innerHTML=`<h1>Understand</h1><p class="sub">Not every thought is a fact.</p>`+
-    seg([["sort","Facts and fears"],["miss","What I miss"]],V.und,"v")+'<div id="ub2"></div>';
-  $$("[data-v]",el).forEach(b=>b.addEventListener("click",()=>{V.und=b.dataset.v;go("understand")}));
+  el.innerHTML=`<div><h1>Understand</h1><p class="sub">Not every thought is a fact.</p></div>`+
+    seg([["sort","Facts and fears"],["miss","What I miss"]],V.und,"v")+'<div id="ub2" class="sv"></div>';
+  subSwitch(el,"und");
   (V.und==="sort"?uSort:uMiss)($("#ub2"));
 }
 function uSort(el){
@@ -403,10 +540,8 @@ function uSort(el){
     <div class="card">
       <label class="lb">Type a thought, then pick where it belongs.</label>
       <input type="text" id="si" placeholder="e.g. They stopped replying on Tuesday">
-      <div class="row mt">
-        ${order.map(c=>'<button type="button" class="chip'+(S.cat===c?" on":"")+'" data-c="'+c+'">'+names[c]+'</button>').join("")}
-        <button class="btn btn-main btn-sm" id="sa">Add</button>
-      </div>
+      <div class="chips mt">${order.map(c=>'<button type="button" class="chip'+(S.cat===c?" on":"")+'" data-c="'+c+'">'+names[c]+'</button>').join("")}</div>
+      <button class="btn btn-main mt" id="sa" style="width:100%">Add</button>
       <p class="small mt">Tap a card to move it to the next column.</p>
     </div>
     <div class="cols gap">${order.map(c=>`<div class="col ${c}"><h4>${names[c]}</h4>${S[c].map((t,i)=>`<div class="tile" data-m="${c}:${i}">${esc(t)}<b data-d="${c}:${i}" aria-label="Remove">×</b></div>`).join("")}</div>`).join("")}</div>
@@ -417,7 +552,7 @@ function uSort(el){
   $("#si").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();add()}});
   $$(".tile",el).forEach(t=>t.addEventListener("click",e=>{
     const [c,i]=t.dataset.m.split(":");
-    if(e.target.dataset.d){S[c].splice(+i,1);uSort(el);return}
+    if(e.target.closest("[data-d]")){S[c].splice(+i,1);uSort(el);return}
     const [it]=S[c].splice(+i,1);S[order[(order.indexOf(c)+1)%3]].push(it);uSort(el);
   }));
   if(total){
@@ -432,22 +567,22 @@ function uSort(el){
 }
 function uMiss(el){
   const opts=["Them","Their attention","Talking every day","Physical affection","Having someone","Our routine","Our memories","Feeling wanted","Feeling safe","Having plans","Who I thought they’d become","The future I imagined","Something else"];
-  el.innerHTML=`<div class="card"><p style="margin-bottom:14px">You might not miss everything. What exactly do you miss?</p>${chips(opts,"o")}<button class="btn btn-main mt" id="mr">See reflection</button><div id="mo"></div></div>`;
+  el.innerHTML=`<div class="card"><p style="margin-bottom:16px">You might not miss everything. What exactly do you miss?</p>${chips(opts,"o")}<button class="btn btn-main mt" id="mr" style="width:100%">See reflection</button><div id="mo"></div></div>`;
   pick(el,"o",true);
   $("#mr").addEventListener("click",()=>{
     const c=chosen(el,"o");if(!c.length){toast("Pick at least one.");return}
     const t="You chose: "+c.join(", ")+". Missing these doesn’t always mean you want the relationship back. It can mean you miss what it gave you.";
-    $("#mo").innerHTML='<div class="mt" style="background:var(--bg2);border-radius:14px;padding:16px"><p style="line-height:1.7">'+esc(t)+'</p><button class="btn btn-ghost btn-sm mt" id="mv">Save to journal</button></div>';
+    $("#mo").innerHTML='<div class="mt sv" style="background:var(--bg2);border-radius:16px;padding:18px"><p style="line-height:1.7">'+esc(t)+'</p><button class="btn btn-ghost btn-sm mt" id="mv">Save to journal</button></div>';
     $("#mv").addEventListener("click",()=>{D.journal.push({id:uid(),date:today(),title:"What I miss",body:t});save();toast("Saved to your journal.")});
   });
 }
 
-/* ---------- JOURNAL (entries + pattern + letters) ---------- */
+/* ---------- JOURNAL ---------- */
 const PROMPTS=["What are you pretending doesn’t hurt?","What do you wish they understood?","What do you know now that you didn’t then?","What part of this is outside your control?","What do you miss?","What don’t you miss?","What boundary became clearer?","What would you tell yourself from a month ago?"];
 function rJournal(el){
-  el.innerHTML=`<h1>Journal</h1><p class="sub">Your entries, your pattern, and letters to future you.</p>`+
-    seg([["entries","Entries"],["pattern","Pattern"],["letters","Letters"]],V.jr,"v")+'<div id="jb"></div>';
-  $$("[data-v]",el).forEach(b=>b.addEventListener("click",()=>{V.jr=b.dataset.v;go("journal")}));
+  el.innerHTML=`<div><h1>Journal</h1><p class="sub">Your entries, your pattern, and letters to future you.</p></div>`+
+    seg([["entries","Entries"],["pattern","Pattern"],["letters","Letters"]],V.jr,"v")+'<div id="jb" class="sv"></div>';
+  subSwitch(el,"jr");
   ({entries:jEntries,pattern:jPattern,letters:jLetters})[V.jr]($("#jb"));
 }
 function jEntries(el){
@@ -456,13 +591,13 @@ function jEntries(el){
   el.innerHTML=`
     <div class="card">
       <label class="lb">Today’s prompt: ${PROMPTS[q]}</label>
-      <input type="text" id="jt" placeholder="Title (optional)" style="margin-bottom:10px">
+      <input type="text" id="jt" placeholder="Title (optional)" style="margin-bottom:12px">
       <textarea id="jbody" rows="5" placeholder="Write here, or answer today’s prompt."></textarea>
-      <button class="btn btn-main mt" id="js">Save entry</button>
+      <button class="btn btn-main mt" id="js" style="width:100%">Save entry</button>
     </div>
-    <div class="between" style="margin:26px 0 6px"><h3 style="font-size:17px">Past entries (${list.length})</h3></div>
-    ${list.length?'<input type="text" id="jq" placeholder="Search entries" style="margin:8px 0">':""}
-    <div id="jl"></div>`;
+    <h3 class="h2">Past entries (${list.length})</h3>
+    ${list.length?'<input type="text" id="jq" placeholder="Search entries" style="margin:10px 0 4px">':""}
+    <div id="jl" class="stag fresh"></div>`;
   $("#js").addEventListener("click",()=>{
     const b=$("#jbody").value.trim();if(!b){toast("Write something first.");return}
     D.journal.push({id:uid(),date:today(),title:$("#jt").value.trim(),body:b});save();toast("Saved.");rerender();
@@ -470,14 +605,14 @@ function jEntries(el){
   const draw=()=>{
     const s=($("#jq")?$("#jq").value:"").toLowerCase();
     const items=list.filter(e=>!s||(e.title||"").toLowerCase().includes(s)||e.body.toLowerCase().includes(s));
-    $("#jl").innerHTML=items.length?items.map(e=>`<div class="item" data-j="${e.id}"><div class="meta"><span>${fmt(e.date)}</span></div>${e.title?'<div style="font-size:15px;margin-bottom:3px">'+esc(e.title)+"</div>":""}<div class="pv">${esc(e.body)}</div></div>`).join(""):'<div class="empty">'+(list.length?"No matches.":"Start anywhere. One sentence is enough.")+"</div>";
+    $("#jl").innerHTML=items.length?items.map(e=>`<div class="item" data-j="${e.id}"><div class="meta"><span>${fmt(e.date)}</span></div>${e.title?'<div style="font-size:15.5px;margin-bottom:3px">'+esc(e.title)+"</div>":""}<div class="pv">${esc(e.body)}</div></div>`).join(""):'<div class="empty">'+(list.length?"No matches.":"Start anywhere. One sentence is enough.")+"</div>";
     $$("[data-j]",$("#jl")).forEach(c=>c.addEventListener("click",()=>{
       const e=D.journal.find(x=>x.id===c.dataset.j);
       const m=modal(`<h3>${esc(e.title||"Untitled")}</h3><p class="small" style="margin-bottom:14px">${fmt(e.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(e.body)}</p><div class="row mt"><button class="btn btn-danger btn-sm" id="jd">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
       $("#jd",m).addEventListener("click",()=>{closeModal();confirmBox("Delete this entry?","This can’t be undone.","Delete",()=>{D.journal=D.journal.filter(x=>x.id!==e.id);save();rerender()})});
     }));
   };
-  if($("#jq"))$("#jq").addEventListener("input",draw);
+  if($("#jq"))$("#jq").addEventListener("input",()=>{$("#jl").classList.remove("fresh");draw()});
   draw();
 }
 function jPattern(el){
@@ -486,20 +621,20 @@ function jPattern(el){
   if(pts.length>=2){
     const w=600,h=140,p=10,xs=pts.map((_,i)=>p+i*((w-2*p)/(pts.length-1))),ys=pts.map(c=>h-p-(c.weight/100)*(h-2*p));
     const path=xs.map((x,i)=>(i?"L":"M")+x.toFixed(1)+","+ys[i].toFixed(1)).join(" ");
-    graph=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:140px" role="img" aria-label="Emotional weight over the last 30 days"><path d="${path} L${xs[xs.length-1]},${h} L${xs[0]},${h}Z" fill="var(--glow)"/><path d="${path}" fill="none" stroke="var(--violet)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>${xs.map((x,i)=>'<circle cx="'+x.toFixed(1)+'" cy="'+ys[i].toFixed(1)+'" r="2.8" fill="var(--violet)"/>').join("")}</svg><div class="hint"><span>Last 30 days</span><span>Higher means heavier</span></div>`;
+    graph=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:140px" role="img" aria-label="Emotional weight over the last 30 days"><path d="${path} L${xs[xs.length-1]},${h} L${xs[0]},${h}Z" fill="var(--glow)"/><path d="${path}" fill="none" stroke="var(--violet)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dash 1.4s var(--ease) .1s forwards"/>${xs.map((x,i)=>'<circle cx="'+x.toFixed(1)+'" cy="'+ys[i].toFixed(1)+'" r="2.8" fill="var(--violet)"/>').join("")}</svg><div class="hint"><span>Last 30 days</span><span>Higher means heavier</span></div><style>@keyframes dash{to{stroke-dashoffset:0}}</style>`;
   }
   const st=[["Unsent messages",D.unsent.length],["Times paused",D.pauses.length],["Urges that passed",D.pauses.filter(x=>x.resolved==="kept").length]];
-  el.innerHTML=`<div class="card"><h3>Your pattern</h3><p class="small" style="margin-bottom:14px">Not a measure of recovery. Just what you’ve noticed.</p>${graph}</div>
-    <div class="card"><h3>So far</h3>${st.map(([k,v])=>'<div class="between" style="padding:8px 0;border-top:1px solid var(--line);font-size:14px"><span style="color:var(--ink1)">'+k+'</span><span>'+v+"</span></div>").join("")}</div>`;
+  el.innerHTML=`<div class="card"><h3>Your pattern</h3><p class="small" style="margin-bottom:16px">Not a measure of recovery. Just what you’ve noticed.</p>${graph}</div>
+    <div class="card"><h3>So far</h3>${st.map(([k,v])=>'<div class="between" style="padding:12px 0;border-top:1px solid var(--line);font-size:15px"><span style="color:var(--ink1)">'+k+'</span><span>'+v+"</span></div>").join("")}</div>`;
 }
 function jLetters(el){
   const list=D.letters.slice().sort((a,b)=>b.date.localeCompare(a.date));
   el.innerHTML=`
     <div class="card"><h3>Dear future me,</h3>
-      <textarea id="lb" rows="5" placeholder="I hope you remember…"></textarea>
+      <textarea id="lb" rows="5" placeholder="I hope you remember…" style="margin-top:8px"></textarea>
       <div class="field mt"><label class="lb">Unlock on</label><input type="date" id="ld" min="${today()}" value="${today()}"></div>
-      <button class="btn btn-main" id="ls">Seal the letter</button></div>
-    <div id="ll">${list.map(l=>{const open=l.unlock<=today();return `<div class="item" data-l="${l.id}"><div class="meta"><span>Written ${fmt(l.date)}</span><span>${open?"Unlocked":"Opens "+fmt(l.unlock)}</span></div><div class="pv">${open?esc(l.body):"This letter is still sealed."}</div></div>`}).join("")}</div>`;
+      <button class="btn btn-main" id="ls" style="width:100%">Seal the letter</button></div>
+    <div id="ll" class="stag fresh">${list.map(l=>{const open=l.unlock<=today();return `<div class="item" data-l="${l.id}"><div class="meta"><span>Written ${fmt(l.date)}</span><span>${open?"Unlocked":"Opens "+fmt(l.unlock)}</span></div><div class="pv">${open?esc(l.body):"This letter is still sealed."}</div></div>`}).join("")}</div>`;
   $("#ls").addEventListener("click",()=>{
     const b=$("#lb").value.trim();if(!b){toast("Write a little first.");return}
     const u=$("#ld").value||today();D.letters.push({id:uid(),date:today(),unlock:u,body:b});save();toast("Sealed until "+fmt(u)+".");rerender();
@@ -512,66 +647,25 @@ function jLetters(el){
   }));
 }
 
-/* ---------- INSTALL ---------- */
-function platform(){
-  const u=navigator.userAgent;
-  if(/iPad|iPhone|iPod/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))return "ios";
-  return /Android/.test(u)?"android":"desktop";
-}
-const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
-const GUIDE={
-  ios:{l:"iPhone / iPad",s:["Open this page in <b>Safari</b>.","Tap the <b>Share</b> button (square with an arrow up).","Scroll down and tap <b>Add to Home Screen</b>.","Tap <b>Add</b>. UNSENT now sits on your home screen."],n:"iPhone can’t install with one tap. Apple only allows it through the Share menu."},
-  android:{l:"Android",s:["Open this page in <b>Chrome</b>.","Tap the <b>⋮</b> menu at the top right.","Tap <b>Install app</b> or <b>Add to Home screen</b>.","Tap <b>Install</b>."],n:"On Samsung Internet: menu (≡), then <b>Add page to</b>, then <b>Home screen</b>."},
-  desktop:{l:"Computer",s:["Open this page in <b>Chrome</b> or <b>Edge</b>.","Click the <b>install icon</b> at the right end of the address bar.","Click <b>Install</b>. UNSENT opens in its own window."],n:"No icon? Chrome: ⋮ menu, <b>Cast, save and share</b>, <b>Install page as app</b>. Safari on Mac: <b>File, Add to Dock</b>."}
-};
-function guideHtml(k){
-  const g=GUIDE[k];
-  return '<div class="seg" style="margin:14px 0 8px">'+Object.entries(GUIDE).map(([x,v])=>'<button class="'+(x===k?"on":"")+'" data-g="'+x+'">'+v.l+'</button>').join("")+'</div>'+
-    g.s.map((t,i)=>'<div class="step"><i>'+(i+1)+'</i><span>'+t+'</span></div>').join("")+'<p class="small mt">'+g.n+'</p>';
-}
-function bindGuide(root){
-  $$("[data-g]",root).forEach(b=>b.addEventListener("click",()=>{const box=$("#gbox",root);box.innerHTML=guideHtml(b.dataset.g);bindGuide(box)}));
-}
-let deferred=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});
-window.addEventListener("appinstalled",()=>{deferred=null;toast("UNSENT installed.")});
-async function doInstall(){
-  if(standalone()){toast("You’re already using the installed app.");return}
-  if(deferred){deferred.prompt();try{await deferred.userChoice}catch(e){}deferred=null;return}
-  const m=modal('<h3>Install UNSENT</h3><p class="small">Add it to your home screen so it opens like an app.</p><div id="gbox">'+guideHtml(platform())+'</div><button class="btn btn-solid btn-block mt" data-x style="width:100%">Okay</button>');
-  bindGuide(m);
-}
-(function pwa(){ // manifest + icon generated in code, so no extra files are needed
-  try{
-    const c=document.createElement("canvas");c.width=c.height=512;const x=c.getContext("2d");
-    x.fillStyle="#0B0B0F";x.fillRect(0,0,512,512);x.fillStyle="#9C8FE0";x.font="italic 320px Georgia,serif";x.textAlign="center";x.textBaseline="middle";x.fillText("U",256,282);
-    const icon=c.toDataURL("image/png");
-    $("#apple-icon").href=icon;$("#fav-icon").href=icon;
-    const base=location.href.split("#")[0].split("?")[0];
-    const man={name:"UNSENT",short_name:"UNSENT",description:"For the feelings that have nowhere to go.",start_url:base,scope:base.replace(/[^/]*$/,""),display:"standalone",background_color:"#0B0B0F",theme_color:"#0B0B0F",icons:[{src:icon,sizes:"512x512",type:"image/png",purpose:"any"}]};
-    $("#manifest-link").href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:"application/manifest+json"}));
-  }catch(e){}
-})();
-
 /* ---------- SETTINGS ---------- */
 function rSettings(el){
   const th=D.theme||"dark";
-  el.innerHTML=`<h1>Settings</h1><p class="sub">Everything stays on this device.</p>
-    <div class="card"><h3>Appearance</h3><div class="between" style="margin-top:10px"><span>Theme</span>${seg([["dark","Dark"],["light","Light"]],th,"th").replace("margin-bottom:22px","")}</div></div>
+  el.innerHTML=`<div><h1>Settings</h1><p class="sub">Everything stays on this device.</p></div>
+    <div class="card"><h3>Appearance</h3><div class="setrow"><span class="l">Theme</span>${seg([["dark","Dark"],["light","Light"]],th,"th",true)}</div></div>
     <div class="card"><h3>Privacy</h3>
-      <div class="between" style="margin-top:10px"><div><div>Passcode lock</div><div class="small">4 digits to open UNSENT on this device</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin")}</div>
+      <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits to open UNSENT on this device</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
       ${D.pin?'<button class="btn btn-ghost btn-sm" id="pc">Change passcode</button>':""}</div>
-    <div class="card"><h3>Install UNSENT</h3>${standalone()?'<p style="color:var(--sage);margin-top:8px">✓ You’re using the installed app.</p>':'<p class="small" style="margin:6px 0 14px">Open it like a normal app, full screen and from your home screen.</p><button class="btn btn-main btn-sm" id="ins">Install app</button><div id="gbox">'+guideHtml(platform())+"</div>"}</div>
-    <div class="card"><h3>Your data</h3><p class="small" style="margin:6px 0 14px">Saved in this browser only. There’s no account and no server. Export a backup before clearing your browser data.</p>
+    <div class="card"><h3>Install UNSENT</h3>${standalone()?'<p style="color:var(--sage);margin-top:8px">✓ You’re using the installed app.</p>':'<p class="small" style="margin:6px 0 16px">Open it like a normal app, full screen and from your home screen.</p><button class="btn btn-main" id="ins" style="width:100%">Install app</button><div id="gbox">'+guideHtml(platform())+"</div>"}</div>
+    <div class="card"><h3>Your data</h3><p class="small" style="margin:6px 0 16px">Saved in this browser only. There’s no account and no server. Export a backup before clearing your browser data.</p>
       <div class="row"><button class="btn btn-ghost btn-sm" id="ex">Export</button><button class="btn btn-ghost btn-sm" id="im">Import</button><input type="file" id="imf" accept="application/json" class="hidden"><button class="btn btn-danger btn-sm" id="del">Delete everything</button></div></div>
-    <div class="card"><h3>Need more support?</h3><p style="font-size:13.5px;line-height:1.7;margin-top:8px">UNSENT is a reflection tool, not a therapist or emergency service.</p><p class="small" style="line-height:1.7;margin-top:10px">In the Philippines, you can call the National Center for Mental Health Crisis Hotline at 1553 (landline, toll-free) or 0966-351-4518 / 0917-899-8727. In immediate danger, contact local emergency services (911) or go to the nearest emergency room. Elsewhere, reach out to a local crisis line or someone you trust.</p></div>`;
+    <div class="card"><h3>Need more support?</h3><p style="font-size:14px;line-height:1.7;margin-top:8px">UNSENT is a reflection tool, not a therapist or emergency service.</p><p class="small" style="line-height:1.75;margin-top:12px">In the Philippines, you can call the National Center for Mental Health Crisis Hotline at 1553 (landline, toll-free) or 0966-351-4518 / 0917-899-8727. In immediate danger, contact local emergency services (911) or go to the nearest emergency room. Elsewhere, reach out to a local crisis line or someone you trust.</p></div>`;
   $$("[data-th]",el).forEach(b=>b.addEventListener("click",()=>{D.theme=b.dataset.th;save();theme();rerender()}));
   $$("[data-pin]",el).forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.pin==="on"){if(!D.pin)lockOpen("setup",()=>rerender())}
     else if(D.pin)confirmBox("Turn off passcode?","UNSENT will open without a code on this device.","Turn off",()=>{D.pin=null;save();rerender()});
   }));
   if($("#pc"))$("#pc").addEventListener("click",()=>lockOpen("setup",()=>rerender()));
-  if($("#ins")){$("#ins").addEventListener("click",doInstall);bindGuide(el)}
+  if($("#ins"))$("#ins").addEventListener("click",doInstall);
   $("#ex").addEventListener("click",()=>{
     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:"application/json"}));
     a.download="unsent-backup-"+today()+".json";document.body.appendChild(a);a.click();a.remove();toast("Exported.");
@@ -595,11 +689,11 @@ function theme(){
 
 /* ---------- LOCK ---------- */
 async function sha(s){
-  if(crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
+  if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
   return "f"+s.split("").reduce((h,c)=>(h<<5)-h+c.charCodeAt(0)|0,0);
 }
-let L={mode:"enter",buf:"",first:null,ok:null};
-function lockOpen(mode,ok){L={mode,buf:"",first:null,ok};$("#lock").classList.remove("hidden");lockDraw()}
+let L={mode:"enter",buf:"",first:null,ok:null,busy:false};
+function lockOpen(mode,ok){L={mode,buf:"",first:null,ok,busy:false};$("#lock").classList.remove("hidden");lockDraw()}
 function lockDraw(){
   const t={enter:["Enter your passcode","Only you can open this."],setup:["Choose a passcode","4 digits. Something only you know."],confirm:["Confirm your passcode","Enter it once more."]}[L.mode];
   $("#lock-t").textContent=t[0];$("#lock-s").textContent=t[1];
@@ -608,9 +702,10 @@ function lockDraw(){
   $$("#lock-pad [data-k]").forEach(b=>b.addEventListener("click",()=>lockKey(b.dataset.k)));
 }
 async function lockKey(k){
+  if(L.busy)return;
   if(k==="⌫"){L.buf=L.buf.slice(0,-1);lockDraw();return}
   if(L.buf.length>=4)return;L.buf+=k;lockDraw();if(L.buf.length<4)return;
-  const bad=()=>{$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";lockDraw();$("#lock-s").textContent="Try again."},400)};
+  const bad=()=>{L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();$("#lock-s").textContent="Try again."},450)};
   if(L.mode==="enter"){if(await sha(L.buf)===D.pin){$("#lock").classList.add("hidden");L.ok&&L.ok()}else bad()}
   else if(L.mode==="setup"){L.first=L.buf;L.buf="";L.mode="confirm";lockDraw()}
   else{ if(L.buf===L.first){D.pin=await sha(L.buf);save();$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
@@ -621,12 +716,17 @@ $("#lock-x").addEventListener("click",()=>{
 });
 
 /* ---------- START ---------- */
+$("#mark").innerHTML="UNSENT".split("").map((c,i)=>'<span style="animation-delay:'+(i*.08)+'s">'+c+'</span>').join("");
+function openApp(){
+  const w=$("#welcome");w.classList.add("leaving");
+  setTimeout(()=>{w.classList.add("hidden");w.classList.remove("leaving");$("#app").classList.remove("hidden");go("today")},reduced()?0:380);
+}
 $("#enter").addEventListener("click",()=>{
-  const open=()=>{$("#welcome").classList.add("hidden");$("#app").classList.remove("hidden");go("today")};
-  if(D.pin)lockOpen("enter",open);else open();
+  if(D.pin){$("#welcome").classList.add("hidden");lockOpen("enter",()=>{$("#app").classList.remove("hidden");go("today")})}
+  else openApp();
 });
 $("#w-install").addEventListener("click",doInstall);
-if(standalone())$("#w-install").classList.add("hidden");
+if(standalone())$("#w-inst").remove();
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{})});
 }
