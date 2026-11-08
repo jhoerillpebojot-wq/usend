@@ -72,6 +72,7 @@ button{font-family:inherit;cursor:pointer;color:inherit;touch-action:manipulatio
 .btn-danger{background:none;border-color:#5a3434;color:#d98080}
 .btn-sm{min-height:42px;padding:9px 18px;font-size:14px}
 .btn[disabled]{opacity:.45;pointer-events:none}
+a.btn{text-decoration:none}
 .btn.done{background:var(--sage);color:#10200f;box-shadow:none}
 .link{background:none;border:none;color:var(--ink2);font-size:14.5px;text-decoration:underline;text-underline-offset:4px;padding:10px}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
@@ -83,7 +84,7 @@ button{font-family:inherit;cursor:pointer;color:inherit;touch-action:manipulatio
 .seg.flat{margin:0}
 .seg button{background:none;border:none;min-height:40px;padding:8px 18px;border-radius:100px;font-size:14px;font-weight:500;color:var(--ink2);white-space:nowrap;transition:background .25s var(--ease),color .2s}
 .seg button.on{background:var(--bg3);color:var(--ink)}
-textarea,input[type=text],input[type=date]{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:14px;color:var(--ink);font:inherit;font-size:16px;padding:14px 16px;resize:vertical;transition:border-color .2s,box-shadow .2s}
+textarea,input[type=text],input[type=date],input[type=time]{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:14px;color:var(--ink);font:inherit;font-size:16px;padding:14px 16px;resize:vertical;transition:border-color .2s,box-shadow .2s}
 textarea:focus,input:focus{border-color:var(--violet);outline:none;box-shadow:0 0 0 4px var(--glow)}
 ::placeholder{color:var(--ink2);opacity:.7}
 label.lb{display:block;font-size:13.5px;color:var(--ink2);margin-bottom:10px}
@@ -211,6 +212,9 @@ nav.tabs button.on svg{animation:pop .4s var(--ease)}
 .step{display:flex;gap:16px;padding:13px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink1);line-height:1.5}
 .step:first-child{border-top:none}
 .step i{font-family:var(--serif);color:var(--violet);min-width:18px;font-style:normal}
+#lock{position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto}
+.bar{height:8px;border-radius:8px;background:var(--bg3);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--violet);border-radius:8px}
 </style>
 </head>
 <body>
@@ -218,7 +222,7 @@ nav.tabs button.on svg{animation:pop .4s var(--ease)}
 <!-- LOCK -->
 <div id="lock" class="center hidden">
   <h2 id="lock-t" style="font-size:27px">Enter your passcode</h2>
-  <p class="small" id="lock-s" style="margin-top:8px">Only you can open this.</p>
+  <p class="small" id="lock-s" style="margin-top:8px">Welcome back.</p>
   <div class="dots" id="lock-dots"></div>
   <div class="pad" id="lock-pad"></div>
   <button class="link" id="lock-x" style="margin-top:22px">Cancel</button>
@@ -260,7 +264,7 @@ const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- DATA ---------- */
 const KEY="unsent2";
-const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null,sound:true});
+const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null,sound:true,haptics:true,sort:null,since:today(),lastBackup:null,backupSnooze:null,remind:{on:true,time:"20:00"},fails:0,lockUntil:0});
 function load(){
   try{
     const r=localStorage.getItem(KEY);
@@ -358,14 +362,19 @@ const SFX=(function(){
     unlock:()=>{tone(N.C5,{d:.5,v:.05});tone(N.G5,{d:.5,v:.05,at:.09});tone(N.C6,{d:.7,v:.045,at:.18})},
     enter:()=>{tone(261.6,{d:1.5,v:.05,a:.18});tone(329.6,{d:1.5,v:.04,a:.2,at:.04});tone(392,{d:1.5,v:.04,a:.22,at:.08});tone(N.C5,{d:1.4,v:.03,a:.2,at:.2})}
   };
+  const HAP={tap:6,nav:8,seg:6,chipOn:8,chipOff:5,open:7,pop:8,soft:8,save:[10,40,10],seal:20,release:[10,30,10],start:[15,40,15],bell:[30,80,30],success:[15,50,15,50,25],chime:[8,30,8],delete:18,back:5,key:5,error:[40,60,40],unlock:[10,40,15],enter:12};
+  function buzz(n){
+    if(D.haptics===false||!navigator.vibrate)return;
+    const v=HAP[n];if(v)try{navigator.vibrate(v)}catch(e){}
+  }
   const SCALE=[262,294,330,392,440,523,587,659,784,880];
   return {
     init,
-    play(n){if(!on()||!init()||!S[n])return;try{S[n]()}catch(e){}},
+    play(n){buzz(n);if(!on()||!init()||!S[n])return;try{S[n]()}catch(e){}},
     // for sounds triggered by a click handler: also stops the generic click sound from doubling up
     click(n){this.play(n);skip=true;setTimeout(()=>{skip=false},0)},
     eatSkip(){if(skip){skip=false;return true}return false},
-    key(d){if(!on()||!init())return;try{tone(SCALE[+d%10],{d:.14,v:.05})}catch(e){}},
+    key(d){buzz("key");if(!on()||!init())return;try{tone(SCALE[+d%10],{d:.14,v:.05})}catch(e){}},
     tick(val){
       const t=Date.now();if(t-lastTick<70||!on()||!init())return;lastTick=t;
       try{tone(300+val*3.2,{d:.05,v:.03})}catch(e){}
@@ -494,22 +503,32 @@ function rToday(el){
   const bits=[];if(n1)bits.push("wrote "+n1+" unsent message"+(n1>1?"s":""));if(n2)bits.push("paused "+n2+" time"+(n2>1?"s":""));if(n3)bits.push("journaled "+n3+" time"+(n3>1?"s":""));
   const msg=v=>v<34?"A little more breathing room today.":v<67?"Today feels heavy. You don’t have to solve everything today.":"You don’t have to carry everything at once. Start with one thing.";
   const showNudge=!standalone()&&(!D.installDismissed||ago(D.installDismissed)>=7);
+  const hasData=D.journal.length+D.unsent.length+D.letters.length+D.checkins.length>0;
+  const showBackup=hasData&&(D.lastBackup?ago(D.lastBackup)>=30:ago(D.since||today())>=7)&&(!D.backupSnooze||ago(D.backupSnooze)>=7);
+  const rmd=D.remind||{on:true,time:"20:00"}, rt=(rmd.time||"20:00").split(":").map(Number), nw=new Date();
+  const showRemind=rmd.on!==false&&!ci&&(nw.getHours()*60+nw.getMinutes())>=rt[0]*60+rt[1];
+  const nIc=pth=>'<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+pth+'</svg></div>';
+  const extra=(showRemind?'<div class="nudge" id="rm">'+nIc('<path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/>')+'<div><b>A quiet moment for you?</b><p>You haven’t checked in today. It takes ten seconds.</p><div class="row" style="margin-top:12px"><button class="btn btn-main btn-sm" id="rmg">Check in</button></div></div></div>':"")+
+    (showBackup?'<div class="nudge" id="bk">'+nIc('<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>')+'<div><b>Back up your entries</b><p>Everything lives only on this device. A backup file keeps it safe if your browser data is cleared.</p><div class="row" style="margin-top:12px"><button class="btn btn-main btn-sm" id="bke">Export backup</button><button class="btn btn-ghost btn-sm" id="bkx">Later</button></div></div></div>':"");
   el.innerHTML=`
     <div><h1>How are you carrying today?</h1>
     <p class="sub">${bits.length?"This week you "+bits.join(", ")+".":"Take a moment. No pressure."}</p></div>
     ${showNudge?`<div class="nudge" id="nd"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></div><div><b>Add UNSENT to your home screen</b><p>Open it like an app, even offline.</p><div class="row" style="margin-top:12px"><button class="btn btn-main btn-sm" id="ndi">Install</button><button class="btn btn-ghost btn-sm" id="ndx">Not now</button></div></div></div>`:"<span></span>"}
+    ${extra}
     <div class="card">
       <h3>Check in</h3>
       <div class="big" id="wv">${w}%</div>
       <input type="range" min="0" max="100" value="${w}" id="ws" aria-label="How heavy today feels">
       <div class="hint"><span>Light</span><span>Very heavy</span></div>
       <p class="note mt" id="wm">${msg(w)}</p>
+      <div id="hp" class="${w>=80?"":"hidden"}" style="margin-top:14px;background:var(--bg2);border-radius:14px;padding:14px 16px"><p style="font-size:14.5px;line-height:1.6">That’s a lot to carry. You don’t have to do it alone.</p><button class="btn btn-ghost btn-sm" data-help style="margin-top:10px">Support options</button></div>
       <div class="mt">${chips(["Missing them","A memory","Saw something online","Lonely","Angry","Nothing specific"],"r",rs)}</div>
       <button class="btn btn-main mt" id="ci">${ci?"Update check-in":"Save check-in"}</button>
     </div>
     <div>
       <h3 class="h2" style="margin-bottom:14px">Need something right now?</h3>
       <div class="quick">
+        <button data-help>I need support right now<small>Hotlines and what to do in the next few minutes</small></button>
         <button data-q="write:unsent">Get it out<small>Write what you can’t send</small></button>
         <button data-q="write:pause">I want to text them or check their profile<small>Wait it out before you decide</small></button>
         <button data-q="understand:sort">I can’t stop thinking about it<small>Sort what you know from what you fear</small></button>
@@ -517,7 +536,7 @@ function rToday(el){
     </div>`;
   const s=$("#ws"), paint=()=>s.style.setProperty("--p",s.value+"%");
   paint();
-  s.addEventListener("input",()=>{paint();$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value);SFX.tick(+s.value)});
+  s.addEventListener("input",()=>{paint();$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value);SFX.tick(+s.value);$("#hp").classList.toggle("hidden",+s.value<80)});
   pick(el,"r",true);
   $("#ci").addEventListener("click",()=>{
     const e={date:today(),weight:+s.value,reasons:chosen(el,"r")};
@@ -527,6 +546,10 @@ function rToday(el){
     setTimeout(rerender,reduced()?0:900);
   });
   $$("[data-q]",el).forEach(b=>b.addEventListener("click",()=>{const [p,s]=b.dataset.q.split(":");go(p,s)}));
+  $$("[data-help]",el).forEach(b=>b.addEventListener("click",helpModal));
+  if($("#bke"))$("#bke").addEventListener("click",()=>{exportData();$("#bk").remove()});
+  if($("#bkx"))$("#bkx").addEventListener("click",()=>{D.backupSnooze=today();save();const n=$("#bk");n.style.transition="opacity .3s,transform .3s";n.style.opacity="0";n.style.transform="translateY(-8px)";setTimeout(()=>n.remove(),300)});
+  if($("#rmg"))$("#rmg").addEventListener("click",()=>{$("#ws").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"center"})});
   if($("#ndi")){
     $("#ndi").addEventListener("click",doInstall);
     $("#ndx").addEventListener("click",()=>{D.installDismissed=today();save();const n=$("#nd");n.style.transition="opacity .3s,transform .3s";n.style.opacity="0";n.style.transform="translateY(-8px)";setTimeout(()=>n.remove(),300)});
@@ -576,7 +599,7 @@ function wUnsent(el){
   }));
 }
 
-const P={stage:"idle",kind:"text",dur:300,rem:0,timer:null,id:null};
+const P={stage:"idle",kind:"text",dur:300,rem:0,timer:null,id:null,text:"",endAt:0};
 function finishPause(res){const s=D.pauses.find(x=>x.id===P.id);if(s&&s.resolved==="pending"){s.resolved=res;save()}}
 function wPause(el){
   const mo=today().slice(0,7), m=D.pauses.filter(p=>p.date.slice(0,7)===mo), kept=m.filter(p=>p.resolved==="kept").length;
@@ -587,7 +610,7 @@ function wPause(el){
         <p class="small" style="margin-bottom:18px">Give it a few minutes before you decide.</p>
         <label class="lb">What do you want to do?</label>
         ${chips(["Text them","Check their profile"],"k",["Text them"])}
-        <div class="field mt"><label class="lb">What would you say? (optional)</label><textarea id="pt" rows="4" placeholder="Write it exactly as you would send it."></textarea></div>
+        <div class="field mt"><label class="lb">What would you say? (optional. You can seal it as an unsent message after the pause.)</label><textarea id="pt" rows="4" placeholder="Write it exactly as you would send it.">${esc(P.text||"")}</textarea></div>
         <label class="lb">How long to pause?</label>
         <div class="chips">${[["5 min",300],["10 min",600],["30 min",1800]].map(([l,s])=>'<button type="button" class="chip'+(s===P.dur?" on":"")+'" data-d="'+s+'">'+l+'</button>').join("")}</div>
         <button class="btn btn-main mt" id="ps" style="width:100%">Start pause</button>
@@ -597,8 +620,9 @@ function wPause(el){
     $$("[data-d]",el).forEach(b=>b.addEventListener("click",()=>{P.dur=+b.dataset.d}));
     $("#ps").addEventListener("click",()=>{
       sfx("start");
+      P.text=($("#pt").value||"").trim();
       P.kind=chosen(el,"k")[0]==="Check their profile"?"check":"text";
-      P.rem=P.dur;P.stage="timer";P.id=uid();
+      P.rem=P.dur;P.endAt=Date.now()+P.dur*1000;P.stage="timer";P.id=uid();
       D.pauses.push({id:P.id,date:today(),kind:P.kind,resolved:"pending"});save();
       wPause(el);
     });
@@ -609,26 +633,29 @@ function wPause(el){
     el.innerHTML=`<div class="card" style="text-align:center"><p class="note">You don’t have to decide yet.</p>
       <div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="rt" cx="60" cy="60" r="54"/><circle class="rp" id="rp" cx="60" cy="60" r="54" style="stroke-dasharray:${C};stroke-dashoffset:0"/></svg><div class="orb"></div></div>
       <div class="timer" id="tn"></div><p class="small" id="bl" style="margin-top:6px"></p><button class="btn btn-ghost btn-sm mt" id="sk">Skip</button></div>`;
+    let lastSec=-1;
     const tick=()=>{
+      P.rem=Math.max(0,Math.ceil((P.endAt-Date.now())/1000));
       const mm=Math.floor(P.rem/60),ss=P.rem%60;$("#tn").textContent=mm+":"+String(ss).padStart(2,"0");
       $("#bl").textContent=((P.dur-P.rem)%8)<4?"Breathe in":"Breathe out";
       $("#rp").style.strokeDashoffset=C*(1-P.rem/P.dur);
       if(P.rem<=0){clearInterval(P.timer);P.timer=null;P.stage="decide";SFX.play("bell");wPause(el);return}
       const el_=P.dur-P.rem;
-      if(el_%4===0&&el_>0)SFX.play(el_%8===0?"in":"out");
-      P.rem--;
+      if(el_!==lastSec){lastSec=el_;if(el_%4===0&&el_>0)SFX.play(el_%8===0?"in":"out")}
     };
-    tick();P.timer=setInterval(tick,1000);
+    tick();P.timer=setInterval(tick,500);
     $("#sk").addEventListener("click",()=>{clearInterval(P.timer);P.timer=null;P.stage="decide";wPause(el)});
     return;
   }
   if(P.stage==="decide"){
     el.innerHTML=`<div class="card sv" style="text-align:center"><h3>How do you feel now?</h3><p class="small">Whatever you choose, nothing is sent from here.</p>
+      ${P.text?`<div style="text-align:left;background:var(--bg2);border-radius:14px;padding:14px 16px;margin-top:16px"><p class="small" style="margin-bottom:6px">What you wrote before the pause:</p><p style="white-space:pre-wrap;color:var(--ink);font-size:14.5px;line-height:1.6">${esc(P.text)}</p></div><button class="btn btn-ghost btn-sm mt" id="pseal">Seal it as an unsent message</button>`:""}
       <div class="row mt" style="justify-content:center"><button class="btn btn-main" id="pk">The urge passed</button><button class="btn btn-ghost" id="pd2">I still want to</button></div></div>`;
-    $("#pk").addEventListener("click",()=>{sfx("success");finishPause("kept");P.stage="idle";toast("Noted. That took something.");rerender()});
+    if($("#pseal"))$("#pseal").addEventListener("click",()=>{D.unsent.push({id:uid(),date:today(),to:"Someone else",body:P.text,status:"sealed"});save();sfx("seal");P.text="";toast("Sealed. It stays here.");wPause(el)});
+    $("#pk").addEventListener("click",()=>{P.text="";sfx("success");finishPause("kept");P.stage="idle";toast("Noted. That took something.");rerender()});
     $("#pd2").addEventListener("click",()=>{
       sfx("soft");
-      finishPause("done");P.stage="idle";
+      P.text="";finishPause("done");P.stage="idle";
       modal('<h3>That’s your call</h3><p style="line-height:1.7">UNSENT can’t send anything for you. If you reach out, that happens outside this space. What you wrote here is only yours.</p><button class="btn btn-solid mt" data-x style="width:100%">Okay</button>');
       rerender();
     });
@@ -637,6 +664,9 @@ function wPause(el){
 
 /* ---------- UNDERSTAND ---------- */
 const S={know:[],think:[],fear:[],cat:"know"};
+function loadSort(){const o=D.sort||{};S.know=(o.know||[]).slice();S.think=(o.think||[]).slice();S.fear=(o.fear||[]).slice()}
+function keepSort(){D.sort={know:S.know.slice(),think:S.think.slice(),fear:S.fear.slice()};save()}
+loadSort();
 function rUnderstand(el){
   el.innerHTML=`<div><h1>Understand</h1><p class="sub">Not every thought is a fact.</p></div>`+
     seg([["sort","Facts and fears"],["miss","What I miss"]],V.und,"v")+'<div id="ub2" class="sv"></div>';
@@ -657,21 +687,21 @@ function uSort(el){
     <div class="cols gap">${order.map(c=>`<div class="col ${c}"><h4>${names[c]}</h4>${S[c].map((t,i)=>`<div class="tile" data-m="${c}:${i}">${esc(t)}<b data-d="${c}:${i}" aria-label="Remove">×</b></div>`).join("")}</div>`).join("")}</div>
     ${total?`<div class="card"><label class="lb">What changed when you separated them?</label><textarea id="sr" rows="3" placeholder="Optional"></textarea><div class="row mt"><button class="btn btn-main btn-sm" id="ss">Save to journal</button><button class="btn btn-ghost btn-sm" id="sc">Clear</button></div></div>`:""}`;
   $$("[data-c]",el).forEach(b=>b.addEventListener("click",()=>{S.cat=b.dataset.c;$$("[data-c]",el).forEach(x=>x.classList.toggle("on",x===b))}));
-  const add=()=>{const v=$("#si").value.trim();if(!v)return;sfx("pop");S[S.cat].push(v);uSort(el);$("#si").focus()};
+  const add=()=>{const v=$("#si").value.trim();if(!v)return;sfx("pop");S[S.cat].push(v);keepSort();uSort(el);$("#si").focus()};
   $("#sa").addEventListener("click",add);
   $("#si").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();SFX.play("pop");add()}});
   $$(".tile",el).forEach(t=>t.addEventListener("click",e=>{
     const [c,i]=t.dataset.m.split(":");
-    if(e.target.closest("[data-d]")){S[c].splice(+i,1);uSort(el);return}
-    const [it]=S[c].splice(+i,1);S[order[(order.indexOf(c)+1)%3]].push(it);uSort(el);
+    if(e.target.closest("[data-d]")){S[c].splice(+i,1);keepSort();uSort(el);return}
+    const [it]=S[c].splice(+i,1);S[order[(order.indexOf(c)+1)%3]].push(it);keepSort();uSort(el);
   }));
   if(total){
-    $("#sc").addEventListener("click",()=>{S.know=[];S.think=[];S.fear=[];uSort(el)});
+    $("#sc").addEventListener("click",()=>{S.know=[];S.think=[];S.fear=[];keepSort();uSort(el)});
     $("#ss").addEventListener("click",()=>{
       const part=(h,a)=>a.length?h+":\n- "+a.join("\n- ")+"\n\n":"";
       const r=$("#sr").value.trim();
       D.journal.push({id:uid(),date:today(),title:"Facts and fears",body:(part("I know",S.know)+part("I think",S.think)+part("I fear",S.fear)+(r?"What changed: "+r:"")).trim()});
-      save();sfx("save");S.know=[];S.think=[];S.fear=[];toast("Saved to your journal.");uSort(el);
+      save();sfx("save");S.know=[];S.think=[];S.fear=[];keepSort();toast("Saved to your journal.");uSort(el);
     });
   }
 }
@@ -719,7 +749,8 @@ function jEntries(el){
     $("#jl").innerHTML=items.length?items.map(e=>`<div class="item" data-j="${e.id}"><div class="meta"><span>${fmt(e.date)}</span></div>${e.title?'<div style="font-size:15.5px;margin-bottom:3px">'+esc(e.title)+"</div>":""}<div class="pv">${esc(e.body)}</div></div>`).join(""):'<div class="empty">'+(list.length?"No matches.":"Start anywhere. One sentence is enough.")+"</div>";
     $$("[data-j]",$("#jl")).forEach(c=>c.addEventListener("click",()=>{
       const e=D.journal.find(x=>x.id===c.dataset.j);
-      const m=modal(`<h3>${esc(e.title||"Untitled")}</h3><p class="small" style="margin-bottom:14px">${fmt(e.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(e.body)}</p><div class="row mt"><button class="btn btn-danger btn-sm" id="jd">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
+      const m=modal(`<h3>${esc(e.title||"Untitled")}</h3><p class="small" style="margin-bottom:14px">${fmt(e.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(e.body)}</p><div class="row mt"><button class="btn btn-ghost btn-sm" id="je">Edit</button><button class="btn btn-danger btn-sm" id="jd">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
+      $("#je",m).addEventListener("click",()=>editEntry(e));
       $("#jd",m).addEventListener("click",()=>{closeModal();confirmBox("Delete this entry?","This can’t be undone.","Delete",()=>{D.journal=D.journal.filter(x=>x.id!==e.id);save();rerender()})});
     }));
   };
@@ -734,9 +765,18 @@ function jPattern(el){
     const path=xs.map((x,i)=>(i?"L":"M")+x.toFixed(1)+","+ys[i].toFixed(1)).join(" ");
     graph=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:140px" role="img" aria-label="Emotional weight over the last 30 days"><path d="${path} L${xs[xs.length-1]},${h} L${xs[0]},${h}Z" fill="var(--glow)"/><path d="${path}" fill="none" stroke="var(--violet)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:dash 1.4s var(--ease) .1s forwards"/>${xs.map((x,i)=>'<circle cx="'+x.toFixed(1)+'" cy="'+ys[i].toFixed(1)+'" r="2.8" fill="var(--violet)"/>').join("")}</svg><div class="hint"><span>Last 30 days</span><span>Higher means heavier</span></div><style>@keyframes dash{to{stroke-dashoffset:0}}</style>`;
   }
+  const recent=D.checkins.filter(c=>ago(c.date)<=29), cnt={};
+  recent.forEach(c=>(c.reasons||[]).forEach(r=>{cnt[r]=(cnt[r]||0)+1}));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4), mx=top.length?top[0][1]:1;
+  const avg=f=>{const a=D.checkins.filter(f);return a.length?Math.round(a.reduce((t,c)=>t+c.weight,0)/a.length):null};
+  const a1=avg(c=>ago(c.date)<=6), a0=avg(c=>ago(c.date)>=7&&ago(c.date)<=13);
+  let wk="";
+  if(a1!=null&&a0!=null){const df=a1-a0;wk="This week averaged "+a1+"%, "+(Math.abs(df)<5?"about the same as":(df<0?"lighter than":"heavier than"))+" last week ("+a0+"%).";}
+  else if(a1!=null)wk="This week averages "+a1+"%.";
+  const insHtml=(wk||top.length)?'<div class="card"><h3>What’s been showing up</h3>'+(wk?'<p style="margin:8px 0 6px;line-height:1.7">'+wk+'</p>':"")+top.map(([r,n])=>'<div style="margin-top:14px"><div class="between" style="font-size:14.5px"><span style="color:var(--ink1)">'+esc(r)+'</span><span class="small">'+n+(n===1?" day":" days")+'</span></div><div class="bar"><i style="width:'+Math.round(n/mx*100)+'%"></i></div></div>').join("")+'<p class="small mt">Patterns, not verdicts. Hard days are part of it.</p></div>':"";
   const st=[["Unsent messages",D.unsent.length],["Times paused",D.pauses.length],["Urges that passed",D.pauses.filter(x=>x.resolved==="kept").length]];
   el.innerHTML=`<div class="card"><h3>Your pattern</h3><p class="small" style="margin-bottom:16px">Not a measure of recovery. Just what you’ve noticed.</p>${graph}</div>
-    <div class="card"><h3>So far</h3>${st.map(([k,v])=>'<div class="between" style="padding:12px 0;border-top:1px solid var(--line);font-size:15px"><span style="color:var(--ink1)">'+k+'</span><span>'+v+"</span></div>").join("")}</div>`;
+    ${insHtml}<div class="card"><h3>So far</h3>${st.map(([k,v])=>'<div class="between" style="padding:12px 0;border-top:1px solid var(--line);font-size:15px"><span style="color:var(--ink1)">'+k+'</span><span>'+v+"</span></div>").join("")}</div>`;
 }
 function jLetters(el){
   const list=D.letters.slice().sort((a,b)=>b.date.localeCompare(a.date));
@@ -753,23 +793,81 @@ function jLetters(el){
   $$("[data-l]",el).forEach(c=>c.addEventListener("click",()=>{
     const l=D.letters.find(x=>x.id===c.dataset.l);
     if(l.unlock>today()){toast("Opens on "+fmt(l.unlock)+".");return}
-    const m=modal(`<h3>You wrote this for today</h3><p class="small" style="margin-bottom:14px">Written ${fmt(l.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(l.body)}</p><div class="row mt"><button class="btn btn-danger btn-sm" id="ldl">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
+    const m=modal(`<h3>You wrote this for today</h3><p class="small" style="margin-bottom:14px">Written ${fmt(l.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(l.body)}</p><div class="row mt"><button class="btn btn-ghost btn-sm" id="lde">Edit</button><button class="btn btn-danger btn-sm" id="ldl">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
+    $("#lde",m).addEventListener("click",()=>editLetter(l));
     $("#ldl",m).addEventListener("click",()=>{closeModal();confirmBox("Delete this letter?","This can’t be undone.","Delete",()=>{D.letters=D.letters.filter(x=>x.id!==l.id);save();rerender()})});
   }));
 }
 
 /* ---------- SETTINGS ---------- */
+function exportData(){
+  D.lastBackup=today();save();
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:"application/json"}));
+  a.download="unsent-backup-"+today()+".json";document.body.appendChild(a);a.click();a.remove();
+  SFX.play("success");toast("Backup saved to your downloads.");
+}
+function helpModal(){
+  modal('<h3>You don’t have to hold this alone</h3><p style="line-height:1.7">If you’re in danger, or thinking about hurting yourself, please reach out to someone right now.</p>'+
+    '<div class="row mt"><a class="btn btn-main btn-sm" href="tel:1553">Call 1553</a><a class="btn btn-ghost btn-sm" href="tel:+639178998727">0917-899-8727</a><a class="btn btn-ghost btn-sm" href="tel:911">Call 911</a></div>'+
+    '<p class="small mt" style="line-height:1.75">Philippines: NCMH Crisis Hotline 1553 (landline, toll-free), 0966-351-4518 or 0917-899-8727. Emergency: 911. Elsewhere, contact your local crisis line or emergency number.</p>'+
+    '<p class="small mt" style="line-height:1.75">For the next few minutes: put the phone down, drink some water, and tell one person you trust that today is hard.</p>'+
+    '<button class="btn btn-solid mt" data-x style="width:100%">Close</button>');
+}
+function editEntry(e){
+  closeModal();
+  const b=modal('<h3>Edit entry</h3><div class="field"><input type="text" id="et" placeholder="Title (optional)" value="'+esc(e.title||"")+'"></div><div class="field"><textarea id="eb" rows="8">'+esc(e.body)+'</textarea></div><div class="row"><button class="btn btn-main" id="es">Save changes</button><button class="btn btn-ghost" data-x>Cancel</button></div>');
+  $("#es",b).addEventListener("click",()=>{
+    const nb=$("#eb",b).value.trim();if(!nb){toast("An entry can’t be empty.");return}
+    e.title=$("#et",b).value.trim();e.body=nb;save();sfx("save");closeModal();toast("Updated.");rerender();
+  });
+}
+function editLetter(l){
+  closeModal();
+  const b=modal('<h3>Edit letter</h3><div class="field"><textarea id="eb" rows="8">'+esc(l.body)+'</textarea></div><div class="field"><label class="lb">Unlock on</label><input type="date" id="ed" value="'+esc(l.unlock)+'"></div><div class="row"><button class="btn btn-main" id="es">Save changes</button><button class="btn btn-ghost" data-x>Cancel</button></div>');
+  $("#es",b).addEventListener("click",()=>{
+    const nb=$("#eb",b).value.trim();if(!nb){toast("A letter can’t be empty.");return}
+    l.body=nb;l.unlock=$("#ed",b).value||l.unlock;save();sfx("save");closeModal();toast("Updated.");rerender();
+  });
+}
+function makeIcs(){
+  const t=((D.remind&&D.remind.time)||"20:00").split(":"), d=new Date(), p2=n=>String(n).padStart(2,"0");
+  const start=d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+"T"+p2(t[0])+p2(t[1])+"00";
+  const url=/^https?:/.test(location.href)?location.href.split("#")[0].split("?")[0]:"";
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//UNSENT//Check-in//EN","BEGIN:VEVENT","UID:unsent-checkin-"+uid()+"@unsent","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z","DTSTART:"+start,"DURATION:PT10M","RRULE:FREQ=DAILY","SUMMARY:UNSENT check-in","DESCRIPTION:Take a quiet minute to check in with yourself."+(url?" "+url:""),"BEGIN:VALARM","TRIGGER:PT0S","ACTION:DISPLAY","DESCRIPTION:UNSENT check-in","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));
+  a.download="unsent-daily-checkin.ics";document.body.appendChild(a);a.click();a.remove();
+  toast("Open the file to add it to your calendar.");
+}
 function rSettings(el){
   const th=D.theme||"dark";
   el.innerHTML=`<div><h1>Settings</h1><p class="sub">Everything stays on this device.</p></div>
     <div class="card"><h3>Appearance</h3><div class="setrow"><span class="l">Theme</span>${seg([["dark","Dark"],["light","Light"]],th,"th",true)}</div></div>
-    <div class="card"><h3>Sound</h3><div class="setrow"><div><div class="l">Sound effects</div><div class="small">Soft taps and gentle chimes</div></div>${seg([["off","Off"],["on","On"]],D.sound!==false?"on":"off","snd",true)}</div></div>
+    <div class="card"><h3>Sound and touch</h3>
+      <div class="setrow"><div><div class="l">Sound effects</div><div class="small">Soft taps and gentle chimes</div></div>${seg([["off","Off"],["on","On"]],D.sound!==false?"on":"off","snd",true)}</div>
+      <div class="setrow"><div><div class="l">Gentle vibration</div><div class="small">Android phones only. iPhone doesn’t allow it in web apps.</div></div>${seg([["off","Off"],["on","On"]],D.haptics!==false?"on":"off","hap",true)}</div></div>
+    <div class="card"><h3>Daily reminder</h3>
+      <p class="small" style="margin:6px 0 4px">Nothing leaves your device, so UNSENT can’t send notifications by itself. Two private options:</p>
+      <div class="setrow"><div><div class="l">In-app nudge</div><div class="small">A gentle note on Today if you haven’t checked in by this time</div></div>${seg([["off","Off"],["on","On"]],(D.remind&&D.remind.on===false)?"off":"on","rm",true)}</div>
+      <div class="setrow"><span class="l">Time</span><input type="time" id="rt" value="${esc((D.remind&&D.remind.time)||"20:00")}" style="max-width:160px"></div>
+      <button class="btn btn-ghost btn-sm" id="rics" style="width:100%">Add a daily alert to my calendar</button>
+      <p class="small mt">Downloads a calendar file. Open it and your phone’s calendar will remind you every day at that time.</p></div>
     <div class="card"><h3>Privacy</h3>
-      <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits to open UNSENT on this device</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
+      <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits. Locks again after 30 seconds away. It hides your entries from a quick look, but it isn’t encryption.</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
       ${D.pin?'<button class="btn btn-ghost btn-sm" id="pc">Change passcode</button>':""}</div>
     <div class="card"><h3>Install UNSENT</h3>${standalone()?'<p style="color:var(--sage);margin-top:8px">✓ You’re using the installed app.</p>':'<p class="small" style="margin:6px 0 16px">Open it like a normal app, full screen and from your home screen.</p><button class="btn btn-main" id="ins" style="width:100%">Install app</button><div id="gbox">'+guideHtml(platform())+"</div>"}</div>
-    <div class="card"><h3>Your data</h3><p class="small" style="margin:6px 0 16px">Saved in this browser only. There’s no account and no server. Export a backup before clearing your browser data.</p>
+    <div class="card"><h3>Your data</h3><p class="small" style="margin:6px 0 16px">Saved in this browser only. There’s no account and no server. Export a backup before clearing your browser data. ${D.lastBackup?"Last backup: "+fmt(D.lastBackup)+".":"No backup yet."}</p>
       <div class="row"><button class="btn btn-ghost btn-sm" id="ex">Export</button><button class="btn btn-ghost btn-sm" id="im">Import</button><input type="file" id="imf" accept="application/json" class="hidden"><button class="btn btn-danger btn-sm" id="del">Delete everything</button></div></div>
+    <div class="card"><h3>Support the developer</h3>
+      <p class="small" style="margin:6px 0 10px">UNSENT is free. If it helped you, a small tip or a follow means a lot. Thank you.</p>
+      <div class="setrow"><div><div class="l">GCash</div><div class="small">09272098239</div></div><button class="btn btn-ghost btn-sm" data-copy="09272098239">Copy number</button></div>
+      <div class="setrow"><div><div class="l">PayPal (email)</div><div class="small" style="word-break:break-all">jhoerillpebojot@gmail.com</div></div><button class="btn btn-ghost btn-sm" data-copy="jhoerillpebojot@gmail.com">Copy email</button></div>
+      <div class="setrow"><div><div class="l">PayPal (mobile)</div><div class="small">09272098239</div></div><button class="btn btn-ghost btn-sm" data-copy="09272098239">Copy number</button></div>
+      <div class="setrow"><div><div class="l">Follow and support</div><div class="small">Facebook, Instagram and TikTok</div></div></div>
+      <div class="row">
+        <a class="btn btn-main btn-sm" href="https://www.facebook.com/share/19iH3xpGVP/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a class="btn btn-main btn-sm" href="https://www.instagram.com/pbjni_?dlrf=eDUyNGVuZTk4N3Vn&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="btn btn-main btn-sm" href="https://www.tiktok.com/@pbj_ni" target="_blank" rel="noopener noreferrer">TikTok</a>
+      </div></div>
     <div class="card"><h3>Need more support?</h3><p style="font-size:14px;line-height:1.7;margin-top:8px">UNSENT is a reflection tool, not a therapist or emergency service.</p><p class="small" style="line-height:1.75;margin-top:12px">In the Philippines, you can call the National Center for Mental Health Crisis Hotline at 1553 (landline, toll-free) or 0966-351-4518 / 0917-899-8727. In immediate danger, contact local emergency services (911) or go to the nearest emergency room. Elsewhere, reach out to a local crisis line or someone you trust.</p></div>`;
   $$("[data-th]",el).forEach(b=>b.addEventListener("click",()=>{D.theme=b.dataset.th;save();theme();rerender()}));
   $$("[data-snd]",el).forEach(b=>b.addEventListener("click",()=>{
@@ -777,24 +875,38 @@ function rSettings(el){
     if(D.sound)sfx("save");
     rerender();
   }));
+  $$("[data-hap]",el).forEach(b=>b.addEventListener("click",()=>{
+    D.haptics=b.dataset.hap==="on";save();
+    if(D.haptics)sfx("save");
+    rerender();
+  }));
+  $$("[data-rm]",el).forEach(b=>b.addEventListener("click",()=>{
+    D.remind=Object.assign({on:true,time:"20:00"},D.remind,{on:b.dataset.rm==="on"});save();rerender();
+  }));
+  $("#rt").addEventListener("change",e=>{D.remind=Object.assign({on:true,time:"20:00"},D.remind,{time:e.target.value||"20:00"});save();toast("Reminder time saved.")});
+  $("#rics").addEventListener("click",makeIcs);
   $$("[data-pin]",el).forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.pin==="on"){if(!D.pin)lockOpen("setup",()=>rerender())}
     else if(D.pin)confirmBox("Turn off passcode?","UNSENT will open without a code on this device.","Turn off",()=>{D.pin=null;save();rerender()});
   }));
   if($("#pc"))$("#pc").addEventListener("click",()=>lockOpen("setup",()=>rerender()));
   if($("#ins"))$("#ins").addEventListener("click",doInstall);
-  $("#ex").addEventListener("click",()=>{
-    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:"application/json"}));
-    a.download="unsent-backup-"+today()+".json";document.body.appendChild(a);a.click();a.remove();toast("Exported.");
-  });
+  $$("[data-copy]",el).forEach(b=>b.addEventListener("click",async()=>{
+    const v=b.dataset.copy;let ok=false;
+    try{await navigator.clipboard.writeText(v);ok=true}catch(e){
+      try{const t=document.createElement("textarea");t.value=v;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove()}catch(x){}
+    }
+    toast(ok?"Copied: "+v:"Couldn’t copy. Please copy it manually: "+v);
+  }));
+  $("#ex").addEventListener("click",()=>{exportData();rerender()});
   $("#im").addEventListener("click",()=>$("#imf").click());
   $("#imf").addEventListener("change",e=>{
     const f=e.target.files[0];if(!f)return;const r=new FileReader();
-    r.onload=()=>{try{const p=JSON.parse(r.result);D=Object.assign(blank(),p);save();theme();SFX.play("success");toast("Imported.");go("today")}catch(x){SFX.play("error");toast("That file isn’t UNSENT data.")}};
+    r.onload=()=>{try{const p=JSON.parse(r.result);D=Object.assign(blank(),p);loadSort();save();theme();SFX.play("success");toast("Imported.");go("today")}catch(x){SFX.play("error");toast("That file isn’t UNSENT data.")}};
     r.readAsText(f);
   });
   $("#del").addEventListener("click",()=>confirmBox("Delete everything?","All entries, messages and settings on this device will be erased. This can’t be undone.","Delete everything",()=>{
-    localStorage.removeItem(KEY);localStorage.removeItem("unsentAppData");D=blank();theme();
+    localStorage.removeItem(KEY);localStorage.removeItem("unsentAppData");D=blank();loadSort();theme();
     $("#app").classList.add("hidden");$("#welcome").classList.remove("hidden");toast("Everything deleted.");
   }));
 }
@@ -809,11 +921,27 @@ async function sha(s){
   if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
   return "f"+s.split("").reduce((h,c)=>(h<<5)-h+c.charCodeAt(0)|0,0);
 }
-let L={mode:"enter",buf:"",first:null,ok:null,busy:false};
-function lockOpen(mode,ok){L={mode,buf:"",first:null,ok,busy:false};$("#lock").classList.remove("hidden");lockDraw()}
+async function hashPin(pin,salt){
+  if(!(window.crypto&&crypto.subtle))return null;
+  const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveBits"]);
+  const b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(salt),iterations:150000,hash:"SHA-256"},k,256);
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+async function makePin(pin){const salt=uid()+uid();const h=await hashPin(pin,salt);return h?"p2:"+salt+":"+h:await sha(pin)}
+async function checkPin(pin){
+  if(!D.pin)return false;
+  if(D.pin.indexOf("p2:")===0){const parts=D.pin.split(":");return (await hashPin(pin,parts[1]))===parts[2]}
+  const ok=(await sha(pin))===D.pin;
+  if(ok){D.pin=await makePin(pin);save()}   // quietly upgrade an older, unsalted passcode
+  return ok;
+}
+let L={mode:"enter",buf:"",first:null,ok:null,busy:false,relock:false};
+function lockOpen(mode,ok,relock){L={mode,buf:"",first:null,ok,busy:false,relock:!!relock};$("#lock").classList.remove("hidden");$("#lock-x").classList.toggle("hidden",!!relock);lockDraw()}
 function lockDraw(){
-  const t={enter:["Enter your passcode","Only you can open this."],setup:["Choose a passcode","4 digits. Something only you know."],confirm:["Confirm your passcode","Enter it once more."]}[L.mode];
+  const t={enter:["Enter your passcode","Welcome back."],setup:["Choose a passcode","4 digits. Something only you know."],confirm:["Confirm your passcode","Enter it once more."]}[L.mode];
   $("#lock-t").textContent=t[0];$("#lock-s").textContent=t[1];
+  const wait=Math.ceil(((D.lockUntil||0)-Date.now())/1000);
+  if(L.mode==="enter"&&wait>0)$("#lock-s").textContent="Too many tries. Try again in "+(wait>=60?Math.ceil(wait/60)+" min":wait+"s")+".";
   $("#lock-dots").innerHTML=[0,1,2,3].map(i=>'<i class="'+(i<L.buf.length?"f":"")+'"></i>').join("");
   $("#lock-pad").innerHTML=["1","2","3","4","5","6","7","8","9","","0","⌫"].map(k=>k===""?"<div></div>":'<button type="button" class="'+(k==="⌫"?"g":"")+'" data-k="'+k+'">'+k+"</button>").join("");
   $$("#lock-pad [data-k]").forEach(b=>b.addEventListener("click",()=>lockKey(b.dataset.k)));
@@ -821,11 +949,12 @@ function lockDraw(){
 async function lockKey(k){
   if(L.busy)return;
   if(k==="⌫"){SFX.play("back");L.buf=L.buf.slice(0,-1);lockDraw();return}
+  if(L.mode==="enter"&&(D.lockUntil||0)>Date.now()){SFX.play("error");lockDraw();return}
   if(L.buf.length>=4)return;SFX.key(k);L.buf+=k;lockDraw();if(L.buf.length<4)return;
-  const bad=()=>{SFX.play("error");L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();$("#lock-s").textContent="Try again."},450)};
-  if(L.mode==="enter"){if(await sha(L.buf)===D.pin){SFX.play("unlock");$("#lock").classList.add("hidden");L.ok&&L.ok()}else bad()}
+  const bad=()=>{SFX.play("error");L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();if(!((D.lockUntil||0)>Date.now()))$("#lock-s").textContent="Try again."},450)};
+  if(L.mode==="enter"){if(await checkPin(L.buf)){D.fails=0;D.lockUntil=0;save();SFX.play("unlock");$("#lock").classList.add("hidden");L.ok&&L.ok()}else{D.fails=(D.fails||0)+1;if(D.fails%5===0)D.lockUntil=Date.now()+Math.min(15,Math.pow(2,D.fails/5-1)/2)*60000;save();bad()}}
   else if(L.mode==="setup"){L.first=L.buf;L.buf="";L.mode="confirm";lockDraw()}
-  else{ if(L.buf===L.first){D.pin=await sha(L.buf);save();SFX.play("unlock");$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
+  else{ if(L.buf===L.first){D.pin=await makePin(L.buf);D.fails=0;D.lockUntil=0;save();SFX.play("unlock");$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
 }
 $("#lock-x").addEventListener("click",()=>{
   $("#lock").classList.add("hidden");
@@ -848,6 +977,12 @@ if(standalone())$("#w-inst").remove();
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{})});
 }
+let hiddenAt=0;
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){hiddenAt=Date.now();return}
+  const away=hiddenAt?Date.now()-hiddenAt:0;hiddenAt=0;
+  if(D.pin&&away>30000&&!$("#app").classList.contains("hidden")&&$("#lock").classList.contains("hidden"))lockOpen("enter",()=>{},true);
+});
 theme();
 })();
 </script>
