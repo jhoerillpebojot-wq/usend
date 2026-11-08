@@ -260,7 +260,7 @@ const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- DATA ---------- */
 const KEY="unsent2";
-const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null});
+const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null,sound:true});
 function load(){
   try{
     const r=localStorage.getItem(KEY);
@@ -284,6 +284,111 @@ let D=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast("Couldn’t save. Browser storage may be full.")}}
 function toast(m){const e=document.createElement("div");e.className="toast";e.textContent=m;$("#toasts").appendChild(e);setTimeout(()=>{e.style.transition="opacity .4s,transform .4s";e.style.opacity="0";e.style.transform="translateY(8px)";setTimeout(()=>e.remove(),400)},2400)}
 
+/* ---------- SOUND ----------
+   Soft, synthesized with the Web Audio API. No audio files needed.
+   Everything is quiet, rounded (sine waves) and passed through a gentle low-pass + light echo. */
+const SFX=(function(){
+  let ctx=null,master=null,send=null,lastTick=0,skip=false;
+  const N={A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25,G5:783.99,A5:880,C6:1046.5,E6:1318.5};
+  const on=()=>D.sound!==false;
+  function init(){
+    if(!ctx){
+      const A=window.AudioContext||window.webkitAudioContext;
+      if(!A)return null;
+      try{ctx=new A()}catch(e){return null}
+      const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=3200;lp.Q.value=.3;
+      master=ctx.createGain();master.gain.value=.6;master.connect(lp);lp.connect(ctx.destination);
+      send=ctx.createGain();send.gain.value=.22;
+      const dl=ctx.createDelay(1);dl.delayTime.value=.17;
+      const fb=ctx.createGain();fb.gain.value=.32;
+      const fl=ctx.createBiquadFilter();fl.type="lowpass";fl.frequency.value=1800;
+      send.connect(dl);dl.connect(fl);fl.connect(fb);fb.connect(dl);fl.connect(lp);
+    }
+    if(ctx.state==="suspended")ctx.resume().catch(()=>{});
+    return ctx;
+  }
+  function tone(f,o){
+    o=o||{};
+    const t0=ctx.currentTime+(o.at||0), d=o.d||.15, v=o.v||.06, a=o.a||.008;
+    const os=ctx.createOscillator(), g=ctx.createGain();
+    os.type=o.t||"sine";
+    os.frequency.setValueAtTime(f,t0);
+    if(o.to)os.frequency.exponentialRampToValueAtTime(o.to,t0+d);
+    g.gain.setValueAtTime(.0001,t0);
+    g.gain.exponentialRampToValueAtTime(v,t0+a);
+    g.gain.exponentialRampToValueAtTime(.0001,t0+d);
+    os.connect(g);g.connect(master);g.connect(send);
+    os.start(t0);os.stop(t0+d+.05);
+  }
+  function air(d,v,f1,f2){
+    const t0=ctx.currentTime, len=Math.floor(ctx.sampleRate*d);
+    const buf=ctx.createBuffer(1,len,ctx.sampleRate), ch=buf.getChannelData(0);
+    for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const bp=ctx.createBiquadFilter();bp.type="bandpass";bp.Q.value=1.2;
+    bp.frequency.setValueAtTime(f1,t0);bp.frequency.exponentialRampToValueAtTime(f2,t0+d);
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(.0001,t0);
+    g.gain.exponentialRampToValueAtTime(v,t0+d*.35);
+    g.gain.exponentialRampToValueAtTime(.0001,t0+d);
+    src.connect(bp);bp.connect(g);g.connect(master);g.connect(send);
+    src.start(t0);
+  }
+  const S={
+    tap:()=>tone(480,{d:.07,v:.045,to:420}),
+    nav:()=>{tone(392,{d:.13,v:.055});tone(587,{d:.15,v:.035,at:.04})},
+    seg:()=>tone(523,{d:.09,v:.04}),
+    chipOn:()=>{tone(N.E5,{d:.13,v:.055});tone(988,{d:.1,v:.022,at:.03})},
+    chipOff:()=>tone(392,{d:.09,v:.035,to:349}),
+    open:()=>{tone(440,{d:.14,v:.04});tone(660,{d:.16,v:.025,at:.05})},
+    pop:()=>tone(700,{d:.1,v:.055,to:920}),
+    soft:()=>tone(330,{d:.26,v:.045,to:294}),
+    save:()=>{tone(N.C5,{d:.3,v:.05});tone(N.E5,{d:.3,v:.05,at:.07});tone(N.G5,{d:.4,v:.05,at:.14})},
+    seal:()=>{tone(196,{d:.55,v:.09,to:150});tone(294,{d:.5,v:.04,at:.02});tone(1175,{d:.45,v:.018,at:.09})},
+    release:()=>{air(.9,.05,400,2400);tone(N.C5,{d:.7,v:.04});tone(N.G5,{d:.8,v:.035,at:.12});tone(N.C6,{d:.9,v:.025,at:.24})},
+    start:()=>{tone(174.6,{d:1.7,v:.07,a:.06});tone(261.6,{d:1.7,v:.035,a:.08,at:.02})},
+    in:()=>tone(262,{d:1.6,v:.022,a:.6,to:330}),
+    out:()=>tone(330,{d:1.8,v:.022,a:.3,to:247}),
+    bell:()=>{tone(N.C5,{d:2.4,v:.06,a:.01});tone(N.G5,{d:2.6,v:.04,a:.01,at:.01});tone(1568,{d:1.6,v:.012,a:.01,at:.02})},
+    success:()=>{tone(N.C5,{d:.8,v:.05});tone(N.E5,{d:.8,v:.05,at:.1});tone(N.G5,{d:.9,v:.05,at:.2});tone(N.C6,{d:1.1,v:.045,at:.32})},
+    chime:()=>{tone(N.G5,{d:.9,v:.045});tone(1175,{d:.9,v:.022,at:.08})},
+    delete:()=>tone(220,{d:.22,v:.055,to:150}),
+    back:()=>tone(300,{d:.07,v:.035}),
+    error:()=>{tone(233,{d:.2,v:.055});tone(196,{d:.28,v:.055,at:.14})},
+    unlock:()=>{tone(N.C5,{d:.5,v:.05});tone(N.G5,{d:.5,v:.05,at:.09});tone(N.C6,{d:.7,v:.045,at:.18})},
+    enter:()=>{tone(261.6,{d:1.5,v:.05,a:.18});tone(329.6,{d:1.5,v:.04,a:.2,at:.04});tone(392,{d:1.5,v:.04,a:.22,at:.08});tone(N.C5,{d:1.4,v:.03,a:.2,at:.2})}
+  };
+  const SCALE=[262,294,330,392,440,523,587,659,784,880];
+  return {
+    init,
+    play(n){if(!on()||!init()||!S[n])return;try{S[n]()}catch(e){}},
+    // for sounds triggered by a click handler: also stops the generic click sound from doubling up
+    click(n){this.play(n);skip=true;setTimeout(()=>{skip=false},0)},
+    eatSkip(){if(skip){skip=false;return true}return false},
+    key(d){if(!on()||!init())return;try{tone(SCALE[+d%10],{d:.14,v:.05})}catch(e){}},
+    tick(val){
+      const t=Date.now();if(t-lastTick<70||!on()||!init())return;lastTick=t;
+      try{tone(300+val*3.2,{d:.05,v:.03})}catch(e){}
+    }
+  };
+})();
+const sfx=(n)=>SFX.click(n);
+// unlock audio on the first touch / click (browsers require a gesture)
+["pointerdown","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,()=>SFX.init(),{capture:true,passive:true}));
+// generic soft sounds for everything tappable (specific actions use sfx() and skip this)
+document.addEventListener("click",e=>{
+  if(SFX.eatSkip())return;
+  const t=e.target;if(!t||!t.closest)return;
+  if(t.closest("#lock-pad"))return;
+  let b;
+  if(t.closest("nav.tabs button"))SFX.play("nav");
+  else if((b=t.closest(".chip")))SFX.play(b.classList.contains("on")?"chipOn":"chipOff");
+  else if(t.closest(".seg button"))SFX.play("seg");
+  else if(t.closest(".tile b"))SFX.play("soft");
+  else if(t.closest(".item,.quick button,.tile"))SFX.play("open");
+  else if(t.closest(".btn,.link"))SFX.play("tap");
+});
+
 /* ---------- MODAL ---------- */
 function modal(html){
   closeModal();
@@ -299,7 +404,7 @@ function closeModal(){const m=$("#modal");if(m)m.remove();document.body.style.ov
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 function confirmBox(title,body,label,fn){
   const m=modal('<h3>'+title+'</h3><p>'+body+'</p><div class="row mt" style="justify-content:flex-end"><button class="btn btn-ghost" data-x>Cancel</button><button class="btn btn-danger" id="yes">'+label+'</button></div>');
-  $("#yes",m).addEventListener("click",()=>{closeModal();fn()});
+  $("#yes",m).addEventListener("click",()=>{sfx("delete");closeModal();fn()});
 }
 function seg(items,cur,k,flat){return '<div class="seg'+(flat?" flat":"")+'">'+items.map(([v,l])=>'<button class="'+(v===cur?"on":"")+'" data-'+k+'="'+v+'">'+l+'</button>').join("")+'</div>'}
 function chips(list,k,on){return '<div class="chips">'+list.map(o=>'<button type="button" class="chip'+(on&&on.includes(o)?" on":"")+'" data-'+k+'="'+esc(o)+'">'+o+'</button>').join("")+'</div>'}
@@ -363,7 +468,7 @@ document.addEventListener("click",e=>{
 });
 let deferred=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});
-window.addEventListener("appinstalled",()=>{deferred=null;toast("UNSENT installed.");$$("#w-inst,#nd").forEach(x=>x.remove())});
+window.addEventListener("appinstalled",()=>{deferred=null;toast("UNSENT installed.");SFX.play("success");$$("#w-inst,#nd").forEach(x=>x.remove())});
 async function doInstall(){
   if(standalone()){toast("You’re already using the installed app.");return}
   if(deferred){const d=deferred;deferred=null;d.prompt();try{await d.userChoice}catch(e){}return}
@@ -412,13 +517,13 @@ function rToday(el){
     </div>`;
   const s=$("#ws"), paint=()=>s.style.setProperty("--p",s.value+"%");
   paint();
-  s.addEventListener("input",()=>{paint();$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value)});
+  s.addEventListener("input",()=>{paint();$("#wv").textContent=s.value+"%";$("#wm").textContent=msg(+s.value);SFX.tick(+s.value)});
   pick(el,"r",true);
   $("#ci").addEventListener("click",()=>{
     const e={date:today(),weight:+s.value,reasons:chosen(el,"r")};
     const i=D.checkins.findIndex(c=>c.date===today());
     if(i>-1)D.checkins[i]=e;else D.checkins.push(e);
-    save();const b=$("#ci");b.classList.add("done");b.textContent="Saved ✓";toast("Check-in saved.");
+    save();sfx("save");const b=$("#ci");b.classList.add("done");b.textContent="Saved ✓";toast("Check-in saved.");
     setTimeout(rerender,reduced()?0:900);
   });
   $$("[data-q]",el).forEach(b=>b.addEventListener("click",()=>{const [p,s]=b.dataset.q.split(":");go(p,s)}));
@@ -454,6 +559,7 @@ function wUnsent(el){
   const add=st=>{
     const body=$("#ub").value.trim();if(!body){toast("Write a sentence first.");return}
     D.unsent.push({id:uid(),date:today(),to:chosen(el,"to")[0]||"Someone else",body,status:st});save();
+    sfx(st==="sealed"?"seal":"release");
     $("#seal").disabled=true;$("#rel").disabled=true;
     $("#uc").classList.add(st==="sealed"?"sealing":"releasing");
     toast(st==="sealed"?"Sealed. It stays here.":"Released.");
@@ -465,7 +571,7 @@ function wUnsent(el){
     const m=D.unsent.find(x=>x.id===c.dataset.m);
     const b=modal(`<h3>${esc(m.to)}</h3><p class="small" style="margin-bottom:14px">${fmt(m.date)}</p><p style="white-space:pre-wrap;line-height:1.7;color:var(--ink)">${esc(m.body)}</p>
       <div class="row mt">${m.status!=="released"?'<button class="btn btn-ghost btn-sm" id="mr">Mark released</button>':""}<button class="btn btn-danger btn-sm" id="md">Delete</button><button class="btn btn-ghost btn-sm" data-x>Close</button></div>`);
-    const mr=$("#mr",b);if(mr)mr.addEventListener("click",()=>{m.status="released";save();closeModal();rerender()});
+    const mr=$("#mr",b);if(mr)mr.addEventListener("click",()=>{sfx("release");m.status="released";save();closeModal();rerender()});
     $("#md",b).addEventListener("click",()=>{closeModal();confirmBox("Delete this message?","This can’t be undone.","Delete",()=>{D.unsent=D.unsent.filter(x=>x.id!==m.id);save();rerender()})});
   }));
 }
@@ -490,6 +596,7 @@ function wPause(el){
     pick(el,"k",false);pick(el,"d",false);
     $$("[data-d]",el).forEach(b=>b.addEventListener("click",()=>{P.dur=+b.dataset.d}));
     $("#ps").addEventListener("click",()=>{
+      sfx("start");
       P.kind=chosen(el,"k")[0]==="Check their profile"?"check":"text";
       P.rem=P.dur;P.stage="timer";P.id=uid();
       D.pauses.push({id:P.id,date:today(),kind:P.kind,resolved:"pending"});save();
@@ -506,7 +613,9 @@ function wPause(el){
       const mm=Math.floor(P.rem/60),ss=P.rem%60;$("#tn").textContent=mm+":"+String(ss).padStart(2,"0");
       $("#bl").textContent=((P.dur-P.rem)%8)<4?"Breathe in":"Breathe out";
       $("#rp").style.strokeDashoffset=C*(1-P.rem/P.dur);
-      if(P.rem<=0){clearInterval(P.timer);P.timer=null;P.stage="decide";wPause(el);return}
+      if(P.rem<=0){clearInterval(P.timer);P.timer=null;P.stage="decide";SFX.play("bell");wPause(el);return}
+      const el_=P.dur-P.rem;
+      if(el_%4===0&&el_>0)SFX.play(el_%8===0?"in":"out");
       P.rem--;
     };
     tick();P.timer=setInterval(tick,1000);
@@ -516,8 +625,9 @@ function wPause(el){
   if(P.stage==="decide"){
     el.innerHTML=`<div class="card sv" style="text-align:center"><h3>How do you feel now?</h3><p class="small">Whatever you choose, nothing is sent from here.</p>
       <div class="row mt" style="justify-content:center"><button class="btn btn-main" id="pk">The urge passed</button><button class="btn btn-ghost" id="pd2">I still want to</button></div></div>`;
-    $("#pk").addEventListener("click",()=>{finishPause("kept");P.stage="idle";toast("Noted. That took something.");rerender()});
+    $("#pk").addEventListener("click",()=>{sfx("success");finishPause("kept");P.stage="idle";toast("Noted. That took something.");rerender()});
     $("#pd2").addEventListener("click",()=>{
+      sfx("soft");
       finishPause("done");P.stage="idle";
       modal('<h3>That’s your call</h3><p style="line-height:1.7">UNSENT can’t send anything for you. If you reach out, that happens outside this space. What you wrote here is only yours.</p><button class="btn btn-solid mt" data-x style="width:100%">Okay</button>');
       rerender();
@@ -547,9 +657,9 @@ function uSort(el){
     <div class="cols gap">${order.map(c=>`<div class="col ${c}"><h4>${names[c]}</h4>${S[c].map((t,i)=>`<div class="tile" data-m="${c}:${i}">${esc(t)}<b data-d="${c}:${i}" aria-label="Remove">×</b></div>`).join("")}</div>`).join("")}</div>
     ${total?`<div class="card"><label class="lb">What changed when you separated them?</label><textarea id="sr" rows="3" placeholder="Optional"></textarea><div class="row mt"><button class="btn btn-main btn-sm" id="ss">Save to journal</button><button class="btn btn-ghost btn-sm" id="sc">Clear</button></div></div>`:""}`;
   $$("[data-c]",el).forEach(b=>b.addEventListener("click",()=>{S.cat=b.dataset.c;$$("[data-c]",el).forEach(x=>x.classList.toggle("on",x===b))}));
-  const add=()=>{const v=$("#si").value.trim();if(!v)return;S[S.cat].push(v);uSort(el);$("#si").focus()};
+  const add=()=>{const v=$("#si").value.trim();if(!v)return;sfx("pop");S[S.cat].push(v);uSort(el);$("#si").focus()};
   $("#sa").addEventListener("click",add);
-  $("#si").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();add()}});
+  $("#si").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();SFX.play("pop");add()}});
   $$(".tile",el).forEach(t=>t.addEventListener("click",e=>{
     const [c,i]=t.dataset.m.split(":");
     if(e.target.closest("[data-d]")){S[c].splice(+i,1);uSort(el);return}
@@ -561,7 +671,7 @@ function uSort(el){
       const part=(h,a)=>a.length?h+":\n- "+a.join("\n- ")+"\n\n":"";
       const r=$("#sr").value.trim();
       D.journal.push({id:uid(),date:today(),title:"Facts and fears",body:(part("I know",S.know)+part("I think",S.think)+part("I fear",S.fear)+(r?"What changed: "+r:"")).trim()});
-      save();S.know=[];S.think=[];S.fear=[];toast("Saved to your journal.");uSort(el);
+      save();sfx("save");S.know=[];S.think=[];S.fear=[];toast("Saved to your journal.");uSort(el);
     });
   }
 }
@@ -571,9 +681,10 @@ function uMiss(el){
   pick(el,"o",true);
   $("#mr").addEventListener("click",()=>{
     const c=chosen(el,"o");if(!c.length){toast("Pick at least one.");return}
+    sfx("chime");
     const t="You chose: "+c.join(", ")+". Missing these doesn’t always mean you want the relationship back. It can mean you miss what it gave you.";
     $("#mo").innerHTML='<div class="mt sv" style="background:var(--bg2);border-radius:16px;padding:18px"><p style="line-height:1.7">'+esc(t)+'</p><button class="btn btn-ghost btn-sm mt" id="mv">Save to journal</button></div>';
-    $("#mv").addEventListener("click",()=>{D.journal.push({id:uid(),date:today(),title:"What I miss",body:t});save();toast("Saved to your journal.")});
+    $("#mv").addEventListener("click",()=>{sfx("save");D.journal.push({id:uid(),date:today(),title:"What I miss",body:t});save();toast("Saved to your journal.")});
   });
 }
 
@@ -600,7 +711,7 @@ function jEntries(el){
     <div id="jl" class="stag fresh"></div>`;
   $("#js").addEventListener("click",()=>{
     const b=$("#jbody").value.trim();if(!b){toast("Write something first.");return}
-    D.journal.push({id:uid(),date:today(),title:$("#jt").value.trim(),body:b});save();toast("Saved.");rerender();
+    D.journal.push({id:uid(),date:today(),title:$("#jt").value.trim(),body:b});save();sfx("save");toast("Saved.");rerender();
   });
   const draw=()=>{
     const s=($("#jq")?$("#jq").value:"").toLowerCase();
@@ -637,7 +748,7 @@ function jLetters(el){
     <div id="ll" class="stag fresh">${list.map(l=>{const open=l.unlock<=today();return `<div class="item" data-l="${l.id}"><div class="meta"><span>Written ${fmt(l.date)}</span><span>${open?"Unlocked":"Opens "+fmt(l.unlock)}</span></div><div class="pv">${open?esc(l.body):"This letter is still sealed."}</div></div>`}).join("")}</div>`;
   $("#ls").addEventListener("click",()=>{
     const b=$("#lb").value.trim();if(!b){toast("Write a little first.");return}
-    const u=$("#ld").value||today();D.letters.push({id:uid(),date:today(),unlock:u,body:b});save();toast("Sealed until "+fmt(u)+".");rerender();
+    const u=$("#ld").value||today();D.letters.push({id:uid(),date:today(),unlock:u,body:b});save();sfx("seal");toast("Sealed until "+fmt(u)+".");rerender();
   });
   $$("[data-l]",el).forEach(c=>c.addEventListener("click",()=>{
     const l=D.letters.find(x=>x.id===c.dataset.l);
@@ -652,6 +763,7 @@ function rSettings(el){
   const th=D.theme||"dark";
   el.innerHTML=`<div><h1>Settings</h1><p class="sub">Everything stays on this device.</p></div>
     <div class="card"><h3>Appearance</h3><div class="setrow"><span class="l">Theme</span>${seg([["dark","Dark"],["light","Light"]],th,"th",true)}</div></div>
+    <div class="card"><h3>Sound</h3><div class="setrow"><div><div class="l">Sound effects</div><div class="small">Soft taps and gentle chimes</div></div>${seg([["off","Off"],["on","On"]],D.sound!==false?"on":"off","snd",true)}</div></div>
     <div class="card"><h3>Privacy</h3>
       <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits to open UNSENT on this device</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
       ${D.pin?'<button class="btn btn-ghost btn-sm" id="pc">Change passcode</button>':""}</div>
@@ -660,6 +772,11 @@ function rSettings(el){
       <div class="row"><button class="btn btn-ghost btn-sm" id="ex">Export</button><button class="btn btn-ghost btn-sm" id="im">Import</button><input type="file" id="imf" accept="application/json" class="hidden"><button class="btn btn-danger btn-sm" id="del">Delete everything</button></div></div>
     <div class="card"><h3>Need more support?</h3><p style="font-size:14px;line-height:1.7;margin-top:8px">UNSENT is a reflection tool, not a therapist or emergency service.</p><p class="small" style="line-height:1.75;margin-top:12px">In the Philippines, you can call the National Center for Mental Health Crisis Hotline at 1553 (landline, toll-free) or 0966-351-4518 / 0917-899-8727. In immediate danger, contact local emergency services (911) or go to the nearest emergency room. Elsewhere, reach out to a local crisis line or someone you trust.</p></div>`;
   $$("[data-th]",el).forEach(b=>b.addEventListener("click",()=>{D.theme=b.dataset.th;save();theme();rerender()}));
+  $$("[data-snd]",el).forEach(b=>b.addEventListener("click",()=>{
+    D.sound=b.dataset.snd==="on";save();
+    if(D.sound)sfx("save");
+    rerender();
+  }));
   $$("[data-pin]",el).forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.pin==="on"){if(!D.pin)lockOpen("setup",()=>rerender())}
     else if(D.pin)confirmBox("Turn off passcode?","UNSENT will open without a code on this device.","Turn off",()=>{D.pin=null;save();rerender()});
@@ -673,7 +790,7 @@ function rSettings(el){
   $("#im").addEventListener("click",()=>$("#imf").click());
   $("#imf").addEventListener("change",e=>{
     const f=e.target.files[0];if(!f)return;const r=new FileReader();
-    r.onload=()=>{try{const p=JSON.parse(r.result);D=Object.assign(blank(),p);save();theme();toast("Imported.");go("today")}catch(x){toast("That file isn’t UNSENT data.")}};
+    r.onload=()=>{try{const p=JSON.parse(r.result);D=Object.assign(blank(),p);save();theme();SFX.play("success");toast("Imported.");go("today")}catch(x){SFX.play("error");toast("That file isn’t UNSENT data.")}};
     r.readAsText(f);
   });
   $("#del").addEventListener("click",()=>confirmBox("Delete everything?","All entries, messages and settings on this device will be erased. This can’t be undone.","Delete everything",()=>{
@@ -703,12 +820,12 @@ function lockDraw(){
 }
 async function lockKey(k){
   if(L.busy)return;
-  if(k==="⌫"){L.buf=L.buf.slice(0,-1);lockDraw();return}
-  if(L.buf.length>=4)return;L.buf+=k;lockDraw();if(L.buf.length<4)return;
-  const bad=()=>{L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();$("#lock-s").textContent="Try again."},450)};
-  if(L.mode==="enter"){if(await sha(L.buf)===D.pin){$("#lock").classList.add("hidden");L.ok&&L.ok()}else bad()}
+  if(k==="⌫"){SFX.play("back");L.buf=L.buf.slice(0,-1);lockDraw();return}
+  if(L.buf.length>=4)return;SFX.key(k);L.buf+=k;lockDraw();if(L.buf.length<4)return;
+  const bad=()=>{SFX.play("error");L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();$("#lock-s").textContent="Try again."},450)};
+  if(L.mode==="enter"){if(await sha(L.buf)===D.pin){SFX.play("unlock");$("#lock").classList.add("hidden");L.ok&&L.ok()}else bad()}
   else if(L.mode==="setup"){L.first=L.buf;L.buf="";L.mode="confirm";lockDraw()}
-  else{ if(L.buf===L.first){D.pin=await sha(L.buf);save();$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
+  else{ if(L.buf===L.first){D.pin=await sha(L.buf);save();SFX.play("unlock");$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
 }
 $("#lock-x").addEventListener("click",()=>{
   $("#lock").classList.add("hidden");
@@ -722,6 +839,7 @@ function openApp(){
   setTimeout(()=>{w.classList.add("hidden");w.classList.remove("leaving");$("#app").classList.remove("hidden");go("today")},reduced()?0:380);
 }
 $("#enter").addEventListener("click",()=>{
+  sfx("enter");
   if(D.pin){$("#welcome").classList.add("hidden");lockOpen("enter",()=>{$("#app").classList.remove("hidden");go("today")})}
   else openApp();
 });
