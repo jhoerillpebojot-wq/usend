@@ -191,7 +191,7 @@ nav.tabs button.on svg{animation:pop .4s var(--ease)}
 .releasing{animation:released .7s var(--ease) forwards}
 
 /* ---------- modal / toast ---------- */
-.back{position:fixed;inset:0;background:rgba(6,6,9,.66);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .25s both}
+.back{position:fixed;inset:0;background:rgba(6,6,9,.66);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:350;display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .25s both}
 .modal{background:var(--bg1);border:1px solid var(--line);border-radius:24px;max-width:520px;width:100%;max-height:88vh;max-height:88dvh;overflow-y:auto;padding:28px;animation:zoom .3s var(--ease) both}
 .modal h3{font-size:21px;margin-bottom:12px}
 @media (max-width:700px){
@@ -225,7 +225,8 @@ nav.tabs button.on svg{animation:pop .4s var(--ease)}
   <p class="small" id="lock-s" style="margin-top:8px">Welcome back.</p>
   <div class="dots" id="lock-dots"></div>
   <div class="pad" id="lock-pad"></div>
-  <button class="link" id="lock-x" style="margin-top:22px">Cancel</button>
+  <button class="link" id="lock-f" style="margin-top:18px">Forgot passcode?</button>
+  <button class="link" id="lock-x" style="margin-top:4px">Cancel</button>
 </div>
 
 <!-- WELCOME -->
@@ -264,7 +265,7 @@ const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- DATA ---------- */
 const KEY="unsent2";
-const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null,sound:true,haptics:true,sort:null,since:today(),lastBackup:null,backupSnooze:null,remind:{on:true,time:"20:00"},fails:0,lockUntil:0});
+const blank=()=>({checkins:[],unsent:[],pauses:[],journal:[],letters:[],theme:null,pin:null,installDismissed:null,sound:true,haptics:true,sort:null,since:today(),lastBackup:null,backupSnooze:null,remind:{on:true,time:"20:00"},fails:0,lockUntil:0,recQ:null,rec:null});
 function load(){
   try{
     const r=localStorage.getItem(KEY);
@@ -840,6 +841,7 @@ function makeIcs(){
 }
 function rSettings(el){
   const th=D.theme||"dark";
+  const mail="mailto:jhoerillhoyo@gmail.com?subject="+encodeURIComponent("UNSENT bug report / feedback")+"&body="+encodeURIComponent("What happened:\n\n\nWhat I expected:\n\n\n---\nPlease don’t include your private entries here.\nDevice: "+navigator.userAgent);
   el.innerHTML=`<div><h1>Settings</h1><p class="sub">Everything stays on this device.</p></div>
     <div class="card"><h3>Appearance</h3><div class="setrow"><span class="l">Theme</span>${seg([["dark","Dark"],["light","Light"]],th,"th",true)}</div></div>
     <div class="card"><h3>Sound and touch</h3>
@@ -852,11 +854,17 @@ function rSettings(el){
       <button class="btn btn-ghost btn-sm" id="rics" style="width:100%">Add a daily alert to my calendar</button>
       <p class="small mt">Downloads a calendar file. Open it and your phone’s calendar will remind you every day at that time.</p></div>
     <div class="card"><h3>Privacy</h3>
-      <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits. Locks again after 30 seconds away. It hides your entries from a quick look, but it isn’t encryption.</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
-      ${D.pin?'<button class="btn btn-ghost btn-sm" id="pc">Change passcode</button>':""}</div>
+      <div class="setrow"><div><div class="l">Passcode lock</div><div class="small">4 digits. Locks again after 30 seconds away. It hides your entries from a quick look, but it isn’t encryption. Set a recovery question so you can reset it without losing data.</div></div>${seg([["off","Off"],["on","On"]],D.pin?"on":"off","pin",true)}</div>
+      ${D.pin?'<div class="row"><button class="btn btn-ghost btn-sm" id="pc">Change passcode</button><button class="btn btn-ghost btn-sm" id="prq">'+(D.recQ?"Change recovery question":"Set recovery question")+'</button></div>':""}</div>
     <div class="card"><h3>Install UNSENT</h3>${standalone()?'<p style="color:var(--sage);margin-top:8px">✓ You’re using the installed app.</p>':'<p class="small" style="margin:6px 0 16px">Open it like a normal app, full screen and from your home screen.</p><button class="btn btn-main" id="ins" style="width:100%">Install app</button><div id="gbox">'+guideHtml(platform())+"</div>"}</div>
     <div class="card"><h3>Your data</h3><p class="small" style="margin:6px 0 16px">Saved in this browser only. There’s no account and no server. Export a backup before clearing your browser data. ${D.lastBackup?"Last backup: "+fmt(D.lastBackup)+".":"No backup yet."}</p>
       <div class="row"><button class="btn btn-ghost btn-sm" id="ex">Export</button><button class="btn btn-ghost btn-sm" id="im">Import</button><input type="file" id="imf" accept="application/json" class="hidden"><button class="btn btn-danger btn-sm" id="del">Delete everything</button></div></div>
+    <div class="card"><h3>Report a bug or send feedback</h3>
+      <p class="small" style="margin:6px 0 14px">Found something broken, or have an idea? Tell me. Please describe what went wrong instead of sending your private entries. Nothing is sent from the app itself.</p>
+      <div class="row"><a class="btn btn-main btn-sm" href="${mail}">Email a bug report</a><button class="btn btn-ghost btn-sm" data-copy="jhoerillhoyo@gmail.com">Copy email</button></div>
+      <div class="setrow"><div><div class="l">Call or text</div><div class="small">09272098239</div></div><div class="row"><a class="btn btn-ghost btn-sm" href="tel:09272098239">Call</a><a class="btn btn-ghost btn-sm" href="sms:09272098239">Text</a></div></div>
+      <div class="setrow" style="padding-bottom:4px"><div><div class="l">Message me online</div><div class="small">Facebook, Instagram or TikTok</div></div></div>
+      <div class="row"><a class="btn btn-ghost btn-sm" href="https://www.facebook.com/share/19iH3xpGVP/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Facebook</a><a class="btn btn-ghost btn-sm" href="https://www.instagram.com/pbjni_?dlrf=eDUyNGVuZTk4N3Vn&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a><a class="btn btn-ghost btn-sm" href="https://www.tiktok.com/@pbj_ni" target="_blank" rel="noopener noreferrer">TikTok</a></div></div>
     <div class="card"><h3>Support the developer</h3>
       <p class="small" style="margin:6px 0 10px">UNSENT is free. If it helped you, a small tip or a follow means a lot. Thank you.</p>
       <div class="setrow"><div><div class="l">GCash</div><div class="small">09272098239</div></div><button class="btn btn-ghost btn-sm" data-copy="09272098239">Copy number</button></div>
@@ -887,9 +895,10 @@ function rSettings(el){
   $("#rics").addEventListener("click",makeIcs);
   $$("[data-pin]",el).forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.pin==="on"){if(!D.pin)lockOpen("setup",()=>rerender())}
-    else if(D.pin)confirmBox("Turn off passcode?","UNSENT will open without a code on this device.","Turn off",()=>{D.pin=null;save();rerender()});
+    else if(D.pin)confirmBox("Turn off passcode?","UNSENT will open without a code on this device.","Turn off",()=>{D.pin=null;D.recQ=null;D.rec=null;save();rerender()});
   }));
   if($("#pc"))$("#pc").addEventListener("click",()=>lockOpen("setup",()=>rerender()));
+  if($("#prq"))$("#prq").addEventListener("click",recoveryModal);
   if($("#ins"))$("#ins").addEventListener("click",doInstall);
   $$("[data-copy]",el).forEach(b=>b.addEventListener("click",async()=>{
     const v=b.dataset.copy;let ok=false;
@@ -936,12 +945,45 @@ async function checkPin(pin){
   return ok;
 }
 let L={mode:"enter",buf:"",first:null,ok:null,busy:false,relock:false};
-function lockOpen(mode,ok,relock){L={mode,buf:"",first:null,ok,busy:false,relock:!!relock};$("#lock").classList.remove("hidden");$("#lock-x").classList.toggle("hidden",!!relock);lockDraw()}
+function lockOpen(mode,ok,relock){L={mode,buf:"",first:null,ok,busy:false,relock:!!relock};$("#lock").classList.remove("hidden");$("#lock-x").classList.toggle("hidden",!!relock);$("#lock-f").classList.toggle("hidden",mode!=="enter");lockDraw()}
+const norm=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," ");
+async function checkSecret(v,stored){
+  if(!stored)return false;
+  if(stored.indexOf("p2:")===0){const x=stored.split(":");return (await hashPin(v,x[1]))===x[2]}
+  return (await sha(v))===stored;
+}
+function recoveryModal(){
+  const qs=["What was the name of my first pet?","What street did I grow up on?","Who was my favorite teacher?","Where was my favorite place as a kid?"];
+  const m=modal('<h3>Set a recovery question</h3><p class="small" style="line-height:1.6">If you forget your passcode, this lets you reset it without losing anything. Pick something only you would know. The answer is stored scrambled, on this device only.</p><div class="chips mt">'+qs.map(q=>'<button type="button" class="chip" data-q2="'+esc(q)+'">'+esc(q)+'</button>').join("")+'</div><div class="field mt"><input type="text" id="rq" placeholder="Or write your own question" value="'+esc(D.recQ||"")+'"></div><div class="field"><input type="text" id="rans" autocomplete="off" placeholder="Your answer"></div><div class="row"><button class="btn btn-main" id="rsv">Save</button><button class="btn btn-ghost" data-x>Skip for now</button></div>');
+  $$("[data-q2]",m).forEach(b=>b.addEventListener("click",()=>{$("#rq",m).value=b.dataset.q2;$$("[data-q2]",m).forEach(x=>x.classList.toggle("on",x===b))}));
+  $("#rsv",m).addEventListener("click",async()=>{
+    const q=$("#rq",m).value.trim(), a=norm($("#rans",m).value);
+    if(q.length<4){toast("Add a question first.");return}
+    if(a.length<2){toast("Add an answer.");return}
+    D.recQ=q;D.rec=await makePin(a);save();SFX.play("success");closeModal();toast("Recovery question saved.");
+    if(cur==="settings")rerender();
+  });
+}
+let lockTick=null;
+function lockWatch(){
+  clearInterval(lockTick);lockTick=null;
+  if(L.mode!=="enter")return;
+  const upd=()=>{
+    const w=Math.ceil(((D.lockUntil||0)-Date.now())/1000);
+    if(w<=0)return false;
+    $("#lock-s").textContent="Too many tries. Try again in "+(w>=60?Math.floor(w/60)+":"+String(w%60).padStart(2,"0"):w+"s")+".";
+    return true;
+  };
+  if(!upd())return;
+  lockTick=setInterval(()=>{
+    if($("#lock").classList.contains("hidden")){clearInterval(lockTick);lockTick=null;return}
+    if(!upd()){clearInterval(lockTick);lockTick=null;$("#lock-s").textContent="You can try again now."}
+  },1000);
+}
 function lockDraw(){
   const t={enter:["Enter your passcode","Welcome back."],setup:["Choose a passcode","4 digits. Something only you know."],confirm:["Confirm your passcode","Enter it once more."]}[L.mode];
   $("#lock-t").textContent=t[0];$("#lock-s").textContent=t[1];
-  const wait=Math.ceil(((D.lockUntil||0)-Date.now())/1000);
-  if(L.mode==="enter"&&wait>0)$("#lock-s").textContent="Too many tries. Try again in "+(wait>=60?Math.ceil(wait/60)+" min":wait+"s")+".";
+  lockWatch();
   $("#lock-dots").innerHTML=[0,1,2,3].map(i=>'<i class="'+(i<L.buf.length?"f":"")+'"></i>').join("");
   $("#lock-pad").innerHTML=["1","2","3","4","5","6","7","8","9","","0","⌫"].map(k=>k===""?"<div></div>":'<button type="button" class="'+(k==="⌫"?"g":"")+'" data-k="'+k+'">'+k+"</button>").join("");
   $$("#lock-pad [data-k]").forEach(b=>b.addEventListener("click",()=>lockKey(b.dataset.k)));
@@ -954,11 +996,49 @@ async function lockKey(k){
   const bad=()=>{SFX.play("error");L.busy=true;$("#lock-s").textContent="That didn’t match. Try again.";setTimeout(()=>{L.buf="";L.busy=false;lockDraw();if(!((D.lockUntil||0)>Date.now()))$("#lock-s").textContent="Try again."},450)};
   if(L.mode==="enter"){if(await checkPin(L.buf)){D.fails=0;D.lockUntil=0;save();SFX.play("unlock");$("#lock").classList.add("hidden");L.ok&&L.ok()}else{D.fails=(D.fails||0)+1;if(D.fails%5===0)D.lockUntil=Date.now()+Math.min(15,Math.pow(2,D.fails/5-1)/2)*60000;save();bad()}}
   else if(L.mode==="setup"){L.first=L.buf;L.buf="";L.mode="confirm";lockDraw()}
-  else{ if(L.buf===L.first){D.pin=await makePin(L.buf);D.fails=0;D.lockUntil=0;save();SFX.play("unlock");$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok()}else{L.mode="setup";L.first=null;bad()} }
+  else{ if(L.buf===L.first){D.pin=await makePin(L.buf);D.fails=0;D.lockUntil=0;save();SFX.play("unlock");$("#lock").classList.add("hidden");toast("Passcode set.");L.ok&&L.ok();if(!D.recQ)setTimeout(recoveryModal,500)}else{L.mode="setup";L.first=null;bad()} }
 }
+function eraseModal(){
+  const m=modal('<h3>Erase everything and start over?</h3><p style="line-height:1.7">This erases all entries and settings on this device and removes the passcode. It can’t be undone.</p><p class="small mt" style="line-height:1.7">If you exported a backup, you can import it afterwards in Settings.</p><div class="field mt"><label class="lb">Type RESET to confirm</label><input type="text" id="rf" autocapitalize="characters" autocomplete="off"></div><div class="row"><button class="btn btn-danger" id="rgo" disabled>Erase and reset</button><button class="btn btn-ghost" data-x>Cancel</button></div>');
+  const i=$("#rf",m), g=$("#rgo",m);
+  i.addEventListener("input",()=>{g.disabled=i.value.trim().toUpperCase()!=="RESET"});
+  g.addEventListener("click",()=>{
+    const keep={theme:D.theme,sound:D.sound,haptics:D.haptics};
+    localStorage.removeItem(KEY);localStorage.removeItem("unsentAppData");
+    D=Object.assign(blank(),keep);save();loadSort();theme();closeModal();
+    clearInterval(lockTick);lockTick=null;
+    $("#lock").classList.add("hidden");$("#app").classList.add("hidden");$("#welcome").classList.remove("hidden");
+    toast("Passcode reset. Everything was erased.");
+  });
+}
+function forgotFlow(){
+  if(!D.recQ){
+    modal('<h3>Forgot your passcode?</h3><p style="line-height:1.7">No recovery question was set for this passcode, so it can’t be reset without erasing your data. If you have a backup file, you can import it afterwards.</p><div class="row mt"><button class="btn btn-danger" id="ers">Erase and start over</button><button class="btn btn-ghost" data-x>Cancel</button></div>');
+    $("#ers").addEventListener("click",eraseModal);
+    return;
+  }
+  const m=modal('<h3>Reset your passcode</h3><p class="small" style="line-height:1.6">Answer your recovery question. Your entries stay exactly as they are.</p><p style="margin:16px 0 12px;color:var(--ink);line-height:1.5">'+esc(D.recQ)+'</p><div class="field"><input type="text" id="ra" autocomplete="off" placeholder="Your answer"></div><p class="small" id="rmsg" style="min-height:22px;margin-bottom:10px"></p><div class="row"><button class="btn btn-main" id="rgo2">Reset passcode</button><button class="btn btn-ghost" data-x>Cancel</button></div><button class="link" id="rer" style="margin-top:10px">Can’t remember? Erase everything instead</button>');
+  const msg=$("#rmsg",m);
+  $("#rer",m).addEventListener("click",eraseModal);
+  $("#rgo2",m).addEventListener("click",async()=>{
+    const wait=Math.ceil(((D.lockUntil||0)-Date.now())/1000);
+    if(wait>0){SFX.play("error");msg.textContent="Too many tries. Try again in "+wait+"s.";return}
+    if(await checkSecret(norm($("#ra",m).value),D.rec)){
+      D.pin=null;D.fails=0;D.lockUntil=0;save();closeModal();
+      clearInterval(lockTick);lockTick=null;
+      SFX.play("unlock");toast("Verified. Choose a new passcode.");
+      lockOpen("setup",()=>{$("#app").classList.remove("hidden");go("today")});
+    }else{
+      D.fails=(D.fails||0)+1;
+      if(D.fails%5===0)D.lockUntil=Date.now()+Math.min(15,Math.pow(2,D.fails/5-1)/2)*60000;
+      save();SFX.play("error");msg.textContent="That doesn’t match. Try again.";
+    }
+  });
+}
+$("#lock-f").addEventListener("click",forgotFlow);
 $("#lock-x").addEventListener("click",()=>{
   $("#lock").classList.add("hidden");
-  if(L.mode==="enter")$("#welcome").classList.remove("hidden");
+  if(L.mode==="enter"||$("#app").classList.contains("hidden"))$("#welcome").classList.remove("hidden");
 });
 
 /* ---------- START ---------- */
